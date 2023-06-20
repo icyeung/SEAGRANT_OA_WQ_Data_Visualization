@@ -5,7 +5,7 @@ import numpy as np
 import csv
 import math
 
-plt.style.use('_mpl-gallery')
+plt.style.use('default')
   
 x = []
 ty = []
