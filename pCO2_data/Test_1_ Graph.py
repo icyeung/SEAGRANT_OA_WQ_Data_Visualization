@@ -4,7 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import csv
 import math
+import datetime
+from matplotlib.dates import DateFormatter
+import matplotlib.dates as mdates
 
+# Plot once every 10 lines of data
 x = None
 ty = None
 cy = None
@@ -17,6 +21,10 @@ cyData = []     # CO2
 byData = []     # Battery Voltage
 
 numofLines = 0
+
+ordinalDate = []
+timeDate = []
+completeDate = []
 
 # Sets the graph layout colors and style
 plt.style.use('default')
@@ -36,24 +44,70 @@ with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\c
         elif numofLines == 0:
             numofLines += 1
 
+#def jdtodatestd (jdate):
+#    fmt = '%j'
+#    datestd = datetime.datetime.strptime(jdate, fmt).date()
+#    return(datestd)
 
+#for date in xData:
+#    dateMonth.append(jdtodatestd(str(math.trunc(date))))
 
+time = ""
+
+def timeConverter (date):
+    timeDeciDay, timeWholeDay = math.modf(float(date))
+    timeDeciDay = timeDeciDay * 24
+
+    timeDeciHour, timeWholeHour = math.modf(timeDeciDay)
+    hour = str(math.trunc(timeWholeHour))
+
+    timeDeciMinute, timeWholeMinute = math.modf(timeDeciHour * 60)
+    minute = str(math.trunc(timeWholeMinute))
+
+    timeDeciSecond, timeWholeSecond = math.modf(timeDeciMinute * 60)
+    second = str(math.trunc(timeWholeSecond))
+    
+    time = hour + ":" + minute + ":" + second
+
+    timeObject = datetime.datetime.strptime(time, '%H:%M:%S').time()
+
+    return timeObject
+    
+for date in xData:
+    #ordinalDate.append(datetime.date.fromordinal(math.trunc(date)))
+    #timeDate.append(timeConverter(date))
+    dt = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date))
+    completeDate.append(dt)
+
+    #completeDate.append(datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date)))
+
+print(completeDate)
 
 # Makes graph wider so Dates can be viewed properly
-plt.figure().set_figwidth(60)
+# Causes blank Figure 1 to open
+#plt.figure().set_figwidth(60)
 
 # Allows for more than one set of data to be plotted
 
 # Temperature plot
-x = xData[::10]
-ty = tyData[::10]
+x = completeDate[::]     # Plots once every 10 data lines
+ty = tyData[::]       # Plots once every 10 data lines
+
+
+#xRange=range(len(x))
+
 fig, ax1 = plt.subplots()
 p1 = ax1.plot(x, ty, color = 'b', linestyle = 'solid', label = "Temperature (C)")
 
 # Sets x-axis as Dates
 
-ax1.xaxis.set_ticks(np.arange(math.trunc(x[0]), math.trunc(x[-1]), 1))     # Step size of 1
-ax1.set_xticklabels(ax1.get_xticks(), rotation = 90)        # Rotates dates to be perpendiculat to x-axis
+date_form = DateFormatter("%m-%d")
+ax1.xaxis.set_major_formatter(date_form)
+
+ax1.xaxis.set_major_locator(mdates.MonthLocator(interval=1))     # Step size of 1
+#ax1.set_xticklabels(ax1.get_xticks(), rotation = 90)        # Rotates dates to be perpendiculat to x-axis
+
+ax1.xaxis.set_minor_locator(mdates.DayLocator())
 
 # Sets axis labels and changes font color for easy viewing
 ax1.set_ylabel("Temperature (C)")
@@ -63,13 +117,13 @@ ax1.yaxis.label.set_color(p1[0].get_color())
 
 # CO2 plot
 ax2 = ax1.twinx()
-cy = cyData[::10]
+cy = cyData[::]       # Plots once every 10 data lines
 p2 = ax2.plot(x, cy, color = 'r', linestyle = 'solid', label = "CO2")
 ax2.set_ylabel("CO2")
 ax2.yaxis.label.set_color(p2[0].get_color())
 
 # Battery Voltage plot
-by = byData[::10]
+by = byData[::]       # Plots once every 10 data lines
 ax3 = ax1.twinx()
 p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
 ax3.set_ylabel("Battery Voltage")
@@ -78,7 +132,7 @@ ax3.yaxis.label.set_color(p3[0].get_color())
 
   
 # Sets title, adds a grid, and shows legend
-plt.title('pCO2 Data', fontsize = 20)
+plt.title('pCO2 Data (2021)', fontsize = 25)
 plt.grid(True)
 plt.legend(handles=p1+p2+p3)
 
