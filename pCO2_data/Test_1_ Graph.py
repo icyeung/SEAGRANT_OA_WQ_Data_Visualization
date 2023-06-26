@@ -26,6 +26,30 @@ ordinalDate = []
 timeDate = []
 completeDate = []
 
+# Outlier Removal Sourced From: https://www.askpython.com/python/examples/detection-removal-outliers-in-python
+DATA = pd.read_csv('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\completeData.csv')
+categorical_col = ["Year Day"]
+numeric_col = ["Temparature C", "CO2", "Battery Voltage"]
+
+DATA.dtypes
+
+DATA.boxplot(["Temperature C"])
+
+for x in ["Date"]:
+    q75,q25 = np.percentile(DATA.loc[:,x],[75,25])
+    intr_qr = q75-q25
+    max = q75+(1.5*intr_qr)
+    min = q25-(1.5*intr_qr)
+
+    DATA.loc[DATA[x] < min,x] = np.nan
+    DATA.loc[DATA[x] > max,x] = np.nan
+
+print(DATA.isnull().sum())
+
+DATA = DATA.dropna(axis = 0)
+
+print(DATA.isnull().sum())
+
 # Sets the graph layout colors and style
 plt.style.use('default')
 
@@ -81,7 +105,7 @@ for date in xData:
 
     #completeDate.append(datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date)))
 
-print(completeDate)
+#print(completeDate)
 
 # Makes graph wider so Dates can be viewed properly
 # Causes blank Figure 1 to open
