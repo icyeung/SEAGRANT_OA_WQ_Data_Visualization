@@ -7,8 +7,9 @@ import math
 import datetime
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
+from scipy import stats
 
-# Plot once every 10 lines of data
+# Used to hold data after outliers are removed
 x = None
 ty = None
 cy = None
@@ -46,87 +47,19 @@ with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\c
         elif numofLines == 0:
             numofLines += 1
 
-'''
-boxplotData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
-categorical_col = ["Date"]
-numeric_col = ["Temp", "CO2", "Battery"]
-
-
-boxplotData.boxplot(numeric_col)
-
-for x in ["Date"]:
-    q75,q25 = np.percentile(boxplotData.loc[:,x],[75,25])
-    intr_qr = q75-q25
-    max = q75+(1.5*intr_qr)
-    min = q25-(1.5*intr_qr)
-
-    boxplotData.loc[boxplotData[x] < min,x] = np.nan
-    boxplotData.loc[boxplotData[x] > max,x] = np.nan
-
-print(boxplotData.isnull().sum())
-
-boxplotData = boxplotData.dropna(axis = 0)
-
-print(boxplotData.isnull().sum())
-
-
-for x in ["Temp"]:
-    q75,q25 = np.percentile(boxplotData.loc[:,x],[75,25])
-    intr_qr = q75-q25
-    max = q75+(1.5*intr_qr)
-    min = q25-(1.5*intr_qr)
-
-    boxplotData.loc[boxplotData[x] < min,x] = np.nan
-    boxplotData.loc[boxplotData[x] > max,x] = np.nan
-
-print(boxplotData.isnull().sum())
-
-tyData = boxplotData.dropna(axis = 0)
-
-print(boxplotData.isnull().sum())
-
-
-#boxplotDataT = pd.DataFrame({"CO2": cyData})
-#ax = boxplotDataT[['CO2']].plot(kind='box', title='Outlier Visualizer (C)')
-
-#boxplotDataT = pd.DataFrame({"Battery": byData})
-#ax = boxplotDataT[['Battery']].plot(kind='box', title='Outlier Visualizer (B)')
-
-
-# Outlier Removal Sourced From: https://www.askpython.com/python/examples/detection-removal-outliers-in-python
-
-#DATA = pd.read_csv('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\completeData.csv')
-#lines = csv.reader(DATA, delimiter='\t')
-#categorical_col = ["Year Day"]
-#numeric_col = ["Temparature C", "CO2", "Battery Voltage"]
-
-#DATA.dtypes
-
-#DATA.boxplot(["Temperature C"])
-
-#for x in ["Date"]:
-#    q75,q25 = np.percentile(DATA.loc[:,x],[75,25])
-#    intr_qr = q75-q25
-#    max = q75+(1.5*intr_qr)
-#    min = q25-(1.5*intr_qr)
-
-#    DATA.loc[DATA[x] < min,x] = np.nan
-#    DATA.loc[DATA[x] > max,x] = np.nan
-
-#print(DATA.isnull().sum())
-
-#DATA = DATA.dropna(axis = 0)
-
-#print(DATA.isnull().sum())
-
-'''
+# Extracts outliers from dataframe
+# If anr value in the 3 colums is a outlier, removes entire row
+completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
+completeRowData = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]
 
 
 
 # Converts Year Day Column to calendar day and time
-time = ""
 
+# Extracts time in HH:MM:SS format from date in Year Day
 def timeConverter (date):
+    time = ""
+
     timeDeciDay, timeWholeDay = math.modf(float(date))
     timeDeciDay = timeDeciDay * 24
 
@@ -144,42 +77,32 @@ def timeConverter (date):
     timeObject = datetime.datetime.strptime(time, '%H:%M:%S').time()
 
     return timeObject
-    
+
+# Converts all dates in Year Day to 0001-MM-DD HH:MM:SS    
 for date in xData:
-    #ordinalDate.append(datetime.date.fromordinal(math.trunc(date)))
-    #timeDate.append(timeConverter(date))
     dt = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date))
     completeDate.append(dt)
 
-    #completeDate.append(datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date)))
 
-#print(completeDate)
-
-# Makes graph wider so Dates can be viewed properly
-# Causes blank Figure 1 to open
-#plt.figure().set_figwidth(60)
 
 # Allows for more than one set of data to be plotted
 
 # Temperature plot
-x = completeDate[::5]     # Plots once every 10 data lines
-ty = tyData[::5]       # Plots once every 10 data lines
+x = completeRowData.get("Date")     # Plots once every 10 data lines
+ty = completeRowData.get("Temp")       # Plots once every 10 data lines
 
 
-#xRange=range(len(x))
 
 fig, ax1 = plt.subplots()
 p1 = ax1.plot(x, ty, color = 'b', linestyle = 'solid', label = "Temperature (C)")
 
 # Sets x-axis as Dates
-
 date_form = DateFormatter("%m-%d")
 ax1.xaxis.set_major_formatter(date_form)
 
-ax1.xaxis.set_major_locator(mdates.MonthLocator(interval=1))     # Step size of 1
-#ax1.set_xticklabels(ax1.get_xticks(), rotation = 90)        # Rotates dates to be perpendiculat to x-axis
+ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays x-axis label every 14 days
 
-ax1.xaxis.set_minor_locator(mdates.DayLocator())
+ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
 
 # Sets axis labels and changes font color for easy viewing
 ax1.set_ylabel("Temperature (C)")
@@ -189,20 +112,20 @@ ax1.yaxis.label.set_color(p1[0].get_color())
 
 # CO2 plot
 ax2 = ax1.twinx()
-cy = cyData[::5]       # Plots once every 10 data lines
+cy = completeRowData.get("CO2")       # Plots once every 10 data lines
 p2 = ax2.plot(x, cy, color = 'r', linestyle = 'solid', label = "CO2")
 ax2.set_ylabel("CO2")
 ax2.yaxis.label.set_color(p2[0].get_color())
 
 # Battery Voltage plot
-by = byData[::5]       # Plots once every 10 data lines
+by = completeRowData.get("Battery")       # Plots once every 10 data lines
 ax3 = ax1.twinx()
 p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
 ax3.set_ylabel("Battery Voltage")
 ax3.spines["right"].set_position(("outward", 60))
 ax3.yaxis.label.set_color(p3[0].get_color())
 
-  
+ 
 # Sets title, adds a grid, and shows legend
 plt.title('pCO2 Data (2021)', fontsize = 25)
 plt.grid(True)
