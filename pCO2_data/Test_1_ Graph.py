@@ -52,7 +52,7 @@ with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\c
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
 completeRowData = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]
 
-
+print(stats.zscore(completeRowData))
 
 # Converts Year Day Column to calendar day and time
 
@@ -82,7 +82,6 @@ def timeConverter (date):
 for date in xData:
     dt = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date))
     completeDate.append(dt)
-
 
 
 # Allows for more than one set of data to be plotted
