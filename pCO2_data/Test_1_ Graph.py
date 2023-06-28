@@ -87,8 +87,8 @@ for date in xData:
 # Allows for more than one set of data to be plotted
 
 # Temperature plot
-x = completeRowData.get("Date")     # Plots once every 10 data lines
-ty = completeRowData.get("Temp")       # Plots once every 10 data lines
+x = completeRowData.get("Date")     # Plots Dates
+ty = completeRowData.get("Temp")       # Plots Temp
 
 
 
@@ -111,13 +111,13 @@ ax1.yaxis.label.set_color(p1[0].get_color())
 
 # CO2 plot
 ax2 = ax1.twinx()
-cy = completeRowData.get("CO2")       # Plots once every 10 data lines
+cy = completeRowData.get("CO2")       # Plots CO2 
 p2 = ax2.plot(x, cy, color = 'r', linestyle = 'solid', label = "CO2")
 ax2.set_ylabel("CO2")
 ax2.yaxis.label.set_color(p2[0].get_color())
 
 # Battery Voltage plot
-by = completeRowData.get("Battery")       # Plots once every 10 data lines
+by = completeRowData.get("Battery")       # Plots Battery
 ax3 = ax1.twinx()
 p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
 ax3.set_ylabel("Battery Voltage")
@@ -129,5 +129,5 @@ ax3.yaxis.label.set_color(p3[0].get_color())
 plt.title('pCO2 Data (2021)', fontsize = 25)
 plt.grid(True)
 plt.legend(handles=p1+p2+p3)
-
+plt.savefig('pCO2_2021_Graph.png')
 plt.show()
