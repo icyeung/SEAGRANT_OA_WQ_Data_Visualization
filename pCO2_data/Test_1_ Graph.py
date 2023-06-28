@@ -29,8 +29,7 @@ completeDate = []
 
 
 
-# Sets the graph layout colors and style
-plt.style.use('default')
+
 
 with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\completeData.csv','r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
@@ -46,6 +45,10 @@ with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\c
             numofLines += 1
         elif numofLines == 0:
             numofLines += 1
+
+
+print("Original Data after empty values are taken out: ")
+print(len(xData))
 
 # Extracts outliers from dataframe
 # If anr value in the 3 colums is a outlier, removes entire row
@@ -86,10 +89,16 @@ for date in xData:
 
 # Allows for more than one set of data to be plotted
 
+
+fig1 = plt.figure(1)
+'''
+# Sets the graph layout colors and style
+plt.style.use('default')
+'''
+
 # Temperature plot
 x = completeRowData.get("Date")     # Plots Dates
 ty = completeRowData.get("Temp")       # Plots Temp
-
 
 
 fig, ax1 = plt.subplots()
@@ -129,5 +138,68 @@ ax3.yaxis.label.set_color(p3[0].get_color())
 plt.title('pCO2 Data (2021)', fontsize = 25)
 plt.grid(True)
 plt.legend(handles=p1+p2+p3)
-plt.savefig('pCO2_2021_Graph.png')
+
+
+print("Original Data after outliers are taken out: ")
+print(len(x))
+
+# Displays figure
+#plt.show()
+
+# Saves graph to specified name in pCO2_data folder
+plt.savefig('pCO2_2021_Graph_No_Outliers.png')
+
+
+
+# Plots with outliers
+
+fig2 = plt.figure(2)
+
+# Temperature plot
+x = xData     # Plots Dates
+ty = tyData       # Plots Temp
+
+fig, ax1 = plt.subplots()
+p1 = ax1.plot(x, ty, color = 'b', linestyle = 'solid', label = "Temperature (C)")
+
+# Sets x-axis as Dates
+date_form = DateFormatter("%m-%d")
+ax1.xaxis.set_major_formatter(date_form)
+
+ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays x-axis label every 14 days
+
+ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
+
+# Sets axis labels and changes font color for easy viewing
+ax1.set_ylabel("Temperature (C)")
+ax1.set_xlabel("Dates (MM-DD)")
+ax1.yaxis.label.set_color(p1[0].get_color())
+
+
+# CO2 plot
+ax2 = ax1.twinx()
+cy = cyData       # Plots CO2 
+p2 = ax2.plot(x, cy, color = 'r', linestyle = 'solid', label = "CO2")
+ax2.set_ylabel("CO2")
+ax2.yaxis.label.set_color(p2[0].get_color())
+
+# Battery Voltage plot
+by = byData       # Plots Battery
+ax3 = ax1.twinx()
+p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
+ax3.set_ylabel("Battery Voltage")
+ax3.spines["right"].set_position(("outward", 60))
+ax3.yaxis.label.set_color(p3[0].get_color())
+
+ 
+# Sets title, adds a grid, and shows legend
+plt.title('pCO2 Data (2021)', fontsize = 25)
+plt.grid(True)
+plt.legend(handles=p1+p2+p3)
+
+
+print("Original Data after outliers are taken out: ")
+print(len(x))
+
+# Displays figure
 plt.show()
