@@ -10,11 +10,7 @@ from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 from scipy import stats
 
-# Used to hold data after outliers are removed
-x = None        # Dates
-ty = None       # Temperature
-cy = None       # CO2
-by = None       # Battery Voltage
+
 
 # Used to hold data from csv file  
 xData = []      # Dates
@@ -24,11 +20,6 @@ byData = []     # Battery Voltage
 
 # Used in taking out empty data values
 numofLines = 0
-
-# Used in Year Day conversion
-ordinalDate = []
-timeDate = []
-completeDate = []
 
 # Takes out empty data values in data set
 with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\completeData.csv','r') as csvfile:
@@ -88,8 +79,7 @@ def timeConverter (date):
 
 # Converts all dates in Year Day to 0001-MM-DD HH:MM:SS    
 for date in xData:
-    dt = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date))
-    completeDate.append(dt)
+    datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date))
 
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
@@ -128,14 +118,14 @@ def grapher(time, tempC, CO2, batteryV, name):
     ax3.yaxis.label.set_color(p3[0].get_color())
 
     # Sets title, adds a grid, and shows legend
-    plt.title(name, fontsize = 25)
+    plt.title(name, fontsize = 20)
     plt.grid(True)
     plt.legend(handles=p1+p2+p3)
 
-    return plt
+    return
 
 # Plots graph without outliers
-grapher(completeRowData.get("Date"), completeRowData.get("Temp"), completeRowData.get("CO2"), completeRowData.get("Battery"), "2021 pCO2 Data (Without Outliers)")
+grapher(completeRowData.get("Date"), completeRowData.get("Temp"), completeRowData.get("CO2"), completeRowData.get("Battery"), "2021 pCO2 Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_No_Outliers.png')
@@ -143,7 +133,7 @@ plt.savefig('pCO2_2021_Graph_No_Outliers.png')
 # Plots graph with outliers
 grapher(xData, tyData, cyData, byData, "2021 pCO2 Data (With Outliers)")
 
-# Saves without outliers graph to specified name in pCO2_data folder
+# Saves with outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_With_Outliers.png')
 
 # Displays figures
