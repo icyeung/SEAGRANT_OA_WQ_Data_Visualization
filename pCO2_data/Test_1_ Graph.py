@@ -1,3 +1,4 @@
+from runpy import _TempModule
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
@@ -10,10 +11,10 @@ import matplotlib.dates as mdates
 from scipy import stats
 
 # Used to hold data after outliers are removed
-x = None
-ty = None
-cy = None
-by = None
+x = None        # Dates
+ty = None       # Temperature
+cy = None       # CO2
+by = None       # Battery Voltage
 
 # Used to hold data from csv file  
 xData = []      # Dates
@@ -21,16 +22,15 @@ tyData = []     # Temperature
 cyData = []     # CO2
 byData = []     # Battery Voltage
 
+# Used in taking out empty data values
 numofLines = 0
 
+# Used in Year Day conversion
 ordinalDate = []
 timeDate = []
 completeDate = []
 
-
-
-
-
+# Takes out empty data values in data set
 with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\completeData.csv','r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
@@ -46,20 +46,25 @@ with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\c
         elif numofLines == 0:
             numofLines += 1
 
-
-print("Original Data after empty values are taken out: ")
-print(len(xData))
+# Displays number of data points before outliers are taken out
+print("Original data after empty values are taken out: ", len(xData))
 
 # Extracts outliers from dataframe
-# If anr value in the 3 colums is a outlier, removes entire row
+# If any value in the 3 colums is an outlier, removes entire row
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
 completeRowData = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]
 
+# Displays z-score of dataset
 print(stats.zscore(completeRowData))
 
-# Converts Year Day Column to calendar day and time
+# Displays number of data points after outliers are removed
+print("Original data after outliers are removed: ", len(completeRowData.get("Date")))
 
-# Extracts time in HH:MM:SS format from date in Year Day
+# Display number of outliers
+print("Number of outliers: ", (len(xData) - (len(completeRowData.get("Date")))))
+
+# Converts Year Day Column to calendar day and time
+# Extracts time in HH:MM:SS format from date in Year Day column
 def timeConverter (date):
     time = ""
 
@@ -86,120 +91,60 @@ for date in xData:
     dt = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date))
     completeDate.append(dt)
 
+# Graph plotter function
+# Provide date, temperature, CO2, and battery data
+# Provide name of graph in string format 
+def grapher(time, tempC, CO2, batteryV, name):
+    x = time
+    ty = tempC
+    cy = CO2
+    by = batteryV
 
-# Allows for more than one set of data to be plotted
+    fig, ax1 = plt.subplots()
+    p1 = ax1.plot(x, ty, color = 'b', linestyle = 'solid', label = 'Temperature (C)')
 
+    # Sets x-axis as Dates
+    date_form = DateFormatter("%m-%d")
+    ax1.xaxis.set_major_formatter(date_form)
+    ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays x-axis label every 14 days
+    ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
 
-fig1 = plt.figure(1)
-'''
-# Sets the graph layout colors and style
-plt.style.use('default')
-'''
+    # Sets axis labels and changes font color of "Temperature (C)" label for easy viewing
+    ax1.set_ylabel("Temperature (C)")
+    ax1.set_xlabel("Dates (MM-DD)")
+    ax1.yaxis.label.set_color(p1[0].get_color())
 
-# Temperature plot
-x = completeRowData.get("Date")     # Plots Dates
-ty = completeRowData.get("Temp")       # Plots Temp
+    # CO2 plot
+    ax2 = ax1.twinx()
+    p2 = ax2.plot(x, cy, color = 'r', linestyle = 'solid', label = "CO2")
+    ax2.set_ylabel("CO2")
+    ax2.yaxis.label.set_color(p2[0].get_color())
 
+    # Battery Voltage plot
+    ax3 = ax1.twinx()
+    p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
+    ax3.set_ylabel("Battery Voltage")
+    ax3.spines["right"].set_position(("outward", 60))
+    ax3.yaxis.label.set_color(p3[0].get_color())
 
-fig, ax1 = plt.subplots()
-p1 = ax1.plot(x, ty, color = 'b', linestyle = 'solid', label = "Temperature (C)")
+    # Sets title, adds a grid, and shows legend
+    plt.title(name, fontsize = 25)
+    plt.grid(True)
+    plt.legend(handles=p1+p2+p3)
 
-# Sets x-axis as Dates
-date_form = DateFormatter("%m-%d")
-ax1.xaxis.set_major_formatter(date_form)
+    return plt
 
-ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays x-axis label every 14 days
+# Plots graph without outliers
+grapher(completeRowData.get("Date"), completeRowData.get("Temp"), completeRowData.get("CO2"), completeRowData.get("Battery"), "2021 pCO2 Data (Without Outliers)")
 
-ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
-
-# Sets axis labels and changes font color for easy viewing
-ax1.set_ylabel("Temperature (C)")
-ax1.set_xlabel("Dates (MM-DD)")
-ax1.yaxis.label.set_color(p1[0].get_color())
-
-
-# CO2 plot
-ax2 = ax1.twinx()
-cy = completeRowData.get("CO2")       # Plots CO2 
-p2 = ax2.plot(x, cy, color = 'r', linestyle = 'solid', label = "CO2")
-ax2.set_ylabel("CO2")
-ax2.yaxis.label.set_color(p2[0].get_color())
-
-# Battery Voltage plot
-by = completeRowData.get("Battery")       # Plots Battery
-ax3 = ax1.twinx()
-p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
-ax3.set_ylabel("Battery Voltage")
-ax3.spines["right"].set_position(("outward", 60))
-ax3.yaxis.label.set_color(p3[0].get_color())
-
- 
-# Sets title, adds a grid, and shows legend
-plt.title('pCO2 Data (2021)', fontsize = 25)
-plt.grid(True)
-plt.legend(handles=p1+p2+p3)
-
-
-print("Original Data after outliers are taken out: ")
-print(len(x))
-
-# Displays figure
-#plt.show()
-
-# Saves graph to specified name in pCO2_data folder
+# Saves without outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_No_Outliers.png')
 
+# Plots graph with outliers
+grapher(xData, tyData, cyData, byData, "2021 pCO2 Data (With Outliers)")
 
+# Saves without outliers graph to specified name in pCO2_data folder
+plt.savefig('pCO2_2021_Graph_With_Outliers.png')
 
-# Plots with outliers
-
-fig2 = plt.figure(2)
-
-# Temperature plot
-x = xData     # Plots Dates
-ty = tyData       # Plots Temp
-
-fig, ax1 = plt.subplots()
-p1 = ax1.plot(x, ty, color = 'b', linestyle = 'solid', label = "Temperature (C)")
-
-# Sets x-axis as Dates
-date_form = DateFormatter("%m-%d")
-ax1.xaxis.set_major_formatter(date_form)
-
-ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays x-axis label every 14 days
-
-ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
-
-# Sets axis labels and changes font color for easy viewing
-ax1.set_ylabel("Temperature (C)")
-ax1.set_xlabel("Dates (MM-DD)")
-ax1.yaxis.label.set_color(p1[0].get_color())
-
-
-# CO2 plot
-ax2 = ax1.twinx()
-cy = cyData       # Plots CO2 
-p2 = ax2.plot(x, cy, color = 'r', linestyle = 'solid', label = "CO2")
-ax2.set_ylabel("CO2")
-ax2.yaxis.label.set_color(p2[0].get_color())
-
-# Battery Voltage plot
-by = byData       # Plots Battery
-ax3 = ax1.twinx()
-p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
-ax3.set_ylabel("Battery Voltage")
-ax3.spines["right"].set_position(("outward", 60))
-ax3.yaxis.label.set_color(p3[0].get_color())
-
- 
-# Sets title, adds a grid, and shows legend
-plt.title('pCO2 Data (2021)', fontsize = 25)
-plt.grid(True)
-plt.legend(handles=p1+p2+p3)
-
-
-print("Original Data after outliers are taken out: ")
-print(len(x))
-
-# Displays figure
+# Displays figures
 plt.show()
