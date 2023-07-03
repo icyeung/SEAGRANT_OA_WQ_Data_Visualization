@@ -43,16 +43,39 @@ print("Original data after empty values are taken out: ", len(xData))
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
-completeRowData = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]
+
+def extractOutliers(start, end):
+    intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
+    print("Original data for specified interval: ", len(intervalDf.get('Date')))
+    noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]
+    print("Data without outliers for specified interval: ", len(noOutliersDf.get('Date')))
+    return noOutliersDf
+
+januaryDf = extractOutliers(1, 32)
+februaryDf = extractOutliers(32, 60)
+marchDf = extractOutliers(60, 91)
+aprilDf = extractOutliers(91, 121)
+mayDf = extractOutliers(121, 152)
+juneDf = extractOutliers(152, 182)
+julyDF = extractOutliers(182, 213)
+augustDf = extractOutliers(213, 244)
+septemberDf = extractOutliers(244, 274)
+octoberDf = extractOutliers(274, 305)
+novemberDf = extractOutliers(305, 335)
+decemberDf = extractOutliers(335, 366)
+
+
+extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
+#completeRowData = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]
 
 # Displays z-score of dataset
 print(stats.zscore(completeRowData))
 
 # Displays number of data points after outliers are removed
-print("Original data after outliers are removed: ", len(completeRowData.get("Date")))
+print("Original data after outliers are removed: ", len(extractedData.get("Date")))
 
 # Display number of outliers
-print("Number of outliers: ", (len(xData) - (len(completeRowData.get("Date")))))
+print("Number of outliers: ", (len(xData) - (len(extractedData.get("Date")))))
 
 # Converts Year Day Column to calendar day and time
 # Extracts time in HH:MM:SS format from date in Year Day column
@@ -125,7 +148,7 @@ def grapher(time, tempC, CO2, batteryV, name):
     return
 
 # Plots graph without outliers
-grapher(completeRowData.get("Date"), completeRowData.get("Temp"), completeRowData.get("CO2"), completeRowData.get("Battery"), "2021 pCO2 Data (No Outliers)")
+grapher(extractedData.get("Date"), extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), "2021 pCO2 Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_No_Outliers.png')
