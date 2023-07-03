@@ -37,42 +37,40 @@ with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\c
         elif numofLines == 0:
             numofLines += 1
 
-# Displays number of data points before outliers are taken out
+# Displays total number of data points before outliers are taken out
 print("Original data after empty values are taken out: ", len(xData))
+
+# Dataframe of original data after blanks removed
+completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
-completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
-
-def extractOutliers(start, end):
+def extractOutliers(start, end, intervalName):
     intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
-    print("Original data for specified interval: ", len(intervalDf.get('Date')))
-    noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]
-    print("Data without outliers for specified interval: ", len(noOutliersDf.get('Date')))
+    print("Original data for ", intervalName, ": ", len(intervalDf.get('Date')))        # Number of datapoints before outliers are removed
+    noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
+    print("Data without outliers for ", intervalName, ": ", len(noOutliersDf.get('Date')))      # Number of datapoints after outliers are removed
     return noOutliersDf
 
-januaryDf = extractOutliers(1, 32)
-februaryDf = extractOutliers(32, 60)
-marchDf = extractOutliers(60, 91)
-aprilDf = extractOutliers(91, 121)
-mayDf = extractOutliers(121, 152)
-juneDf = extractOutliers(152, 182)
-julyDF = extractOutliers(182, 213)
-augustDf = extractOutliers(213, 244)
-septemberDf = extractOutliers(244, 274)
-octoberDf = extractOutliers(274, 305)
-novemberDf = extractOutliers(305, 335)
-decemberDf = extractOutliers(335, 366)
+# Identifies and extracts outliers using a monthly interval
+januaryDf = extractOutliers(1, 32, "January")
+februaryDf = extractOutliers(32, 60, "February")
+marchDf = extractOutliers(60, 91, "March")
+aprilDf = extractOutliers(91, 121, "April")
+mayDf = extractOutliers(121, 152, "May")
+juneDf = extractOutliers(152, 182, "June")
+julyDF = extractOutliers(182, 213, "July")
+augustDf = extractOutliers(213, 244, "August")
+septemberDf = extractOutliers(244, 274, "September")
+octoberDf = extractOutliers(274, 305, "October")
+novemberDf = extractOutliers(305, 335, "November")
+decemberDf = extractOutliers(335, 366, "December")
 
-
+# Dataframe without outliers
 extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
-#completeRowData = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]
-
-# Displays z-score of dataset
-print(stats.zscore(completeRowData))
-
-# Displays number of data points after outliers are removed
-print("Original data after outliers are removed: ", len(extractedData.get("Date")))
+ 
+# Displays total number of data points after outliers are removed
+print("Original data after all outliers are removed: ", len(extractedData.get("Date")))
 
 # Display number of outliers
 print("Number of outliers: ", (len(xData) - (len(extractedData.get("Date")))))
