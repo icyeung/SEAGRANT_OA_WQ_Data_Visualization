@@ -1,4 +1,5 @@
 from runpy import _TempModule
+from xmlrpc.client import DateTime, _datetime
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
@@ -18,8 +19,20 @@ tyData = []     # Temperature
 cyData = []     # CO2
 byData = []     # Battery Voltage
 
+numofLinesW = 0
+
+# Used to hold weather data from csv file
+weaDate = []
+wyData = []
+ryData = []
+
 # Used in taking out empty data values
-numofLines = 0
+numofLinesD = 0
+
+# Holds converted time values
+xDataTrueO =[]
+xDataTrueNO = []
+weaDateTrue =[]
 
 # Takes out empty data values in data set
 with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\completeData.csv','r') as csvfile:
@@ -28,20 +41,36 @@ with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\c
         
         # Checks if time entry has corresponding Temperature, CO2, and Battery Voltage
         # If not, does not include data point in graph
-        if not row[1] == "" and not row[2] == "" and not row[3] == "" and numofLines > 0:
+        if not row[1] == "" and not row[2] == "" and not row[3] == "" and numofLinesD > 0:
             xData.append(float(row[0]))
             tyData.append(float(row[1]))
             cyData.append(float(row[2]))
             byData.append(float(row[3]))
-            numofLines += 1
-        elif numofLines == 0:
-            numofLines += 1
+            numofLinesD += 1
+        elif numofLinesD == 0:
+            numofLinesD += 1
 
 # Displays total number of data points before outliers are taken out
 print("Original data after empty values are taken out: ", len(xData))
 
 # Dataframe of original data after blanks removed
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
+
+# Opens weather data
+with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\2021_Barlow_Weather_Data_Formatted.csv','r') as csvfile:
+    lines = csv.reader(csvfile, delimiter=',')
+    for row in lines:
+        
+        # Checks if time entry has corresponding Temperature, CO2, and Battery Voltage
+        # If not, does not include data point in graph
+        if not row[11] == "" and not row[15] == "" and numofLinesW > 0:
+            weaDate.append(row[0])
+            wyData.append(float(row[11]))
+            ryData.append(float(row[15]))
+            numofLinesW += 1
+        elif numofLinesW == 0:
+            numofLinesW += 1
+
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
@@ -98,21 +127,39 @@ def timeConverter (date):
 
     return timeObject
 
-# Converts all dates in Year Day to 0001-MM-DD HH:MM:SS    
-for date in xData:
-    datetime.datetime.combine(datetime.date.fromordinal(math.trunc(date)), timeConverter(date))
+# Converts all dates in Year Day to 0001-MM-DD HH:MM:SS
+# Original Data    
+for dateValue in xData:
+    dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
+    trueDate = dateValue.replace(year = 2021)
+    xDataTrueO.append(trueDate)
+
+# Data with no outliers
+for dateValue in extractedData.get("Date"):
+    dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
+    trueDate = dateValue.replace(year = 2021)
+    xDataTrueNO.append(trueDate)
+
+# Weather data    
+for dateValue in weaDate:
+    trueDate = datetime.datetime.strptime(dateValue, '%m/%d/%Y').date()
+    weaDateTrue.append(trueDate)
+  
 
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
 # Provide name of graph in string format 
-def grapher(time, tempC, CO2, batteryV, name):
+def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, name):
     x = time
     ty = tempC
     cy = CO2
     by = batteryV
+    wx = weatherD
+    wy = wind
+    ry = rain
 
     fig, ax1 = plt.subplots()
-    p1 = ax1.plot(x, ty, color = 'b', linestyle = 'solid', label = 'Temperature (C)')
+    p1 = ax1.plot(x, ty, color = 'm', linestyle = 'solid', label = 'Temperature (C)')
 
     # Sets x-axis as Dates
     date_form = DateFormatter("%m-%d")
@@ -127,7 +174,7 @@ def grapher(time, tempC, CO2, batteryV, name):
 
     # CO2 plot
     ax2 = ax1.twinx()
-    p2 = ax2.plot(x, cy, color = 'r', linestyle = 'solid', label = "CO2")
+    p2 = ax2.plot(x, cy, color = 'c', linestyle = 'solid', label = "CO2")
     ax2.set_ylabel("CO2")
     ax2.yaxis.label.set_color(p2[0].get_color())
 
@@ -138,21 +185,35 @@ def grapher(time, tempC, CO2, batteryV, name):
     ax3.spines["right"].set_position(("outward", 60))
     ax3.yaxis.label.set_color(p3[0].get_color())
 
+    # Wind Speed plot
+    ax4 = ax1.twinx()
+    p4 = ax4.plot(wx, wy, color = 'b', linestyle = 'solid', label = "Average Wind Speed (mph)")
+    ax4.set_ylabel("Average Wind Speed (mph)")
+    ax4.spines["right"].set_position(("outward", 120))
+    ax4.yaxis.label.set_color(p4[0].get_color())
+
+    # Rainfall plot
+    ax5 = ax1.twinx()
+    p5 = ax5.plot(wx, ry, color = 'r', linestyle = 'solid', label = "Rainfall (in)")
+    ax5.set_ylabel("Rainfall (in)")
+    ax5.spines["right"].set_position(("outward", 180))
+    ax5.yaxis.label.set_color(p5[0].get_color())
+
     # Sets title, adds a grid, and shows legend
     plt.title(name, fontsize = 20)
     plt.grid(True)
-    plt.legend(handles=p1+p2+p3)
+    plt.legend(handles=p1+p2+p3+p4+p5)
 
     return
 
 # Plots graph without outliers
-grapher(extractedData.get("Date"), extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), "2021 pCO2 Data (No Outliers)")
+grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), weaDateTrue, wyData, ryData, "2021 pCO2 Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_No_Outliers.png')
 
 # Plots graph with outliers
-grapher(xData, tyData, cyData, byData, "2021 pCO2 Data (With Outliers)")
+grapher(xDataTrueO, tyData, cyData, byData, weaDateTrue, wyData, ryData, "2021 pCO2 Data (With Outliers)")
 
 # Saves with outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_With_Outliers.png')
