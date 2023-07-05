@@ -113,7 +113,6 @@ octoberDf = extractOutliers(274, 305, "October")
 novemberDf = extractOutliers(305, 335, "November")
 decemberDf = extractOutliers(335, 366, "December")
 
-
 # Displays table with # of outliers taken out per month
 print("")
 print(pd.DataFrame(outlierData, headersV, headersH))
@@ -127,6 +126,7 @@ print("Original data after all outliers are removed: ", len(extractedData.get("D
 
 # Display number of outliers
 print("Number of outliers: ", (len(xData) - (len(extractedData.get("Date")))))
+
 
 # Converts Year Day Column to calendar day and time
 # Extracts time in HH:MM:SS format from date in Year Day column
@@ -169,6 +169,7 @@ for dateValue in weaDate:
     trueDate = datetime.datetime.strptime(dateValue, '%m/%d/%Y').date()
     weaDateTrue.append(trueDate)
   
+
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
 # Provide weather dates, wind, and rain data
