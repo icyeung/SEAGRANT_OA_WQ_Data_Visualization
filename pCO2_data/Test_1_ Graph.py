@@ -12,7 +12,7 @@ from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 from scipy import stats
 
-# Used to find location of specified file
+# Used to find location of specified file within Python code folder
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 # pCO2 Data
