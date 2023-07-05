@@ -12,29 +12,40 @@ import matplotlib.dates as mdates
 from scipy import stats
 
 
-
+# pCO2 Data
 # Used to hold data from csv file  
 xData = []      # Dates
 tyData = []     # Temperature
 cyData = []     # CO2
 byData = []     # Battery Voltage
 
-numofLinesW = 0
+# Used in taking out empty data values from pCO2 data
+numofLinesD = 0
 
+# Weather Data
 # Used to hold weather data from csv file
 weaDate = []
 wyData = []
 ryData = []
 
-# Used in taking out empty data values
-numofLinesD = 0
+# Used in taking out empty data values from weather data
+numofLinesW = 0
 
+# Outliers
+# Holds information on outliers
+outlierData = []
+
+# Used for creating table on outlier information
+headersH = ["# Values Before Outliers Extracted", "# Values After Outliers Extracted", "# Outliers Extracted"]                          # Horizontal Headers
+headersV = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]   # Vertical Headers
+
+# Time
 # Holds converted time values
-xDataTrueO =[]
-xDataTrueNO = []
-weaDateTrue =[]
+xDataTrueO =[]      # Outlier times
+xDataTrueNO = []    # No outlier times
+weaDateTrue =[]     # Weather times
 
-# Takes out empty data values in data set
+# Takes out empty data values in pCO2 data set
 with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\completeData.csv','r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
@@ -56,7 +67,7 @@ print("Original data after empty values are taken out: ", len(xData))
 # Dataframe of original data after blanks removed
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
 
-# Opens weather data
+# Takes out empty values in weather data set
 with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\2021_Barlow_Weather_Data_Formatted.csv','r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
@@ -74,11 +85,18 @@ with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\2
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
+# Stores information about # of outliers taken out
 def extractOutliers(start, end, intervalName):
+    outlierDataHolder = []
     intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
-    print("Original data for ", intervalName, ": ", len(intervalDf.get('Date')))        # Number of datapoints before outliers are removed
+    bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
+    outlierDataHolder.append(bOutliers)
     noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
-    print("Data without outliers for ", intervalName, ": ", len(noOutliersDf.get('Date')))      # Number of datapoints after outliers are removed
+    aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
+    outlierDataHolder.append(aOutliers)
+    nOutliers = bOutliers - aOutliers              # Number of outliers
+    outlierDataHolder.append(nOutliers)
+    outlierData.append(outlierDataHolder)
     return noOutliersDf
 
 # Identifies and extracts outliers using a monthly interval
@@ -94,6 +112,12 @@ septemberDf = extractOutliers(244, 274, "September")
 octoberDf = extractOutliers(274, 305, "October")
 novemberDf = extractOutliers(305, 335, "November")
 decemberDf = extractOutliers(335, 366, "December")
+
+
+# Displays table with # of outliers taken out per month
+print("")
+print(pd.DataFrame(outlierData, headersV, headersH))
+print("")
 
 # Dataframe without outliers
 extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
@@ -127,7 +151,7 @@ def timeConverter (date):
 
     return timeObject
 
-# Converts all dates in Year Day to 0001-MM-DD HH:MM:SS
+# Converts all dates in Year Day to 2021-MM-DD HH:MM:SS
 # Original Data    
 for dateValue in xData:
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
@@ -145,9 +169,9 @@ for dateValue in weaDate:
     trueDate = datetime.datetime.strptime(dateValue, '%m/%d/%Y').date()
     weaDateTrue.append(trueDate)
   
-
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
+# Provide weather dates, wind, and rain data
 # Provide name of graph in string format 
 def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, name):
     x = time
