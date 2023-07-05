@@ -1,3 +1,4 @@
+import os
 from runpy import _TempModule
 from xmlrpc.client import DateTime, _datetime
 import pandas as pd
@@ -11,6 +12,8 @@ from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 from scipy import stats
 
+# Used to find location of specified file
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 # pCO2 Data
 # Used to hold data from csv file  
@@ -46,7 +49,7 @@ xDataTrueNO = []    # No outlier times
 weaDateTrue =[]     # Weather times
 
 # Takes out empty data values in pCO2 data set
-with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\completeData.csv','r') as csvfile:
+with open(os.path.join(__location__, 'completeData.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
@@ -68,7 +71,7 @@ print("Original data after empty values are taken out: ", len(xData))
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
 
 # Takes out empty values in weather data set
-with open('C:\\Users\\isabe\\Source\\Repos\\icyeung\\pCO2-DataTrue\\pCO2_data\\2021_Barlow_Weather_Data_Formatted.csv','r') as csvfile:
+with open(os.path.join(__location__, '2021_Barlow_Weather_Data_Formatted.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
         
