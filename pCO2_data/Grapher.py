@@ -143,7 +143,8 @@ print(pd.DataFrame(outlierData, headersV, headersH))
 print("")
 
 # Dataframe without outliers
-extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
+extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, 
+                           augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
  
 # Displays total number of data points after outliers are removed
 print("Original data after all outliers are removed: ", len(extractedData.get("Date")))
@@ -274,13 +275,15 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     return
 
 # Plots graph without outliers
-grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, "2021 pCO2 Data (No Outliers)")
+grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), 
+        weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, "2021 pCO2 Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_No_Outliers.png')
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, cyData, byData, weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, "2021 pCO2 Data (With Outliers)")
+grapher(xDataTrueO, tyData, cyData, byData, weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, 
+        "2021 pCO2 Data (With Outliers)")
 
 # Saves with outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_With_Outliers.png')
