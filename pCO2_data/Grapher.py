@@ -98,7 +98,7 @@ with open(os.path.join(__location__, 'Tidal_Data_Complete.csv'),'r') as csvfile:
         
         # Checks if time entry has corresponding Time and Verified Measurement
         # If not, does not include data point in graph
-        if not row[1] == "-" and not row[4] == "-" and numofLinesT > 0:
+        if not row[1] == "-" and not row[4] == "-" and not row[1] == "" and not row [4] == "" and numofLinesT > 0:
             tidDate.append(row[0])
             tidTime.append(row[1])
             tidHeightData.append(float(row[4]))
@@ -196,7 +196,7 @@ for dateValue in weaDate:
 # Tide data
 tidDateTimeStrList = map(" ".join, zip(tidDate, tidTime))
 for string in tidDateTimeStrList:
-    tidDateTrue.append(datetime.datetime.strptime(string, '%Y/%m/%d %H:%M'))
+    tidDateTrue.append(datetime.datetime.strptime(string, '%m/%d/%Y %H:%M'))
 
 
 # Graph plotter function
@@ -229,7 +229,14 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     ax1.set_ylabel("Temperature (C)")
     ax1.set_xlabel("Dates (MM-DD)")
     ax1.yaxis.label.set_color(p1[0].get_color())
-
+    
+    # Tide Height plot
+    ax6 = ax1.twinx()
+    p6 = ax6.plot(tidalx, tidaly, color = 'y', linestyle = 'solid', label = "Tide Height (ft)")
+    ax6.set_ylabel("Tide Height (ft)")
+    ax6.spines["right"].set_position(("outward", 240))
+    ax6.yaxis.label.set_color(p6[0].get_color())
+    
     # CO2 plot
     ax2 = ax1.twinx()
     p2 = ax2.plot(x, cy, color = 'c', linestyle = 'solid', label = "CO2")
@@ -257,12 +264,7 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     ax5.spines["right"].set_position(("outward", 180))
     ax5.yaxis.label.set_color(p5[0].get_color())
 
-    # Tide Height plot
-    ax6 = ax1.twinx()
-    p6 = ax6.plot(tidalx, tidaly, color = 'y', linestyle = 'solid', label = "Tide Height (ft)")
-    ax6.set_ylabel("Tide Height (ft)")
-    ax6.spines["right"].set_position(("outward", 240))
-    ax6.yaxis.label.set_color(p6[0].get_color())
+    
 
     # Sets title, adds a grid, and shows legend
     plt.title(name, fontsize = 20)
