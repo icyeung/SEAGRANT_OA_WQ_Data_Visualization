@@ -31,6 +31,15 @@ ryData = []
 # Used in taking out empty data values from weather data
 numofLinesW = 0
 
+# Tidal Data
+# Used to hold tidal data from csv file
+tidDate = []
+tidTime = []
+tidHeightData = []
+
+# Used in taking out empty values from tidal data
+numofLinesT = 0
+
 # Outliers
 # Holds information on outliers
 outlierData = []
@@ -43,8 +52,8 @@ headersV = ["January", "February", "March", "April", "May", "June", "July", "Aug
 # Holds converted time values
 xDataTrueO =[]      # Outlier times
 xDataTrueNO = []    # No outlier times
-weaDateTrue =[]     # Weather times
-
+weaDateTrue = []    # Weather times
+tidDateTrue = []    # Tidal times
 # Takes out empty data values in pCO2 data set
 with open(os.path.join(__location__, 'completeData.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
@@ -72,7 +81,7 @@ with open(os.path.join(__location__, '2021_Barlow_Weather_Data_Formatted.csv'),'
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
         
-        # Checks if time entry has corresponding Temperature, CO2, and Battery Voltage
+        # Checks if time entry has corresponding Wind Speed and Rainfall
         # If not, does not include data point in graph
         if not row[11] == "" and not row[15] == "" and numofLinesW > 0:
             weaDate.append(row[0])
@@ -81,6 +90,21 @@ with open(os.path.join(__location__, '2021_Barlow_Weather_Data_Formatted.csv'),'
             numofLinesW += 1
         elif numofLinesW == 0:
             numofLinesW += 1
+
+# Takes out empty values in tidal data set
+with open(os.path.join(__location__, 'Tidal_Data_Complete.csv'),'r') as csvfile:
+    lines = csv.reader(csvfile, delimiter=',')
+    for row in lines:
+        
+        # Checks if time entry has corresponding Time and Verified Measurement
+        # If not, does not include data point in graph
+        if not row[1] == "-" and not row[4] == "-" and numofLinesT > 0:
+            tidDate.append(row[0])
+            tidTime.append(row[1])
+            tidHeightData.append(float(row[4]))
+            numofLinesT += 1
+        elif numofLinesT == 0:
+            numofLinesT += 1
 
 
 # Extracts outliers from dataframe
@@ -169,12 +193,18 @@ for dateValue in weaDate:
     trueDate = datetime.datetime.strptime(dateValue, '%m/%d/%Y').date()
     weaDateTrue.append(trueDate)
   
+# Tide data
+tidDateTimeStrList = map(" ".join, zip(tidDate, tidTime))
+for string in tidDateTimeStrList:
+    tidDateTrue.append(datetime.datetime.strptime(string, '%Y/%m/%d %H:%M'))
+
 
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
 # Provide weather dates, wind, and rain data
+# Provide tide times and tide height
 # Provide name of graph in string format 
-def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, name):
+def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name):
     x = time
     ty = tempC
     cy = CO2
@@ -182,8 +212,11 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, name):
     wx = weatherD
     wy = wind
     ry = rain
+    tidalx = tideD
+    tidaly = tideH
 
     fig, ax1 = plt.subplots()
+    #fig.subplots_adjust(right = 0.75)
     p1 = ax1.plot(x, ty, color = 'm', linestyle = 'solid', label = 'Temperature (C)')
 
     # Sets x-axis as Dates
@@ -224,21 +257,28 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, name):
     ax5.spines["right"].set_position(("outward", 180))
     ax5.yaxis.label.set_color(p5[0].get_color())
 
+    # Tide Height plot
+    ax6 = ax1.twinx()
+    p6 = ax6.plot(tidalx, tidaly, color = 'y', linestyle = 'solid', label = "Tide Height (ft)")
+    ax6.set_ylabel("Tide Height (ft)")
+    ax6.spines["right"].set_position(("outward", 240))
+    ax6.yaxis.label.set_color(p6[0].get_color())
+
     # Sets title, adds a grid, and shows legend
     plt.title(name, fontsize = 20)
     plt.grid(True)
-    plt.legend(handles=p1+p2+p3+p4+p5)
+    plt.legend(handles=p1+p2+p3+p4+p5+p6)
 
     return
 
 # Plots graph without outliers
-grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), weaDateTrue, wyData, ryData, "2021 pCO2 Data (No Outliers)")
+grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, "2021 pCO2 Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_No_Outliers.png')
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, cyData, byData, weaDateTrue, wyData, ryData, "2021 pCO2 Data (With Outliers)")
+grapher(xDataTrueO, tyData, cyData, byData, weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, "2021 pCO2 Data (With Outliers)")
 
 # Saves with outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_With_Outliers.png')
