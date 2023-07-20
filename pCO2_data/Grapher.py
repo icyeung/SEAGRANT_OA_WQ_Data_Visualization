@@ -37,12 +37,22 @@ tidDate = []
 tidTime = []
 tidHeightData = []
 
+# Salinity Data
+# Used to hold salinity data from csv file
+salDate = []
+condData = []
+condTempData = []
+
 # Used in taking out empty values from tidal data
 numofLinesT = 0
 
 # Outliers
 # Holds information on outliers
 outlierData = []
+outlierDataSal = []
+
+# Used in taking out empty values from salinity data
+numofLinesS = -1
 
 # Used for creating table on outlier information
 headersH = ["# Values Before Outliers Extracted", "# Values After Outliers Extracted", "# Outliers Extracted"]                          # Horizontal Headers
@@ -54,6 +64,8 @@ xDataTrueO =[]      # Outlier times
 xDataTrueNO = []    # No outlier times
 weaDateTrue = []    # Weather times
 tidDateTrue = []    # Tidal times
+salDateTrue = []    # Salinity times
+
 # Takes out empty data values in pCO2 data set
 with open(os.path.join(__location__, 'completeData.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
@@ -92,7 +104,7 @@ with open(os.path.join(__location__, '2021_Barlow_Weather_Data_Formatted.csv'),'
             numofLinesW += 1
 
 # Takes out empty values in tidal data set
-with open(os.path.join(__location__, 'Tidal_Data_Complete.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'Woods_Hole_Tidal_Data_HL_2021.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
         
@@ -106,6 +118,23 @@ with open(os.path.join(__location__, 'Tidal_Data_Complete.csv'),'r') as csvfile:
         elif numofLinesT == 0:
             numofLinesT += 1
 
+print(numofLinesS)
+# Takes out empty values in salinity data set
+with open(os.path.join(__location__, 'Salinity_2021.csv'),'r') as csvfile:
+    lines = csv.reader(csvfile, delimiter=',')
+    for row in lines:
+        
+        # Checks if time entry has corresponding Time and Verified Measurement
+        # If not, does not include data point in graph
+        if not row[1] == "-" and not row[2] == "-" and not row[3] == "-" and not row[1] == "" and not row[2] == "" and not row[3] == "" and numofLinesS > 0:
+            salDate.append(row[1])
+            condData.append(float(row[2]))
+            condTempData.append(float(row[3]))
+            numofLinesS += 1
+        elif numofLinesS <= 0:
+            numofLinesS += 1
+
+print(salDate)
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
@@ -199,6 +228,13 @@ tidDateTimeStrList = map(" ".join, zip(tidDate, tidTime))
 for string in tidDateTimeStrList:
     tidDateTrue.append(datetime.datetime.strptime(string, '%m/%d/%Y %H:%M'))
 
+# Salinity data
+for time in salDate:
+    timeObj = datetime.datetime.strptime(time, '%m/%d/%Y %H:%M')
+    realTimeObj = timeObj - datetime.datetime.strptime('04:00', '%H:%M')
+    salDateTrue.append(realTimeObj)
+
+print(salDateTrue)
 
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
@@ -226,10 +262,12 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays x-axis label every 14 days
     ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
 
+    
     # Sets axis labels and changes font color of "Temperature (C)" label for easy viewing
     ax1.set_ylabel("Temperature (C)")
     ax1.set_xlabel("Dates (MM-DD)")
     ax1.yaxis.label.set_color(p1[0].get_color())
+    
     
     # Tide Height plot
     ax6 = ax1.twinx()
@@ -243,7 +281,7 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     p2 = ax2.plot(x, cy, color = 'c', linestyle = 'solid', label = "CO2")
     ax2.set_ylabel("CO2")
     ax2.yaxis.label.set_color(p2[0].get_color())
-
+    
     # Battery Voltage plot
     ax3 = ax1.twinx()
     p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
@@ -264,7 +302,7 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     ax5.set_ylabel("Rainfall (in)")
     ax5.spines["right"].set_position(("outward", 180))
     ax5.yaxis.label.set_color(p5[0].get_color())
-
+    
     
 
     # Sets title, adds a grid, and shows legend
