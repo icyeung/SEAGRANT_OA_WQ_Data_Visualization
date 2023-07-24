@@ -231,8 +231,18 @@ for string in tidDateTimeStrList:
 # Salinity data
 for time in salDate:
     timeObj = datetime.datetime.strptime(time, '%m/%d/%Y %H:%M')
-    realTimeObj = timeObj - datetime.datetime.strptime('04:00', '%H:%M')
+    realTimeObj = timeObj - datetime.datetime.strptime('04:00', '%H:%M')        # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
+
+
+# Conductivity conversion to salinity
+condTempData = map(", ".join,zip(condData, condTempData))
+for i in len(condData):
+    condSalConv(condData[i], condTempData[i])
+
+
+def condSalConv(conductivity, temperature):
+
 
 
 # Graph plotter function
