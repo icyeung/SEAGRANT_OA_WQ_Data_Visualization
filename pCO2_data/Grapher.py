@@ -234,7 +234,6 @@ for time in salDate:
     realTimeObj = timeObj - datetime.datetime.strptime('04:00', '%H:%M')
     salDateTrue.append(realTimeObj)
 
-print(salDateTrue)
 
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
@@ -303,7 +302,9 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     ax5.spines["right"].set_position(("outward", 180))
     ax5.yaxis.label.set_color(p5[0].get_color())
     
-    
+    # Salinity plot
+    ax7 = ax1.twinx()
+    p7 = ax7.plot()
 
     # Sets title, adds a grid, and shows legend
     plt.title(name, fontsize = 20)
