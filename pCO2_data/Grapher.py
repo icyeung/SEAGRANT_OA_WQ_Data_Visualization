@@ -126,7 +126,6 @@ with open(os.path.join(__location__, 'Woods_Hole_Tidal_Data_HL_2021.csv'),'r') a
         elif numofLinesT == 0:
             numofLinesT += 1
 
-print(numofLinesS)
 # Takes out empty values in salinity data set
 with open(os.path.join(__location__, 'Salinity_2021.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
@@ -142,7 +141,6 @@ with open(os.path.join(__location__, 'Salinity_2021.csv'),'r') as csvfile:
         elif numofLinesS <= 0:
             numofLinesS += 1
 
-print(salDate)
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
@@ -306,8 +304,6 @@ for i in range(len(condData)):
 
 # Salinity dataframe to remove null values
 salinityDF = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData})
-
-print(salinityDF)
 
 # Removes all rows with null salinity
 salinityDFSorted = salinityDF.loc[salinityDF['Salinity Value'] != ""]
