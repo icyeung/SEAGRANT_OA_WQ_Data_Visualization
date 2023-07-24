@@ -1,3 +1,4 @@
+from binascii import a2b_base64
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,6 +9,7 @@ import datetime
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 from scipy import stats
+import pytz
 
 # Used to find location of specified file within Python code folder
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -65,6 +67,12 @@ xDataTrueNO = []    # No outlier times
 weaDateTrue = []    # Weather times
 tidDateTrue = []    # Tidal times
 salDateTrue = []    # Salinity times
+
+# Converted Salinity
+# Holds converted salinity values
+convertedSalinityData = []
+salinityDates = []
+salinityValues = []
 
 # Takes out empty data values in pCO2 data set
 with open(os.path.join(__location__, 'completeData.csv'),'r') as csvfile:
@@ -139,6 +147,7 @@ print(salDate)
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
 # Stores information about # of outliers taken out
+# Input start and end dates of desired outlier identification time frame in Ordinal form
 def extractOutliers(start, end, intervalName):
     outlierDataHolder = []
     intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
@@ -231,26 +240,118 @@ for string in tidDateTimeStrList:
 # Salinity data
 for time in salDate:
     timeObj = datetime.datetime.strptime(time, '%m/%d/%Y %H:%M')
-    realTimeObj = timeObj - datetime.datetime.strptime('04:00', '%H:%M')        # Converts time from GMT to EST
+    eastern = pytz.timezone('US/Eastern')
+    realTimeObj = timeObj.astimezone(eastern)       # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
 
 
 # Conductivity conversion to salinity
-condTempData = map(", ".join,zip(condData, condTempData))
-for i in len(condData):
-    condSalConv(condData[i], condTempData[i])
-
-
+# Conversion function
+# Input conductivity and corresponding temperature measurement
+# Temperature must be between 0,30 C (exclusive)
+# Conductivity must be greater than 0
+# Formula & code retrived from: http://www.fivecreeks.org/monitor/sal.shtml
 def condSalConv(conductivity, temperature):
+    a0 = 0.008
+    a1 = -0.1692
+    a2 = 25.3851
+    a3 = 14.0941
+    a4 = -7.0261
+    a5 = 2.7081
+
+    b0 = 0.0005
+    b1 = -0.0056
+    b2 = -0.0066
+    b3 = -0.0375
+    b4 = 0.0636
+    b5 = -0.0144
+
+    c0 = 0.6766097
+    c1 = 0.0200564
+    c2 = 0.0001104259
+    c3 = -0.00000069698
+    c4 = 0.0000000010031
+
+    try:
+        if float(temperature) > 0 and float(temperature) < 30 and float(conductivity) > 0:
+            r = conductivity/42914
+            r/= (c0 + temperature * (c1 + temperature * (c2 + temperature * (c3 + temperature * c4))))
+
+            r2 = math.sqrt(r)
+
+            ds = b0 + r2 * (b1 + r2 * (b2 + r2 * (b3 + r2 * (b4 + r2 * b5))))
+
+            ds*= ((temperature - 15.0) / (1.0 + 0.0162 * (temperature - 15.0)))
+
+            salinity = a0 + r2 * (a1 + r2 * (a2 + r2 * (a3 + r2 * (a4 + r2 * a5)))) + ds
+
+            return salinity
+        else:
+            salinity = ""
+            return salinity
+            print("Error: Input is out of bounds")
+    except ValueError:
+        print("Error: Input is not a float")
 
 
+# Converts all conductivity and temperature measurements to salinity
+# Rounds salinity conversions to 3 decimal places
+for i in range(len(condData)):
+    salinity = condSalConv(condData[i-1], condTempData[i-1])
+    
+    if salinity != "":
+        salinity = round(float(salinity), 3)
+    
+    convertedSalinityData.append(salinity)
+
+# Salinity dataframe to remove null values
+salinityDF = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData})
+
+print(salinityDF)
+
+# Removes all rows with null salinity
+salinityDFSorted = salinityDF.loc[salinityDF['Salinity Value'] != ""]
+
+'''
+# Extracts outliers from salinity
+def extractOutliersSal(start, end, intervalName):
+    # outlierDataHolder = []
+    intervalDf = salinityDFSorted.loc[(salinityDFSorted['Date'] >= start) & (salinityDFSorted['Date'] <= end)]
+    # bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
+    # outlierDataHolder.append(bOutliers)
+    noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
+    # aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
+    # outlierDataHolder.append(aOutliers)
+    # nOutliers = bOutliers - aOutliers              # Number of outliers
+    # outlierDataHolder.append(nOutliers)
+    # outlierData.append(outlierDataHolder)
+    return noOutliersDf
+
+# Identifies and extracts outliers using a monthly interval
+januarySalDf = extractOutliersSal('2021-01-01', '2021-01-31', "January")
+februarySalDf = extractOutliersSal('2021-02-01', '2021-02-28', "February")
+marchSalDf = extractOutliersSal('2021-03-01', '2021-03-31', "March")
+aprilSalDf = extractOutliersSal('2021-04-01', '2021-04-30', "April")
+maySalDf = extractOutliersSal('2021-05-01', '2021-05-31', "May")
+juneSalDf = extractOutliersSal('2021-06-01', '2021-06-30', "June")
+julySalDF = extractOutliersSal('2021-07-01', '2021-07-31', "July")
+augustSalDf = extractOutliersSal('2021-08-01', '2021-08-31', "August")
+septemberSalDf = extractOutliersSal('2021-09-01', '2021-09-30', "September")
+octoberSalDf = extractOutliersSal('2021-10-01', '2021-10-31', "October")
+novemberSalDf = extractOutliersSal('2021-11-01', '2021-11-30', "November")
+decemberSalDf = extractOutliersSal('2021-12-01', '2021-12-31', "December")
+
+# Salinity data without outliers
+salinityDFNO = pd.concat([januarySalDf, februarySalDf, marchSalDf, aprilSalDf, maySalDf, juneSalDf, julySalDF, 
+                           augustSalDf, septemberSalDf, octoberSalDf, novemberSalDf, decemberSalDf])
+'''
 
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
 # Provide weather dates, wind, and rain data
 # Provide tide times and tide height
 # Provide name of graph in string format 
-def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name):
+def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, salDate, salValue, name):
     x = time
     ty = tempC
     cy = CO2
@@ -260,6 +361,8 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     ry = rain
     tidalx = tideD
     tidaly = tideH
+    sx = salDate
+    sy = salValue
 
     fig, ax1 = plt.subplots()
     #fig.subplots_adjust(right = 0.75)
@@ -291,6 +394,7 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     ax2.set_ylabel("CO2")
     ax2.yaxis.label.set_color(p2[0].get_color())
     
+    
     # Battery Voltage plot
     ax3 = ax1.twinx()
     p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
@@ -304,7 +408,7 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     ax4.set_ylabel("Average Wind Speed (mph)")
     ax4.spines["right"].set_position(("outward", 120))
     ax4.yaxis.label.set_color(p4[0].get_color())
-
+    
     # Rainfall plot
     ax5 = ax1.twinx()
     p5 = ax5.plot(wx, ry, color = 'r', linestyle = 'solid', label = "Rainfall (in)")
@@ -314,25 +418,29 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, name
     
     # Salinity plot
     ax7 = ax1.twinx()
-    p7 = ax7.plot()
-
+    p7 = ax7.plot(sx, sy, color = 'k', linestyle = 'solid', label = "Salinity (ppt)")
+    ax7.set_ylabel("Salinity (ppt)")
+    ax7.spines["right"].set_position(("outward", 240))
+    ax7.yaxis.label.set_color(p7[0].get_color())
+    
     # Sets title, adds a grid, and shows legend
     plt.title(name, fontsize = 20)
     plt.grid(True)
-    plt.legend(handles=p1+p2+p3+p4+p5+p6)
+    plt.legend(handles=p1+p2+p3+p4+p5+p6+p7)
 
     return
 
 # Plots graph without outliers
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), 
-        weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, "2021 pCO2 Data (No Outliers)")
+        weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, salinityDFSorted.get("Date"), 
+        salinityDFSorted.get("Salinity Value"), "2021 pCO2 Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_No_Outliers.png')
 
 # Plots graph with outliers
 grapher(xDataTrueO, tyData, cyData, byData, weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, 
-        "2021 pCO2 Data (With Outliers)")
+        salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), "pCO2 Data (With Outliers)")
 
 # Saves with outliers graph to specified name in pCO2_data folder
 plt.savefig('pCO2_2021_Graph_With_Outliers.png')
