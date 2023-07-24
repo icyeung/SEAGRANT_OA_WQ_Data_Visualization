@@ -420,7 +420,7 @@ def grapher(time, tempC, CO2, batteryV, weatherD, wind, rain, tideD, tideH, salD
     ax7 = ax1.twinx()
     p7 = ax7.plot(sx, sy, color = 'k', linestyle = 'solid', label = "Salinity (ppt)")
     ax7.set_ylabel("Salinity (ppt)")
-    ax7.spines["right"].set_position(("outward", 240))
+    ax7.spines["right"].set_position(("outward", 300))
     ax7.yaxis.label.set_color(p7[0].get_color())
     
     # Sets title, adds a grid, and shows legend
