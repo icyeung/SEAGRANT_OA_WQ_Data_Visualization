@@ -1,4 +1,5 @@
 from binascii import a2b_base64
+from cgi import test
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,6 +12,8 @@ import matplotlib.dates as mdates
 from scipy import stats
 import pytz
 
+from sklearn.preprocessing import MinMaxScaler
+from scipy.stats import kstest
 
 
 
@@ -374,6 +377,21 @@ mergedDF = pd.concat([pco2DF,weatherDF,tideDF], axis=0, ignore_index=True)
 
 mergedDF.to_excel("merge_tester.xlsx")
 print(mergedDF)
+
+# Histogram of CO2 measurements
+plt.hist(extractedData.get("CO2"), edgecolor='black', bins=20)
+
+# K-S test
+print(kstest(extractedData.get("CO2"), 'norm'))     # Not normally distributed
+print(kstest(extractedData.get("Temp"), 'norm'))    # Not normally distributed
+print(kstest(extractedData.get("Battery"), 'norm')) # Not normally distributed
+
+'''
+scaler = MinMaxScaler()
+model=scaler.fit(extractedData.get("CO2"))
+scaled_data=model.transform(extractedData.get("CO2"))
+print(scaled_data)
+'''
 
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
