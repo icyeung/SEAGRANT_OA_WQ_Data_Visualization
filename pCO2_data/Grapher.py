@@ -119,7 +119,7 @@ with open(os.path.join(__location__, '2021_Barlow_Weather_Data_Formatted.csv'),'
             numofLinesW += 1
 
 # Takes out empty values in tidal data set
-with open(os.path.join(__location__, 'Woods_Hole_Tidal_Data_HL_2021.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'Woods_Hole_Tidal_Data_6Mins.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
         
@@ -240,7 +240,7 @@ for dateValue in weaDate:
 # Tide data
 tidDateTimeStrList = map(" ".join, zip(tidDate, tidTime))
 for string in tidDateTimeStrList:
-    tidDateTrue.append(datetime.datetime.strptime(string, '%m/%d/%Y %H:%M'))
+    tidDateTrue.append(datetime.datetime.strptime(string, '%Y/%m/%d %H:%M'))
 
 # Salinity data
 for time in salDate:
@@ -368,23 +368,39 @@ weatherDF.to_excel("weather_Data_Compiled.xlsx")
 weatherDF['Date'] = pd.to_datetime(weatherDF['Date'])
 
 tideDF.to_excel("tide_Data_Compiled.xlsx")
-'''
-mergedDF = pd.merge_asof(pco2DF, weatherDF, on="Date", tolerance=pd.Timedelta("1d"), allow_exact_matches=True)
-mergedDF = pd.merge_asof(mergedDF, tideDF, on="Date", tolerance=pd.Timedelta("1ms"), allow_exact_matches=False)
-'''
 
-mergedDF = pd.concat([pco2DF,weatherDF,tideDF], axis=0, ignore_index=True)
+# mergedDF = pd.merge_asof(pco2DF, weatherDF, on="Date", tolerance=pd.Timedelta("1d"), allow_exact_matches=True)
+mergedDF = pd.merge_asof(pco2DF, tideDF, on="Date", tolerance=pd.Timedelta("1m"), allow_exact_matches=False)
+
+
+# mergedDF = pd.concat([pco2DF,weatherDF,tideDF], axis=0, ignore_index=True)
 
 mergedDF.to_excel("merge_tester.xlsx")
 print(mergedDF)
 
 # Histogram of CO2 measurements
-plt.hist(extractedData.get("CO2"), edgecolor='black', bins=20)
+# plt.hist(extractedData.get("CO2"), edgecolor='black', bins=20)
+# plt.hist(extractedData.get("Temp"), edgecolor='black', bins=20)
+plt.hist(extractedData.get("Battery"), edgecolor='black', bins=20)
 
 # K-S test
 print(kstest(extractedData.get("CO2"), 'norm'))     # Not normally distributed
 print(kstest(extractedData.get("Temp"), 'norm'))    # Not normally distributed
 print(kstest(extractedData.get("Battery"), 'norm')) # Not normally distributed
+
+
+# Scaling data
+# scaled point = (x-min)/(max-min)
+def minMax(data, output):
+    for point in data:
+        scaledValue = (point-min(data))/(max(data)-min(data))
+        output.append(scaledValue)
+
+scaledValueCO2 = []
+scaledValueTemp = []
+
+minMax(extractedData.get("CO2"), scaledValueCO2)
+print(scaledValueCO2)
 
 '''
 scaler = MinMaxScaler()
