@@ -374,7 +374,6 @@ mergedDF = pd.merge_asof(pco2DF, tideDF, on="Date", tolerance=pd.Timedelta("1m")
 
 
 # mergedDF = pd.concat([pco2DF,weatherDF,tideDF], axis=0, ignore_index=True)
-
 mergedDF.to_excel("merge_tester.xlsx")
 print(mergedDF)
 
@@ -391,6 +390,7 @@ print(kstest(extractedData.get("Battery"), 'norm')) # Not normally distributed
 
 # Scaling data
 # scaled point = (x-min)/(max-min)
+# Input data that is to be scaled and empty list that scaled data is saved in
 def minMax(data, output):
     for point in data:
         scaledValue = (point-min(data))/(max(data)-min(data))
@@ -398,9 +398,36 @@ def minMax(data, output):
 
 scaledValueCO2 = []
 scaledValueTemp = []
+scaledValueBattery = []
+scaledValueTide = []
+scaledValueRain = []
+scaledValueWind = []
 
+
+# Dataframe only contains scaled values
 minMax(extractedData.get("CO2"), scaledValueCO2)
-print(scaledValueCO2)
+minMax(extractedData.get("Temp"), scaledValueTemp)
+minMax(extractedData.get("Battery"), scaledValueBattery)
+minMax(tidHeightData, scaledValueTide)
+minMax(ryData, scaledValueRain)
+minMax(wyData, scaledValueWind)
+
+pco2DFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "CO2": scaledValueCO2, 
+                             "Battery": scaledValueBattery})
+
+weatherDFscaled = pd.DataFrame({"Date": weaDateTrue, "Rainfall (in)": scaledValueRain, "Wind Speed (mph)": scaledValueWind})
+
+tideDFscaled = pd.DataFrame({"Date": tidDateTrue, "Height (ft)": scaledValueTide})
+
+mergedDFscaled = pd.merge_asof(pco2DFscaled, tideDFscaled, on="Date", tolerance=pd.Timedelta("1m"), allow_exact_matches=False)
+
+mergedDFscaled['Year'] = mergedDFscaled['Date'].dt.year
+mergedDFscaled['Month'] = mergedDFscaled['Date'].dt.month
+mergedDFscaled['Day'] = mergedDFscaled['Date'].dt.day
+mergedDFscaled['Time'] = mergedDFscaled['Date'].dt.time
+
+mergedDFscaled.to_excel("merge_tester_scaled.xlsx")
+print(mergedDFscaled)
 
 '''
 scaler = MinMaxScaler()
