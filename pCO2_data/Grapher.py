@@ -419,23 +419,27 @@ weatherDFscaled = pd.DataFrame({"Date": weaDateTrue, "Rainfall (in)": scaledValu
 
 tideDFscaled = pd.DataFrame({"Date": tidDateTrue, "Height (ft)": scaledValueTide})
 
-mergedDFscaled = pd.merge_asof(pco2DFscaled, tideDFscaled, on="Date", tolerance=pd.Timedelta("1m"), allow_exact_matches=False)
+weatherDFscaled["Date"] = pd.to_datetime(weatherDFscaled["Date"])
 
-mergedDFscaled = pd.merge(mergedDFscaled, weatherDFscaled, on='Date')
+mergedDFscaled = pd.merge_asof(pco2DFscaled, tideDFscaled, on="Date", tolerance=pd.Timedelta("1m"))
 
-mergedDFscaled['Year'] = mergedDFscaled['Date'].dt.year
-mergedDFscaled['Month'] = mergedDFscaled['Date'].dt.month
-mergedDFscaled['Day'] = mergedDFscaled['Date'].dt.day
-mergedDFscaled['Hour'] = mergedDFscaled['Date'].dt.hour
-mergedDFscaled['Minute'] = mergedDFscaled['Date'].dt.minute
+mergedDFscaled2 = pd.concat([mergedDFscaled, weatherDFscaled], axis=0, ignore_index=True)
+
+# mergedDFscaled2["Date"] = pd.to_datetime(mergedDFscaled2["Date"])
+
+mergedDFscaled2['Year'] = mergedDFscaled2['Date'].dt.year
+mergedDFscaled2['Month'] = mergedDFscaled2['Date'].dt.month
+mergedDFscaled2['Day'] = mergedDFscaled2['Date'].dt.day
+mergedDFscaled2['Hour'] = mergedDFscaled2['Date'].dt.hour
+mergedDFscaled2['Minute'] = mergedDFscaled2['Date'].dt.minute
 
 
-mergedDFscaled.loc[mergedDFscaled.Minute != 0, 'Hour'] += (mergedDFscaled.Minute/60)
+mergedDFscaled2.loc[mergedDFscaled2.Minute != 0, 'Hour'] += (mergedDFscaled2.Minute/60)
 
 
 
-mergedDFscaled.to_excel("merge_tester_scaled.xlsx")
-print(mergedDFscaled)
+mergedDFscaled2.to_excel("merge_tester_scaled.xlsx")
+print(mergedDFscaled2)
 
 '''
 scaler = MinMaxScaler()
