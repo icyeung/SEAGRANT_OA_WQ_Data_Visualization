@@ -433,20 +433,11 @@ mergedDFscaled2['Day'] = mergedDFscaled2['Date'].dt.day
 mergedDFscaled2['Hour'] = mergedDFscaled2['Date'].dt.hour
 mergedDFscaled2['Minute'] = mergedDFscaled2['Date'].dt.minute
 
-
 mergedDFscaled2.loc[mergedDFscaled2.Minute != 0, 'Hour'] += (mergedDFscaled2.Minute/60)
-
-
 
 mergedDFscaled2.to_excel("merge_tester_scaled.xlsx")
 print(mergedDFscaled2)
 
-'''
-scaler = MinMaxScaler()
-model=scaler.fit(extractedData.get("CO2"))
-scaled_data=model.transform(extractedData.get("CO2"))
-print(scaled_data)
-'''
 
 # Graph plotter function
 # Provide date, temperature, CO2, and battery data
