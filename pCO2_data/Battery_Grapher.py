@@ -43,8 +43,12 @@ plt.axis([max(batteryList), min(batteryList), min(cvList), max(cvList)])
 # plt.xticks(rotation ='vertical')
 plt.xlabel('Battery Level')
 plt.ylabel('Coefficient of Variation')
+plt.title('Coefficient of Variation vs Battery', fontsize = 15)
+plt.grid(True)
 plt.show()
 
+
+plt.savefig('2021_pco2CV_vs_Battery.png')
 
 '''
 
