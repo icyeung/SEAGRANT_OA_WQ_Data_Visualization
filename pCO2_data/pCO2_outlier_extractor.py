@@ -31,29 +31,6 @@ byData = []     # Battery Voltage
 # Used in taking out empty data values from pCO2 data
 numofLinesD = 0
 
-# Weather Data
-# Used to hold weather data from csv file
-weaDate = []
-wyData = []
-ryData = []
-
-# Used in taking out empty data values from weather data
-numofLinesW = 0
-
-# Tidal Data
-# Used to hold tidal data from csv file
-tidDate = []
-tidTime = []
-tidHeightData = []
-
-# Salinity Data
-# Used to hold salinity data from csv file
-salDate = []
-condData = []
-condTempData = []
-
-# Used in taking out empty values from tidal data
-numofLinesT = 0
 
 # Outliers
 # Holds information on outliers
@@ -71,18 +48,11 @@ headersV = ["January", "February", "March", "April", "May", "June", "July", "Aug
 # Holds converted time values
 xDataTrueO =[]      # Outlier times
 xDataTrueNO = []    # No outlier times
-weaDateTrue = []    # Weather times
-tidDateTrue = []    # Tidal times
-salDateTrue = []    # Salinity times
 
-# Converted Salinity
-# Holds converted salinity values
-convertedSalinityData = []
-salinityDates = []
-salinityValues = []
+
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'completeData.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pCO2_2022_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
@@ -196,10 +166,6 @@ for dateValue in extractedData.get("Date"):
 pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"), 
                        "CO2": extractedData.get("CO2"), "Battery": extractedData.get("Battery")})
 
-weatherDF = pd.DataFrame({"Date": weaDateTrue, "Wind Speed (mph)": wyData, "Rainfall (in)": ryData})
-
-tideDF = pd.DataFrame({"Date": tidDateTrue, "Height (ft)": tidHeightData})
-
 
 # Saves dataframes to csv files
 pco2DF.to_excel("pco2_Data_Compiled.xlsx")
@@ -238,9 +204,7 @@ scaledValueWind = []
 minMax(extractedData.get("CO2"), scaledValueCO2)
 minMax(extractedData.get("Temp"), scaledValueTemp)
 minMax(extractedData.get("Battery"), scaledValueBattery)
-minMax(tidHeightData, scaledValueTide)
-minMax(ryData, scaledValueRain)
-minMax(wyData, scaledValueWind)
+
 
 pco2DFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "CO2": scaledValueCO2, 
                              "Battery": scaledValueBattery})
