@@ -82,7 +82,7 @@ salinityDates = []
 salinityValues = []
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'completeData.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pCO2_2021_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
