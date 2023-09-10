@@ -1,5 +1,3 @@
-from binascii import a2b_base64
-from cgi import test
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,11 +8,7 @@ import datetime
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 from scipy import stats
-import pytz
-
-from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import kstest
-
 
 
 
@@ -40,9 +34,6 @@ outlierDataSal = []
 # Used in taking out empty values from salinity data
 numofLinesS = -1
 
-# Used for creating table on outlier information
-headersH = ["# Values Before Outliers Extracted", "# Values After Outliers Extracted", "# Outliers Extracted"]                          # Horizontal Headers
-headersV = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]   # Vertical Headers
 
 # Time
 # Holds converted time values
@@ -52,7 +43,7 @@ xDataTrueNO = []    # No outlier times
 
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pCO2_2021_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pCO2_2023_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
@@ -79,41 +70,10 @@ completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "B
 # If any value in the 3 colums is an outlier, removes entire row
 # Stores information about # of outliers taken out
 # Input start and end dates of desired outlier identification time frame in Ordinal form
-def extractOutliers(start, end, intervalName):
-    outlierDataHolder = []
-    intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
-    bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
-    outlierDataHolder.append(bOutliers)
-    noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
-    aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
-    outlierDataHolder.append(aOutliers)
-    nOutliers = bOutliers - aOutliers              # Number of outliers
-    outlierDataHolder.append(nOutliers)
-    outlierData.append(outlierDataHolder)
-    return noOutliersDf
 
-# Identifies and extracts outliers using a monthly interval
-januaryDf = extractOutliers(1, 32, "January")
-februaryDf = extractOutliers(32, 60, "February")
-marchDf = extractOutliers(60, 91, "March")
-aprilDf = extractOutliers(91, 121, "April")
-mayDf = extractOutliers(121, 152, "May")
-juneDf = extractOutliers(152, 182, "June")
-julyDF = extractOutliers(182, 213, "July")
-augustDf = extractOutliers(213, 244, "August")
-septemberDf = extractOutliers(244, 274, "September")
-octoberDf = extractOutliers(274, 305, "October")
-novemberDf = extractOutliers(305, 335, "November")
-decemberDf = extractOutliers(335, 366, "December")
 
-# Displays table with # of outliers taken out per month
-print("")
-print(pd.DataFrame(outlierData, headersV, headersH))
-print("")
-
-# Dataframe without outliers
-extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, 
-                           augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
+noOutliersDf = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
+extractedData = noOutliersDf
  
 # Displays total number of data points after outliers are removed
 print("Original data after all outliers are removed: ", len(extractedData.get("Date")))
@@ -233,17 +193,17 @@ def grapher(time, tempC, CO2, batteryV, name):
 
 # Plots graph without outliers
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), 
-        "2021 pCO2 Data (No Outliers)")
+        "2023 pCO2 Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('Only_pCO2_2021_Graph_No_Outliers.png')
+plt.savefig('pCO2_2023_Graph_No_Outliers_Annual.png')
 
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, cyData, byData, "2021 pCO2 Data (With Outliers)")
+grapher(xDataTrueO, tyData, cyData, byData, "2023 pCO2 Data (With Outliers)")
 
 # Saves with outliers graph to specified name in pCO2_data folder
-plt.savefig('Only_pCO2_2021_Graph_With_Outliers.png')
+plt.savefig('pCO2_2023_Graph_With_Outliers_Annual.png')
 
 # Displays figures
 plt.show()
@@ -269,7 +229,4 @@ minMax(extractedData.get("Battery"), scaledValueBattery)
 
 pco2DFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "CO2": scaledValueCO2, 
                              "Battery": scaledValueBattery})
-
-
-
 
