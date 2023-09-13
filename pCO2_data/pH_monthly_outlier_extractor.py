@@ -25,8 +25,12 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 # Used to hold data from csv file  
 xData = []      # Dates
 tyData = []     # Temperature
-cyData = []     # CO2
+syData = []     # Salinity
+pyData = []     # pH
 byData = []     # Battery Voltage
+dsData = []     # Date (Calendar)
+tsData = []     # Time 
+
 
 # Used in taking out empty data values from pCO2 data
 numofLinesD = 0
@@ -52,17 +56,20 @@ xDataTrueNO = []    # No outlier times
 
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pCO2_2021_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pH_2019_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
-        # Checks if time entry has corresponding Temperature, CO2, and Battery Voltage
+        # Checks if time entry has corresponding Temperature, Salinity, pH, Battery Voltage, Calendar Date, and Time
         # If not, does not include data point in graph
-        if not row[1] == "" and not row[2] == "" and not row[3] == "" and numofLinesD > 0:
+        if not row[1] == "" and not row[2] == "" and not row[3] == "" and not row[4] == "" and not row[5] == "" and not row[6] == "" and numofLinesD > 0:
             xData.append(float(row[0]))
             tyData.append(float(row[1]))
-            cyData.append(float(row[2]))
-            byData.append(float(row[3]))
+            syData.append(float(row[2]))
+            pyData.append(float(row[3]))
+            byData.append(float(row[4]))
+            # dsData.append(float(row[5]))
+            # tsData.append(float(row[6]))
             numofLinesD += 1
         elif numofLinesD == 0:
             numofLinesD += 1
@@ -71,7 +78,7 @@ with open(os.path.join(__location__, 'pCO2_2021_Complete_Data.csv'),'r') as csvf
 print("Original data after empty values are taken out: ", len(xData))
 
 # Dataframe of original data after blanks removed
-completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
+completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "Salinity": syData, "pH": pyData, "Battery": byData})
 
 
 
@@ -163,8 +170,8 @@ for dateValue in extractedData.get("Date"):
 
 
 # Creates dataframes of data grapher without outliers
-pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"), 
-                       "CO2": extractedData.get("CO2"), "Battery": extractedData.get("Battery")})
+pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"), "Salinity": extractedData.get("Salinity"),
+                       "pH": extractedData.get("CO2"), "Battery": extractedData.get("Battery")})
 
 
 # Saves dataframes to csv files
@@ -174,20 +181,22 @@ pco2DF['Date'] = pd.to_datetime(pco2DF['Date'])
 
 
 # Histogram of CO2 measurements
-# plt.hist(extractedData.get("CO2"), edgecolor='black', bins=20)
+# plt.hist(extractedData.get("pH"), edgecolor='black', bins=20)
 # plt.hist(extractedData.get("Temp"), edgecolor='black', bins=20)
-plt.hist(extractedData.get("Battery"), edgecolor='black', bins=20)
+#plt.hist(extractedData.get("Battery"), edgecolor='black', bins=20)
 
+'''
 # K-S test
-print(kstest(extractedData.get("CO2"), 'norm'))     # Not normally distributed
+print(kstest(extractedData.get("pH"), 'norm'))     # Not normally distributed
 print(kstest(extractedData.get("Temp"), 'norm'))    # Not normally distributed
 print(kstest(extractedData.get("Battery"), 'norm')) # Not normally distributed
+'''
 
-
-def grapher(time, tempC, CO2, batteryV, name):
+def grapher(time, tempC, salinity, pH, batteryV, name):
     x = time
     ty = tempC
-    cy = CO2
+    cy = salinity
+    py = pH
     by = batteryV
 
     fig, ax1 = plt.subplots()
@@ -206,12 +215,12 @@ def grapher(time, tempC, CO2, batteryV, name):
     ax1.set_xlabel("Dates (MM-DD)")
     ax1.yaxis.label.set_color(p1[0].get_color())
     
-    
+
     
     # CO2 plot
     ax2 = ax1.twinx()
-    p2 = ax2.plot(x, cy, color = 'c', linestyle = 'solid', label = "CO2")
-    ax2.set_ylabel("CO2")
+    p2 = ax2.plot(x, py, color = 'c', linestyle = 'solid', label = "pH")
+    ax2.set_ylabel("pH")
     ax2.yaxis.label.set_color(p2[0].get_color())
     
     
@@ -222,28 +231,36 @@ def grapher(time, tempC, CO2, batteryV, name):
     ax3.spines["right"].set_position(("outward", 60))
     ax3.yaxis.label.set_color(p3[0].get_color())
 
+
+    # Salinity plot
+    ax4 = ax1.twinx()
+    p4 = ax4.plot(x, by, color = 'k', linestyle = 'solid', label = "Salinity")
+    ax4.set_ylabel("Salinity")
+    ax4.spines["right"].set_position(("outward", 120))
+    ax4.yaxis.label.set_color(p4[0].get_color())
+
    
     
     # Sets title, adds a grid, and shows legend
     plt.title(name, fontsize = 20)
     plt.grid(True)
-    plt.legend(handles=p1+p2+p3)
+    plt.legend(handles=p1+p2+p3+p4)
 
     return
 
 # Plots graph without outliers
-grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), 
-        "2021 pCO2 Data (No Outliers)")
+grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("Salinity"), extractedData.get("pH"), extractedData.get("Battery"), 
+        "2019 pH Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('Only_pCO2_2021_Graph_No_Outliers.png')
+plt.savefig('pH_2019_Graph_No_Outliers.png')
 
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, cyData, byData, "2021 pCO2 Data (With Outliers)")
+grapher(xDataTrueO, tyData, syData, pyData, byData, "2019 pH Data (With Outliers)_Monthly")
 
 # Saves with outliers graph to specified name in pCO2_data folder
-plt.savefig('Only_pCO2_2021_Graph_With_Outliers.png')
+plt.savefig('pH_2019_Graph_With_Outliers_Monthly.png')
 
 # Displays figures
 plt.show()
@@ -256,18 +273,20 @@ def minMax(data, output):
         scaledValue = (point-min(data))/(max(data)-min(data))
         output.append(scaledValue)
 
-scaledValueCO2 = []
+scaledValuePH = []
 scaledValueTemp = []
 scaledValueBattery = []
+scaledValueSalinity = []
 
 
 # Dataframe only contains scaled values
-minMax(extractedData.get("CO2"), scaledValueCO2)
+minMax(extractedData.get("pH"), scaledValuePH)
 minMax(extractedData.get("Temp"), scaledValueTemp)
 minMax(extractedData.get("Battery"), scaledValueBattery)
+minMax(extractedData.get("Salinity"), scaledValueSalinity)
 
 
-pco2DFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "CO2": scaledValueCO2, 
+pco2DFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "Salinity": scaledValueSalinity, "pH": scaledValuePH, 
                              "Battery": scaledValueBattery})
 
 
