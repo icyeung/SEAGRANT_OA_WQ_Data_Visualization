@@ -1,5 +1,6 @@
 from binascii import a2b_base64
 from cgi import test
+from genericpath import isfile
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -54,15 +55,24 @@ xDataTrueO =[]      # Outlier times
 xDataTrueNO = []    # No outlier times
 
 
+# Sourced from https://pythonhow.com/how/check-if-a-string-is-a-float/
+# Used to check if data is a numeric value
+def is_float(string):
+    if string.replace(".", "").isnumeric():
+        return True
+    else:
+        return False
+
+
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pH_2019_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pH_2023_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
         # Checks if time entry has corresponding Temperature, Salinity, pH, Battery Voltage, Calendar Date, and Time
         # If not, does not include data point in graph
-        if not row[1] == "" and not row[2] == "" and not row[3] == "" and not row[4] == "" and numofLinesD > 0:
+        if not row[1] == "" and is_float(row[1]) and not row[2] == "" and is_float(row[2]) and not row[3] == "" and is_float(row[3]) and not row[4] == "" and is_float(row[4]) and numofLinesD > 0:
             xData.append(float(row[0]))
             tyData.append(float(row[1]))
             syData.append(float(row[2]))
@@ -79,46 +89,10 @@ print("Original data after empty values are taken out: ", len(xData))
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "pH": pyData, "Battery": byData})
 
 
-
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
-# Stores information about # of outliers taken out
-# Input start and end dates of desired outlier identification time frame in Ordinal form
-def extractOutliers(start, end, intervalName):
-    outlierDataHolder = []
-    intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
-    bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
-    outlierDataHolder.append(bOutliers)
-    noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
-    aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
-    outlierDataHolder.append(aOutliers)
-    nOutliers = bOutliers - aOutliers              # Number of outliers
-    outlierDataHolder.append(nOutliers)
-    outlierData.append(outlierDataHolder)
-    return noOutliersDf
-
-# Identifies and extracts outliers using a monthly interval
-januaryDf = extractOutliers(1, 32, "January")
-februaryDf = extractOutliers(32, 60, "February")
-marchDf = extractOutliers(60, 91, "March")
-aprilDf = extractOutliers(91, 121, "April")
-mayDf = extractOutliers(121, 152, "May")
-juneDf = extractOutliers(152, 182, "June")
-julyDF = extractOutliers(182, 213, "July")
-augustDf = extractOutliers(213, 244, "August")
-septemberDf = extractOutliers(244, 274, "September")
-octoberDf = extractOutliers(274, 305, "October")
-novemberDf = extractOutliers(305, 335, "November")
-decemberDf = extractOutliers(335, 366, "December")
-
-# Displays table with # of outliers taken out per month
-print("")
-print(pd.DataFrame(outlierData, headersV, headersH))
-print("")
-
-# Dataframe without outliers
-extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, 
-                           augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
+noOutliersDf = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
+extractedData = noOutliersDf
  
 # Displays total number of data points after outliers are removed
 print("Original data after all outliers are removed: ", len(extractedData.get("Date")))
@@ -154,13 +128,13 @@ def timeConverter (date):
 # Original Data    
 for dateValue in xData:
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2021)
+    trueDate = dateValue.replace(year = 2023)
     xDataTrueO.append(trueDate)
 
 # Data with no outliers
 for dateValue in extractedData.get("Date"):
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2021)
+    trueDate = dateValue.replace(year = 2023)
     xDataTrueNO.append(trueDate)
 
 
@@ -247,17 +221,17 @@ def grapher(time, tempC, pH, batteryV, name):
 
 # Plots graph without outliers
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("pH"), extractedData.get("Battery"), 
-        "2019 pH Data (No Outliers)")
+        "2023 pH Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('pH_2019_Graph_No_Outliers.png')
+plt.savefig('pH_2023_Graph_No_Outliers.png')
 
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, pyData, byData, "2019 pH Data (With Outliers) Monthly")
+grapher(xDataTrueO, tyData, pyData, byData, "2023 pH Data (With Outliers) Annual")
 
 # Saves with outliers graph to specified name in pCO2_data folder
-plt.savefig('pH_2019_Graph_With_Outliers_Monthly.png')
+plt.savefig('pH_2023_Graph_With_Outliers_Annual.png')
 
 # Displays figures
 plt.show()
@@ -285,6 +259,4 @@ minMax(extractedData.get("Battery"), scaledValueBattery)
 
 phDFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "pH": scaledValuePH, 
                              "Battery": scaledValueBattery})
-
-
 

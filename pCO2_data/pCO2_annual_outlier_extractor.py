@@ -65,13 +65,8 @@ print("Original data after empty values are taken out: ", len(xData))
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
 
 
-
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
-# Stores information about # of outliers taken out
-# Input start and end dates of desired outlier identification time frame in Ordinal form
-
-
 noOutliersDf = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
 extractedData = noOutliersDf
  
