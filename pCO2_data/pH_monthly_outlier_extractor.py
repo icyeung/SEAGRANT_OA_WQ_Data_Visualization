@@ -54,15 +54,24 @@ xDataTrueO =[]      # Outlier times
 xDataTrueNO = []    # No outlier times
 
 
+# Sourced from https://pythonhow.com/how/check-if-a-string-is-a-float/
+# Used to check if data is a numeric value
+def is_float(string):
+    if string.replace(".", "").isnumeric():
+        return True
+    else:
+        return False
+    
+
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pH_2019_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pH_2021_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
         # Checks if time entry has corresponding Temperature, Salinity, pH, Battery Voltage, Calendar Date, and Time
         # If not, does not include data point in graph
-        if not row[1] == "" and not row[2] == "" and not row[3] == "" and not row[4] == "" and numofLinesD > 0:
+        if not row[1] == "" and is_float(row[1]) and not row[2] == "" and is_float(row[2]) and not row[3] == "" and is_float(row[3]) and float(row[3]) != 0.00 and not row[4] == "" and is_float(row[4]) and numofLinesD > 0:
             xData.append(float(row[0]))
             tyData.append(float(row[1]))
             syData.append(float(row[2]))
@@ -78,7 +87,15 @@ print("Original data after empty values are taken out: ", len(xData))
 # Dataframe of original data after blanks removed
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "pH": pyData, "Battery": byData})
 
-
+# Sourced from https://www.analyticsvidhya.com/blog/2022/09/dealing-with-outliers-using-the-iqr-method/
+def IQR(dfName):
+    percentile25 = dfName["pH"].quantile(0.25)
+    percentile75 = dfName["pH"].quantile(0.75)
+    iqr = percentile75 - percentile25
+    upperLimit = percentile75 + 1.5*iqr
+    lowerLimit = percentile25 - 1.5*iqr
+    noOutliersDf = dfName[(dfName["pH"] < upperLimit) & (dfName["pH"] > lowerLimit)]
+    return noOutliersDf
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
@@ -89,7 +106,7 @@ def extractOutliers(start, end, intervalName):
     intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
     bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
     outlierDataHolder.append(bOutliers)
-    noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
+    noOutliersDf = IQR(intervalDf)     
     aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
     outlierDataHolder.append(aOutliers)
     nOutliers = bOutliers - aOutliers              # Number of outliers
@@ -154,13 +171,13 @@ def timeConverter (date):
 # Original Data    
 for dateValue in xData:
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2021)
+    trueDate = dateValue.replace(year = 2022)
     xDataTrueO.append(trueDate)
 
 # Data with no outliers
 for dateValue in extractedData.get("Date"):
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2021)
+    trueDate = dateValue.replace(year = 2022)
     xDataTrueNO.append(trueDate)
 
 
@@ -169,7 +186,7 @@ for dateValue in extractedData.get("Date"):
 
 # Creates dataframes of data grapher without outliers
 pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"),
-                       "pH": extractedData.get("CO2"), "Battery": extractedData.get("Battery")})
+                       "pH": extractedData.get("pH"), "Battery": extractedData.get("Battery")})
 
 
 # Saves dataframes to csv files

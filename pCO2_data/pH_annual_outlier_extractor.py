@@ -45,9 +45,6 @@ outlierDataSal = []
 # Used in taking out empty values from salinity data
 numofLinesS = -1
 
-# Used for creating table on outlier information
-headersH = ["# Values Before Outliers Extracted", "# Values After Outliers Extracted", "# Outliers Extracted"]                          # Horizontal Headers
-headersV = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]   # Vertical Headers
 
 # Time
 # Holds converted time values
@@ -72,7 +69,7 @@ with open(os.path.join(__location__, 'pH_2023_Complete_Data.csv'),'r') as csvfil
         
         # Checks if time entry has corresponding Temperature, Salinity, pH, Battery Voltage, Calendar Date, and Time
         # If not, does not include data point in graph
-        if not row[1] == "" and is_float(row[1]) and not row[2] == "" and is_float(row[2]) and not row[3] == "" and is_float(row[3]) and not row[4] == "" and is_float(row[4]) and numofLinesD > 0:
+        if not row[1] == "" and is_float(row[1]) and not row[2] == "" and is_float(row[2]) and not row[3] == "" and is_float(row[3]) and float(row[3]) != 0.00 and not row[4] == "" and is_float(row[4]) and numofLinesD > 0:
             xData.append(float(row[0]))
             tyData.append(float(row[1]))
             syData.append(float(row[2]))
@@ -143,7 +140,7 @@ for dateValue in extractedData.get("Date"):
 
 # Creates dataframes of data grapher without outliers
 pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"),
-                       "pH": extractedData.get("CO2"), "Battery": extractedData.get("Battery")})
+                       "pH": extractedData.get("pH"), "Battery": extractedData.get("Battery")})
 
 
 # Saves dataframes to csv files
