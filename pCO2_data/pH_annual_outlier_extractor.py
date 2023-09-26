@@ -85,10 +85,20 @@ print("Original data after empty values are taken out: ", len(xData))
 # Dataframe of original data after blanks removed
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "pH": pyData, "Battery": byData})
 
+# Sourced from https://www.analyticsvidhya.com/blog/2022/09/dealing-with-outliers-using-the-iqr-method/
+def IQR(dfName):
+    percentile25 = dfName["pH"].quantile(0.25)
+    percentile75 = dfName["pH"].quantile(0.75)
+    iqr = percentile75 - percentile25
+    upperLimit = percentile75 + 1.5*iqr
+    lowerLimit = percentile25 - 1.5*iqr
+    noOutliersDf = dfName[(dfName["pH"] < upperLimit) & (dfName["pH"] > lowerLimit)]
+    return noOutliersDf
+
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
-noOutliersDf = completeRowData[(np.abs(stats.zscore(completeRowData)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
+noOutliersDf = IQR(completeRowData)
 extractedData = noOutliersDf
  
 # Displays total number of data points after outliers are removed
