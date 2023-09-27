@@ -37,7 +37,7 @@ salinityValues = []
 usedTemperature = []
 usedConductivity = []
 
-
+# os.path.join(__location__, 'Salinity_2021.csv'
 # Takes out empty values in salinity data set
 with open(os.path.join(__location__, 'Carolina_June_2021.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
