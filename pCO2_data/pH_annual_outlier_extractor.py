@@ -63,7 +63,7 @@ def is_float(string):
 
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pH_2023_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pH_2019_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
@@ -228,17 +228,17 @@ def grapher(time, tempC, pH, batteryV, name):
 
 # Plots graph without outliers
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("pH"), extractedData.get("Battery"), 
-        "2023 pH Data (No Outliers)")
+        "2019 pH Data (No Outliers) Annual")
 
 # Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('pH_2023_Graph_No_Outliers.png')
+plt.savefig('pH_2019_Graph_No_Outliers.png')
 
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, pyData, byData, "2023 pH Data (With Outliers) Annual")
+grapher(xDataTrueO, tyData, pyData, byData, "2019 pH Data (With Outliers) Annual")
 
 # Saves with outliers graph to specified name in pCO2_data folder
-plt.savefig('pH_2023_Graph_With_Outliers_Annual.png')
+plt.savefig('pH_2019_Graph_With_Outliers_Annual.png')
 
 # Displays figures
 plt.show()

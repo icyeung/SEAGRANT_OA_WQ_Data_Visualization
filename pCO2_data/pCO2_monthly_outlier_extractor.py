@@ -68,6 +68,16 @@ print("Original data after empty values are taken out: ", len(xData))
 completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
 
 
+# Sourced from https://www.analyticsvidhya.com/blog/2022/09/dealing-with-outliers-using-the-iqr-method/
+def IQR(dfName):
+    percentile25 = dfName["CO2"].quantile(0.25)
+    percentile75 = dfName["CO2"].quantile(0.75)
+    iqr = percentile75 - percentile25
+    upperLimit = percentile75 + 1.5*iqr
+    lowerLimit = percentile25 - 1.5*iqr
+    noOutliersDf = dfName[(dfName["CO2"] < upperLimit) & (dfName["CO2"] > lowerLimit)]
+    return noOutliersDf
+
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
@@ -78,7 +88,7 @@ def extractOutliers(start, end, intervalName):
     intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
     bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
     outlierDataHolder.append(bOutliers)
-    noOutliersDf = intervalDf[(np.abs(stats.zscore(intervalDf)) < 3).all(axis = 1)]     # Removes points greater than 3 standard deviations
+    noOutliersDf = IQR(completeRowData)
     aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
     outlierDataHolder.append(aOutliers)
     nOutliers = bOutliers - aOutliers              # Number of outliers
