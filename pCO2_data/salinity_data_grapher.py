@@ -39,24 +39,26 @@ usedConductivity = []
 
 # os.path.join(__location__, 'Salinity_2021.csv'
 # Takes out empty values in salinity data set
-with open(os.path.join(__location__, 'Carolina_June_2021.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'Carolina_September_2021_2.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
-        
+      
         # Checks if time entry has corresponding Time and Verified Measurement
         # If not, does not include data point in graph
-        if not row[1] == "-" and not row[2] == "-" and not row[3] == "-" and not row[1] == "" and not row[2] == "" and not row[3] == "" and numofLinesS > 0:
-            salDate.append(row[1])
-            condData.append(float(row[2]))
-            condTempData.append(float(row[3]))
+        if not row[0] == "-" and not row[1] == "-" and not row[2] == "-" and not row[0] == "" and not row[1] == "" and not row[2] == "" and numofLinesS > 0:
+            salDate.append(row[0])
+            condData.append(float(row[1]))
+            condTempData.append(float(row[2]))
             numofLinesS += 1
         elif numofLinesS <= 0:
             numofLinesS += 1
             
 
+print(salDate)
+
 # Salinity data
 for time in salDate:
-    timeObj = datetime.datetime.strptime(time, '%m/%d/%Y %H:%M')
+    timeObj = datetime.datetime.strptime(time, '%m/%d/%y %H:%M:%S')
     eastern = pytz.timezone('US/Eastern')
     realTimeObj = timeObj.astimezone(eastern)       # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
@@ -70,6 +72,9 @@ for time in salDate:
 # Conductivity must be greater than 0
 # Formula & code retrived from: http://www.fivecreeks.org/monitor/sal.shtml
 def condSalConv(conductivity, temperature):
+    
+    temperature = (temperature-32)/1.8    
+
     a0 = 0.008
     a1 = -0.1692
     a2 = 25.3851
@@ -117,6 +122,7 @@ def condSalConv(conductivity, temperature):
 # Rounds salinity conversions to 3 decimal places
 for i in range(len(condData)):
     salinity = condSalConv(condData[i-1], condTempData[i-1])
+    print(salinity)
     
     if salinity != "":
         salinity = round(float(salinity), 3)
@@ -126,11 +132,16 @@ for i in range(len(condData)):
     usedConductivity.append(condData[i-1])
 
 # Salinity dataframe to remove null values
-salinityDF = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData, 'Temperature (C)': usedTemperature, 'Conductivity': usedConductivity})
+salinityDF = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData, 'Temperature (F)': usedTemperature, 'Conductivity': usedConductivity})
+
+print(salinityDF)
+
 
 # Removes all rows with null salinity
 salinityDFSorted = salinityDF.loc[salinityDF['Salinity Value'] != ""]
 
+
+# print(salinityDFSorted)
 
 def grapher(salDate, salValue, tempValue, condValue, name):
     sx = salDate
@@ -156,15 +167,15 @@ def grapher(salDate, salValue, tempValue, condValue, name):
    
     # Temperature plot
     ax2 = ax1.twinx()
-    p2 = ax2.plot(sx, ty, color = 'r', linestyle = 'solid', label = "Temperature (C)")
-    ax2.set_ylabel("Temperature (C)")
+    p2 = ax2.plot(sx, ty, color = 'r', linestyle = 'solid', label = "Temperature (F)")
+    ax2.set_ylabel("Temperature (F)")
     ax2.spines["right"].set_position(("outward", 60))
     ax2.yaxis.label.set_color(p2[0].get_color())
     
 
     # Conductivity plot
     ax3 = ax1.twinx()
-    p3 = ax3.plot(sx, cy, color = 'g', linestyle = 'solid', label = "Conductivity")
+    p3 = ax3.plot(sx, cy, color = 'c', linestyle = 'solid', label = "Conductivity")
     ax3.set_ylabel("Conductivity")
     ax3.spines["right"].set_position(("outward", 120))
     ax3.yaxis.label.set_color(p3[0].get_color())
@@ -178,11 +189,11 @@ def grapher(salDate, salValue, tempValue, condValue, name):
 
 
 # Plots graph without outliers
-grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (C)"), 
-        salinityDFSorted.get("Conductivity"), "June 2021 (1) Conductivity Data (With Outliers)")
+grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (F)"), 
+        salinityDFSorted.get("Conductivity"), "September 2021 (2) Conductivity Data (With Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('Conductivity_June_2021_1_Graph_With_Outliers.png')
+plt.savefig('Conductivity_September_2021_2_Graph_With_Outliers.png')
 
 # Displays figures
 plt.show()
