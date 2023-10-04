@@ -45,10 +45,10 @@ with open(os.path.join(__location__, 'Carolina_September_2021_2.csv'),'r') as cs
       
         # Checks if time entry has corresponding Time and Verified Measurement
         # If not, does not include data point in graph
-        if not row[0] == "-" and not row[1] == "-" and not row[2] == "-" and not row[0] == "" and not row[1] == "" and not row[2] == "" and numofLinesS > 0:
-            salDate.append(row[0])
-            condData.append(float(row[1]))
-            condTempData.append(float(row[2]))
+        if not row[1] == "-" and not row[2] == "-" and not row[3] == "-" and not row[1] == "" and not row[2] == "" and not row[3] == "" and numofLinesS > 0:
+            salDate.append(row[1])
+            condData.append(float(row[2]))
+            condTempData.append(float(row[3]))
             numofLinesS += 1
         elif numofLinesS <= 0:
             numofLinesS += 1
@@ -72,8 +72,7 @@ for time in salDate:
 # Conductivity must be greater than 0
 # Formula & code retrived from: http://www.fivecreeks.org/monitor/sal.shtml
 def condSalConv(conductivity, temperature):
-    
-    temperature = (temperature-32)/1.8    
+      
 
     a0 = 0.008
     a1 = -0.1692
@@ -132,7 +131,7 @@ for i in range(len(condData)):
     usedConductivity.append(condData[i-1])
 
 # Salinity dataframe to remove null values
-salinityDF = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData, 'Temperature (F)': usedTemperature, 'Conductivity': usedConductivity})
+salinityDF = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData, 'Temperature (C)': usedTemperature, 'Conductivity': usedConductivity})
 
 print(salinityDF)
 
@@ -168,7 +167,7 @@ def grapher(salDate, salValue, tempValue, condValue, name):
     # Temperature plot
     ax2 = ax1.twinx()
     p2 = ax2.plot(sx, ty, color = 'r', linestyle = 'solid', label = "Temperature (F)")
-    ax2.set_ylabel("Temperature (F)")
+    ax2.set_ylabel("Temperature (C)")
     ax2.spines["right"].set_position(("outward", 60))
     ax2.yaxis.label.set_color(p2[0].get_color())
     
