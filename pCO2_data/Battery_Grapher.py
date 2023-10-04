@@ -7,6 +7,10 @@ import math
 
 
 '''
+hi
+'''
+
+'''
 
 for every instance a pco2 sample is added to the data set
 the cov is recalculated and graphed against the battery
