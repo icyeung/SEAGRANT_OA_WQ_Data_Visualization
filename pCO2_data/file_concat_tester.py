@@ -12,6 +12,8 @@ for filename in inputs:
       if h not in fieldnames:
         fieldnames.append(h)
 
+
+
 # Then copy the data
 with open("out.csv", "w", newline="") as f_out:   # Comment 2 below
   writer = csv.DictWriter(f_out, fieldnames=fieldnames)
