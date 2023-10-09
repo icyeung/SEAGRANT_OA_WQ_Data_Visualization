@@ -529,14 +529,14 @@ grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extrac
         salinityDFSorted.get("Salinity Value"), "2021 pCO2 Data (No Outliers)")
 
 # Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('pCO2_2021_Graph_No_Outliers.png')
+plt.savefig('pCO2 Graphs/pCO2_2021_Graph_No_Outliers.png')
 
 # Plots graph with outliers
 grapher(xDataTrueO, tyData, cyData, byData, weaDateTrue, wyData, ryData, tidDateTrue, tidHeightData, 
         salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), "pCO2 Data (With Outliers)")
 
 # Saves with outliers graph to specified name in pCO2_data folder
-plt.savefig('pCO2_2021_Graph_With_Outliers.png')
+plt.savefig('pCO2 Graphs/pCO2_2021_Graph_With_Outliers.png')
 
 # Displays figures
 plt.show()

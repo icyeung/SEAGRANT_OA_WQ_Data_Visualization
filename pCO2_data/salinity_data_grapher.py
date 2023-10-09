@@ -191,15 +191,11 @@ def grapher(salDate, salValue, tempValue, condValue, name):
 grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (F)"), 
         salinityDFSorted.get("Conductivity"), "September 2021 (2) Conductivity Data (With Outliers)")
 
-# Identifies absolute path for directory
-# Sourced from https://stackoverflow.com/questions/11373610/save-matplotlib-file-to-a-directory
-my_path = os.path.abspath(__file__)
-
 
 plt.savefig('Salinity Graphs/Conductivity_September_2021_2_Graph_With_Outliers.png')
 
 # Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig(os.path.join(my_path, 'Conductivity_September_2021_2_Graph_With_Outliers.png'))
+plt.savefig( 'Salinity Graphs/Conductivity_September_2021_2_Graph_With_Outliers.png')
 
 # Displays figures
 plt.show()
