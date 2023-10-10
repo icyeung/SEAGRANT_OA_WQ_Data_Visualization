@@ -45,10 +45,10 @@ with open(os.path.join(__location__, 'Carolina_September_2021_2.csv'),'r') as cs
       
         # Checks if time entry has corresponding Time and Verified Measurement
         # If not, does not include data point in graph
-        if not row[1] == "-" and not row[2] == "-" and not row[3] == "-" and not row[1] == "" and not row[2] == "" and not row[3] == "" and numofLinesS > 0:
-            salDate.append(row[1])
-            condData.append(float(row[2]))
-            condTempData.append(float(row[3]))
+        if not row[0] == "-" and not row[1] == "-" and not row[2] == "-" and not row[0] == "" and not row[1] == "" and not row[2] == "" and numofLinesS > 0:
+            salDate.append(row[0])
+            condData.append(float(row[1]))
+            condTempData.append(float(row[2]))
             numofLinesS += 1
         elif numofLinesS <= 0:
             numofLinesS += 1
@@ -188,14 +188,20 @@ def grapher(salDate, salValue, tempValue, condValue, name):
 
 
 # Plots graph without outliers
-grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (F)"), 
+grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (C)"), 
         salinityDFSorted.get("Conductivity"), "September 2021 (2) Conductivity Data (With Outliers)")
 
 
-plt.savefig('Salinity Graphs/Conductivity_September_2021_2_Graph_With_Outliers.png')
+# Finds location of .py program
+my_path = os.path.dirname(os.path.abspath(__file__))
 
-# Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig( 'Salinity Graphs/Conductivity_September_2021_2_Graph_With_Outliers.png')
+# Saves with outliers graph to specified name in folder
+plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_September_2021_2_Graph_With_Outliers.png')
+
+# Saves without outliers graph to specified name in folder
+plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_September_2021_2_Graph_With_Outliers.png')
+
+
 
 # Displays figures
 plt.show()

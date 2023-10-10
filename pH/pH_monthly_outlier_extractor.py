@@ -264,17 +264,21 @@ def grapher(time, tempC, pH, batteryV, name):
 
 # Plots graph without outliers
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("pH"), extractedData.get("Battery"), 
-        "2019 pH Data (No Outliers)")
+        "2021 pH Data (No Outliers)")
 
-# Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('pH_2019_Graph_No_Outliers.png')
+# Finds location of .py program
+my_path = os.path.dirname(os.path.abspath(__file__))
 
+
+# Saves without outliers graph to specified name in folder
+plt.savefig(my_path + '\\pH_Graphs\\pH_2021_Graph_No_Outliers_Monthly.png')
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, pyData, byData, "2019 pH Data (With Outliers) Monthly")
+grapher(xDataTrueO, tyData, pyData, byData, "2021 pH Data (With Outliers) Monthly")
 
-# Saves with outliers graph to specified name in pCO2_data folder
-plt.savefig('pH_2019_Graph_With_Outliers_Monthly.png')
+
+# Saves with outliers graph to specified name in folder
+plt.savefig(my_path + '\\pH_Graphs\\pH_2021_Graph_With_Outliers_Monthly.png')
 
 # Displays figures
 plt.show()

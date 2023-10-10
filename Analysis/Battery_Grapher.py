@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 import math
 
 
-'''
-hi
-'''
 
 '''
 
@@ -76,7 +73,10 @@ plt.ylabel('Coefficient of Variation')
 plt.title('Coefficient of Variation vs Battery', fontsize = 15)
 plt.grid(True)
 
+# Finds location of .py program
+my_path = os.path.dirname(os.path.abspath(__file__))
+
 # Saves figure as png
-plt.savefig('2021_pco2CV_vs_Battery.png')
+plt.savefig(my_path + '\\2021_pco2CV_vs_Battery.png')
 
 plt.show()

@@ -201,15 +201,17 @@ def grapher(time, tempC, CO2, batteryV, name):
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), 
         "2023 pCO2 Data (No Outliers)")
 
-# Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('pCO2_2023_Graph_No_Outliers_Annual.png')
+# Finds location of .py program
+my_path = os.path.dirname(os.path.abspath(__file__))
 
+# Saves without outliers graph to specified name in folder
+plt.savefig(my_path + '\\pCO2_Graphs\\pCO2_2023_Graph_No_Outliers_Annual.png')
 
 # Plots graph with outliers
 grapher(xDataTrueO, tyData, cyData, byData, "2023 pCO2 Data (With Outliers)")
 
-# Saves with outliers graph to specified name in pCO2_data folder
-plt.savefig('pCO2_2023_Graph_With_Outliers_Annual.png')
+# Saves with outliers graph to specified name in folder
+plt.savefig(my_path + '\\pCO2_Graphs\\pCO2_2023_Graph_With_Outliers_Annual.png')
 
 # Displays figures
 plt.show()

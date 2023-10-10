@@ -1,6 +1,3 @@
-from binascii import a2b_base64
-from cgi import test
-from genericpath import isfile
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,11 +8,7 @@ import datetime
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 from scipy import stats
-import pytz
-
-from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import kstest
-
 
 
 
@@ -26,12 +19,8 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 # Used to hold data from csv file  
 xData = []      # Dates
 tyData = []     # Temperature
-syData = []     # Salinity
-pyData = []     # pH
+cyData = []     # CO2
 byData = []     # Battery Voltage
-dsData = []     # Date (Calendar)
-tsData = []     # Time 
-
 
 # Used in taking out empty data values from pCO2 data
 numofLinesD = 0
@@ -45,6 +34,9 @@ outlierDataSal = []
 # Used in taking out empty values from salinity data
 numofLinesS = -1
 
+# Used for creating table on outlier information
+headersH = ["# Values Before Outliers Extracted", "# Values After Outliers Extracted", "# Outliers Extracted"]                          # Horizontal Headers
+headersV = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]   # Vertical Headers
 
 # Time
 # Holds converted time values
@@ -52,29 +44,19 @@ xDataTrueO =[]      # Outlier times
 xDataTrueNO = []    # No outlier times
 
 
-# Sourced from https://pythonhow.com/how/check-if-a-string-is-a-float/
-# Used to check if data is a numeric value
-def is_float(string):
-    if string.replace(".", "").isnumeric():
-        return True
-    else:
-        return False
-
-
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pH_2019_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pCO2_2021_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
-        # Checks if time entry has corresponding Temperature, Salinity, pH, Battery Voltage, Calendar Date, and Time
+        # Checks if time entry has corresponding Temperature, CO2, and Battery Voltage
         # If not, does not include data point in graph
-        if not row[1] == "" and is_float(row[1]) and not row[2] == "" and is_float(row[2]) and not row[3] == "" and is_float(row[3]) and float(row[3]) != 0.00 and not row[4] == "" and is_float(row[4]) and numofLinesD > 0:
+        if not row[1] == "" and not row[2] == "" and not row[3] == "" and numofLinesD > 0:
             xData.append(float(row[0]))
             tyData.append(float(row[1]))
-            syData.append(float(row[2]))
-            pyData.append(float(row[3]))
-            byData.append(float(row[4]))
+            cyData.append(float(row[2]))
+            byData.append(float(row[3]))
             numofLinesD += 1
         elif numofLinesD == 0:
             numofLinesD += 1
@@ -83,23 +65,59 @@ with open(os.path.join(__location__, 'pH_2019_Complete_Data.csv'),'r') as csvfil
 print("Original data after empty values are taken out: ", len(xData))
 
 # Dataframe of original data after blanks removed
-completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "pH": pyData, "Battery": byData})
+completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "CO2": cyData, "Battery": byData})
+
 
 # Sourced from https://www.analyticsvidhya.com/blog/2022/09/dealing-with-outliers-using-the-iqr-method/
 def IQR(dfName):
-    percentile25 = dfName["pH"].quantile(0.25)
-    percentile75 = dfName["pH"].quantile(0.75)
+    percentile25 = dfName["CO2"].quantile(0.25)
+    percentile75 = dfName["CO2"].quantile(0.75)
     iqr = percentile75 - percentile25
     upperLimit = percentile75 + 1.5*iqr
     lowerLimit = percentile25 - 1.5*iqr
-    noOutliersDf = dfName[(dfName["pH"] < upperLimit) & (dfName["pH"] > lowerLimit)]
+    noOutliersDf = dfName[(dfName["CO2"] < upperLimit) & (dfName["CO2"] > lowerLimit)]
     return noOutliersDf
 
 
 # Extracts outliers from dataframe
 # If any value in the 3 colums is an outlier, removes entire row
-noOutliersDf = IQR(completeRowData)
-extractedData = noOutliersDf
+# Stores information about # of outliers taken out
+# Input start and end dates of desired outlier identification time frame in Ordinal form
+def extractOutliers(start, end, intervalName):
+    outlierDataHolder = []
+    intervalDf = completeRowData.loc[(completeRowData['Date'] >= start) & (completeRowData['Date'] < end)]
+    bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
+    outlierDataHolder.append(bOutliers)
+    noOutliersDf = IQR(completeRowData)
+    aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
+    outlierDataHolder.append(aOutliers)
+    nOutliers = bOutliers - aOutliers              # Number of outliers
+    outlierDataHolder.append(nOutliers)
+    outlierData.append(outlierDataHolder)
+    return noOutliersDf
+
+# Identifies and extracts outliers using a monthly interval
+januaryDf = extractOutliers(1, 32, "January")
+februaryDf = extractOutliers(32, 60, "February")
+marchDf = extractOutliers(60, 91, "March")
+aprilDf = extractOutliers(91, 121, "April")
+mayDf = extractOutliers(121, 152, "May")
+juneDf = extractOutliers(152, 182, "June")
+julyDF = extractOutliers(182, 213, "July")
+augustDf = extractOutliers(213, 244, "August")
+septemberDf = extractOutliers(244, 274, "September")
+octoberDf = extractOutliers(274, 305, "October")
+novemberDf = extractOutliers(305, 335, "November")
+decemberDf = extractOutliers(335, 366, "December")
+
+# Displays table with # of outliers taken out per month
+print("")
+print(pd.DataFrame(outlierData, headersV, headersH))
+print("")
+
+# Dataframe without outliers
+extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, 
+                           augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
  
 # Displays total number of data points after outliers are removed
 print("Original data after all outliers are removed: ", len(extractedData.get("Date")))
@@ -135,13 +153,13 @@ def timeConverter (date):
 # Original Data    
 for dateValue in xData:
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2023)
+    trueDate = dateValue.replace(year = 2021)
     xDataTrueO.append(trueDate)
 
 # Data with no outliers
 for dateValue in extractedData.get("Date"):
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2023)
+    trueDate = dateValue.replace(year = 2021)
     xDataTrueNO.append(trueDate)
 
 
@@ -149,8 +167,8 @@ for dateValue in extractedData.get("Date"):
 
 
 # Creates dataframes of data grapher without outliers
-pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"),
-                       "pH": extractedData.get("pH"), "Battery": extractedData.get("Battery")})
+pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"), 
+                       "CO2": extractedData.get("CO2"), "Battery": extractedData.get("Battery")})
 
 
 # Saves dataframes to csv files
@@ -160,21 +178,20 @@ pco2DF['Date'] = pd.to_datetime(pco2DF['Date'])
 
 
 # Histogram of CO2 measurements
-# plt.hist(extractedData.get("pH"), edgecolor='black', bins=20)
+# plt.hist(extractedData.get("CO2"), edgecolor='black', bins=20)
 # plt.hist(extractedData.get("Temp"), edgecolor='black', bins=20)
-#plt.hist(extractedData.get("Battery"), edgecolor='black', bins=20)
+plt.hist(extractedData.get("Battery"), edgecolor='black', bins=20)
 
-'''
 # K-S test
-print(kstest(extractedData.get("pH"), 'norm'))     # Not normally distributed
+print(kstest(extractedData.get("CO2"), 'norm'))     # Not normally distributed
 print(kstest(extractedData.get("Temp"), 'norm'))    # Not normally distributed
 print(kstest(extractedData.get("Battery"), 'norm')) # Not normally distributed
-'''
 
-def grapher(time, tempC, pH, batteryV, name):
+
+def grapher(time, tempC, CO2, batteryV, name):
     x = time
     ty = tempC
-    py = pH
+    cy = CO2
     by = batteryV
 
     fig, ax1 = plt.subplots()
@@ -193,12 +210,12 @@ def grapher(time, tempC, pH, batteryV, name):
     ax1.set_xlabel("Dates (MM-DD)")
     ax1.yaxis.label.set_color(p1[0].get_color())
     
-
+    
     
     # CO2 plot
     ax2 = ax1.twinx()
-    p2 = ax2.plot(x, py, color = 'c', linestyle = 'solid', label = "pH")
-    ax2.set_ylabel("pH")
+    p2 = ax2.plot(x, cy, color = 'c', linestyle = 'solid', label = "CO2")
+    ax2.set_ylabel("CO2")
     ax2.yaxis.label.set_color(p2[0].get_color())
     
     
@@ -209,14 +226,6 @@ def grapher(time, tempC, pH, batteryV, name):
     ax3.spines["right"].set_position(("outward", 60))
     ax3.yaxis.label.set_color(p3[0].get_color())
 
-    '''
-    # Salinity plot
-    ax4 = ax1.twinx()
-    p4 = ax4.plot(x, by, color = 'k', linestyle = 'solid', label = "Salinity")
-    ax4.set_ylabel("Salinity")
-    ax4.spines["right"].set_position(("outward", 120))
-    ax4.yaxis.label.set_color(p4[0].get_color())
-    '''
    
     
     # Sets title, adds a grid, and shows legend
@@ -227,18 +236,21 @@ def grapher(time, tempC, pH, batteryV, name):
     return
 
 # Plots graph without outliers
-grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("pH"), extractedData.get("Battery"), 
-        "2019 pH Data (No Outliers) Annual")
+grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), 
+        "2021 pCO2 Data (No Outliers)")
 
-# Saves without outliers graph to specified name in pCO2_data folder
-plt.savefig('pH_2019_Graph_No_Outliers.png')
+# Finds location of .py program
+my_path = os.path.dirname(os.path.abspath(__file__))
 
+# Saves without outliers graph to specified name in folder
+plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2021_Graph_No_Outliers_Monthly.png')
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, pyData, byData, "2019 pH Data (With Outliers) Annual")
+grapher(xDataTrueO, tyData, cyData, byData, "2021 pCO2 Data (With Outliers)")
 
-# Saves with outliers graph to specified name in pCO2_data folder
-plt.savefig('pH_2019_Graph_With_Outliers_Annual.png')
+# Saves with outliers graph to specified name in folder
+plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2021_Graph_With_Outliers.png')
+
 
 # Displays figures
 plt.show()
@@ -251,19 +263,20 @@ def minMax(data, output):
         scaledValue = (point-min(data))/(max(data)-min(data))
         output.append(scaledValue)
 
-scaledValuePH = []
+scaledValueCO2 = []
 scaledValueTemp = []
 scaledValueBattery = []
-#scaledValueSalinity = []
 
 
 # Dataframe only contains scaled values
-minMax(extractedData.get("pH"), scaledValuePH)
+minMax(extractedData.get("CO2"), scaledValueCO2)
 minMax(extractedData.get("Temp"), scaledValueTemp)
 minMax(extractedData.get("Battery"), scaledValueBattery)
-#minMax(extractedData.get("Salinity"), scaledValueSalinity)
 
 
-phDFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "pH": scaledValuePH, 
+pco2DFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "CO2": scaledValueCO2, 
                              "Battery": scaledValueBattery})
+
+
+
 
