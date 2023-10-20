@@ -63,6 +63,44 @@ for time in salDate:
     realTimeObj = timeObj.astimezone(eastern)       # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
 
+unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductiviy': condData, 'Temperature (C)': condTempData})
+# Remove outliers by taking 12% every 31 days
+# First 31 days remain same
+# 12% subtracted after based on each 31 day period
+
+
+
+def extractOutliers(start, end, intervalName):
+    outlierDataHolder = []
+    intervalDf = unrefinedCondData.loc[(unrefinedCondData['Date'] >= start) & (unrefinedCondData['Date'] < end)]
+    bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
+    outlierDataHolder.append(bOutliers)
+    noOutliersDf = IQR(completeRowData)
+    aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
+    outlierDataHolder.append(aOutliers)
+    nOutliers = bOutliers - aOutliers              # Number of outliers
+    outlierDataHolder.append(nOutliers)
+    outlierData.append(outlierDataHolder)
+    return noOutliersDf
+
+# Identifies and extracts outliers using a monthly interval
+januaryDf = extractOutliers(1, 32, "January")
+februaryDf = extractOutliers(32, 60, "February")
+marchDf = extractOutliers(60, 91, "March")
+aprilDf = extractOutliers(91, 121, "April")
+mayDf = extractOutliers(121, 152, "May")
+juneDf = extractOutliers(152, 182, "June")
+julyDF = extractOutliers(182, 213, "July")
+augustDf = extractOutliers(213, 244, "August")
+septemberDf = extractOutliers(244, 274, "September")
+octoberDf = extractOutliers(274, 305, "October")
+novemberDf = extractOutliers(305, 335, "November")
+decemberDf = extractOutliers(335, 366, "December")
+
+# Displays table with # of outliers taken out per month
+print("")
+print(pd.DataFrame(outlierData, headersV, headersH))
+print("")
 
 
 # Conductivity conversion to salinity
