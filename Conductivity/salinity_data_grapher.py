@@ -7,6 +7,8 @@ import datetime
 import pytz
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
+import numpy as np
+from matplotlib.dates import date2num
 
 
 
@@ -39,7 +41,7 @@ usedConductivity = []
 
 # os.path.join(__location__, 'Salinity_2021.csv'
 # Takes out empty values in salinity data set
-with open(os.path.join(__location__, 'Carolina_September_2021_2.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'Salinity_Carolina_9-28-21_2.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
       
@@ -68,7 +70,13 @@ unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductiviy': condData, 
 # First 31 days remain same
 # 12% subtracted after based on each 31 day period
 
+'''
+a, b = np.polyfit(date2num(salDateTrue), condData, 1)
+plt.plot(date2num(salDateTrue), a*date2num(salDateTrue) + b)
+'''
 
+
+'''
 
 def extractOutliers(start, end, intervalName):
     outlierDataHolder = []
@@ -101,7 +109,7 @@ decemberDf = extractOutliers(335, 366, "December")
 print("")
 print(pd.DataFrame(outlierData, headersV, headersH))
 print("")
-
+'''
 
 # Conductivity conversion to salinity
 # Conversion function
@@ -227,18 +235,19 @@ def grapher(salDate, salValue, tempValue, condValue, name):
 
 # Plots graph without outliers
 grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (C)"), 
-        salinityDFSorted.get("Conductivity"), "September 2021 (2) Conductivity Data (With Outliers)")
+        salinityDFSorted.get("Conductivity"), "9-28-21 (2) Conductivity Data (With Outliers)")
 
 
 # Finds location of .py program
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_September_2021_2_Graph_With_Outliers.png')
+plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_9-28-21_2_Graph_With_Outliers.png')
 
+'''
 # Saves without outliers graph to specified name in folder
 plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_September_2021_2_Graph_With_Outliers.png')
-
+'''
 
 
 # Displays figures
