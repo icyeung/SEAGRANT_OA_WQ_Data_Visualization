@@ -41,7 +41,7 @@ usedConductivity = []
 
 # os.path.join(__location__, 'Salinity_2021.csv'
 # Takes out empty values in salinity data set
-with open(os.path.join(__location__, 'Salinity_Carolina_9-28-21_2.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'Salinity_Carolina_12-10-21.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
       
@@ -235,14 +235,14 @@ def grapher(salDate, salValue, tempValue, condValue, name):
 
 # Plots graph without outliers
 grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (C)"), 
-        salinityDFSorted.get("Conductivity"), "9-28-21 (2) Conductivity Data (With Outliers)")
+        salinityDFSorted.get("Conductivity"), "12-10-21 (1) Conductivity Data (With Outliers)")
 
 
 # Finds location of .py program
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_9-28-21_2_Graph_With_Outliers.png')
+plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_With_Outliers.png')
 
 '''
 # Saves without outliers graph to specified name in folder
