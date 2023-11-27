@@ -9,6 +9,7 @@ from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 import numpy as np
 from matplotlib.dates import date2num
+from sklearn.linear_model import LinearRegression
 
 
 
@@ -66,14 +67,33 @@ for time in salDate:
     salDateTrue.append(realTimeObj)
 
 unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductiviy': condData, 'Temperature (C)': condTempData})
+
+date_string_unrefined_CondData = pd.DataFrame
 # Remove outliers by taking 12% every 31 days
 # First 31 days remain same
-# 12% subtracted after based on each 31 day period
+# 10% subtracted after based on each 31 day period
 
 '''
 a, b = np.polyfit(date2num(salDateTrue), condData, 1)
 plt.plot(date2num(salDateTrue), a*date2num(salDateTrue) + b)
 '''
+
+# Need to convert to Juliandays
+# strftime not working
+print ('date',salDateTrue)
+
+salDateTrueOrdinal = []
+for date in salDateTrue:
+    dateStr = date.strftime('%Y/%m/%d %H%M%S')
+    #salDateTrueOrdinal.append[date.toordinal()]
+    salDateTrueOrdinal.append(date)
+
+print('string',salDateTrueOrdinal)
+
+dateStringUnrefinedCondData = pd.DataFrame({'Date': salDateTrueOrdinal, 'Conductiviy': condData, 'Temperature (C)': condTempData})   
+model = LinearRegression().fit(salDateTrueOrdinal, condData)
+r_sq = model.score(salDateTrueOrdinal, condData)
+print('coefficient of setermination:', r_sq)
 
 
 '''
@@ -242,7 +262,7 @@ grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), sa
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_With_Outliers.png')
+#plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_With_Outliers.png')
 
 '''
 # Saves without outliers graph to specified name in folder
