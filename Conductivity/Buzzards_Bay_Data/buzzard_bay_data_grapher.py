@@ -5,7 +5,7 @@ import os
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-with open(os.path.join(__location__, 'Salinity_Carolina_9-28-21.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'bbcdata1992to2020-ver07May2021.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
       
