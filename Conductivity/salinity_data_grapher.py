@@ -58,7 +58,7 @@ print(salDate)
 
 # Salinity data
 for time in salDate:
-    timeObj = datetime.datetime.strptime(time, '%y/%m/%d %H:%M:%S')
+    timeObj = time.datetime.datetime.strptime('%Y/%m/%d %H:%M:%S')
     eastern = pytz.timezone('US/Eastern')
     realTimeObj = timeObj.astimezone(eastern)       # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
@@ -181,7 +181,7 @@ for i in range(len(condData)):
 
 
 # Remove outliers by taking 10% of the regression line
-    
+# Use Julian Days for the time    
 #print('salDate length', len(salDate))
 #print("salDateTrue length", len(salDateTrue))
 
