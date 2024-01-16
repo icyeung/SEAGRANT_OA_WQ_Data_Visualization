@@ -39,7 +39,7 @@ usedConductivity = []
 
 
 # Takes out empty values in salinity data set
-with open(os.path.join(__location__, 'Salinity_Carolina_9-28-21.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'Salinity_Carolina_12-10-21.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
       
@@ -176,8 +176,11 @@ for i in range(len(condData)):
 #print('salDate length', len(salDate))
 #print("salDateTrue length", len(salDateTrue))
 
-salDateTrueOrdinal = salDate.copy()
+salDateTrueJulian = salDateTrue.copy()
 
+# Converts dates to ints
+# Not used as there are jumps due to the date format not being continuous as an int
+'''
 salDateInt = []
 #salDateIntHolder = []
 for date in salDateTrueOrdinal:
@@ -190,18 +193,34 @@ for date in salDateTrueOrdinal:
     #print("Int Conversion Date (currently int)", date, type(date))
     salDateInt.append(date)
 
+'''
+
+
+salDateJulian = []
+#salDateJulianHolder = []
+for date in salDateTrueJulian:
+    year = date.year
+    month = date.month
+    day = date.day
+    hour = date.hour
+    minute = date.minute
+    second = date.second
+    ts = pd.Timestamp(year, month, day, hour, second)
+    jd = ts.to_julian_date()
+    salDateJulian.append(jd)
+print(salDateJulian)
 
 #print("length of salDateInt", len(salDateInt))
 #print("length of salDateTrueOrdinal", len(salDateTrueOrdinal))
 
-salDateTrueOrdinalAry = np.array(salDateInt)
+salDateTrueOrdinalAry = np.array(salDateJulian)
 #salDateTrueOrdinal.toArray(salDateTrueOrdinalAry)
 
 condDataOR = usedConductivity.copy()
 condDataAry = np.array(condDataOR)
 #condData.toArray(condDataAry)
 
-dateStringUnrefinedCondData = pd.DataFrame({'Date': salDateTrueOrdinal, 'Conductiviy': condData, 'Temperature (C)': condTempData})   
+dateStringUnrefinedCondData = pd.DataFrame({'Date': salDateTrueJulian, 'Conductiviy': condData, 'Temperature (C)': condTempData})   
 model = LinearRegression().fit(salDateTrueOrdinalAry.reshape(-1,1), condDataAry)
 r_sq = model.score(salDateTrueOrdinalAry.reshape(-1,1), condDataAry)
 #print('coefficient of determination:', r_sq)
@@ -209,7 +228,7 @@ condDataFitPredAry = model.predict(salDateTrueOrdinalAry.reshape(-1,1))
 #print("fit tester", condDataFitPredAry)
 
 condDataFitPredList = condDataFitPredAry.tolist()
-print(len(salDateTrueOrdinal))
+print(len(salDateTrueJulian))
 print('before cutting', len(condDataFitPredList))
 
 
@@ -258,7 +277,7 @@ def grapher(salDate, salValue, tempValue, condValue, fitValue, name):
     fy = fitValue
 
     # Salinity plot
-    fig, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots(figsize=(14,7))
     p1 = ax1.plot(sx, sy, color = 'b', linestyle = 'solid', label = 'Salinity (ppt)')
 
     # Sets x-axis as Dates
@@ -296,7 +315,9 @@ def grapher(salDate, salValue, tempValue, condValue, fitValue, name):
     ax4.yaxis.label.set_color(p4[0].get_color())
     
     # Sets title, adds a grid, and shows legend
-    plt.title(name, fontsize = 20)
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.95)
+    plt.title(name, loc='center')
     plt.grid(True)
     plt.legend(handles=p1+p2+p3+p4)
 
@@ -305,23 +326,23 @@ def grapher(salDate, salValue, tempValue, condValue, fitValue, name):
 
 # Plots graph with outliers
 grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (C)"),
-        salinityDFSorted.get("Conductivity"), salinityDFSorted.get("Fit"), "9-28-21 (1) Conductivity Data (With Outliers)")
+        salinityDFSorted.get("Conductivity"), salinityDFSorted.get("Fit"), "12-10-21 (1) Conductivity Data (With Outliers)")
 
 # Finds location of .py program
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_9-28-21_1_Graph_With_Outliers.png')
+plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_With_Outliers.png', dpi=2000)
 
 print("no fit lenth", len(salinityDFSorted.get("Fit")))
 
 
 # Plots graph without outliers
 grapher(salinityDFSortedNOreset.get("Date"), salinityDFSortedNOreset.get("Salinity Value"), salinityDFSortedNOreset.get("Temperature (C)"),
-        salinityDFSortedNOreset.get("Conductivity"), salinityDFSortedNOreset.get("Fit"), "9-28-21 (1) Conductivity Data (Without Outliers)")
+        salinityDFSortedNOreset.get("Conductivity"), salinityDFSortedNOreset.get("Fit"), "12-10-21 (1) Conductivity Data (Without Outliers)")
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_9-28-21_1_Graph_Without_Outliers.png')
+plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_Without_Outliers.png', dpi=2000)
 
 print("fitted length", len(salinityDFSortedNOreset.get("Fit")))
 
