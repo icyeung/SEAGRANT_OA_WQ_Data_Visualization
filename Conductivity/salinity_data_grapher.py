@@ -47,23 +47,32 @@ with open(os.path.join(__location__, 'Salinity_Carolina_12-10-21.csv'),'r') as c
         # If not, does not include data point in graph
         if not row[0] == "-" and not row[1] == "-" and not row[2] == "-" and not row[0] == "" and not row[1] == "" and not row[2] == "" and numofLinesS > 0:
             salDate.append(row[0])
+            print(row[0])
             condData.append(float(row[1]))
             condTempData.append(float(row[2]))
             numofLinesS += 1
         elif numofLinesS <= 0:
             numofLinesS += 1
             
-
+print(salDate)
 
 # Salinity data
 for time in salDate:
-    timeObj = datetime.datetime.strptime(time, '%m/%d/%y %H:%M:%S')
+    timeObj = time.datetime.datetime.strptime('%Y/%m/%d %H:%M:%S')
     eastern = pytz.timezone('US/Eastern')
     realTimeObj = timeObj.astimezone(eastern)       # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
 
+
 unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductiviy': condData, 'Temperature (C)': condTempData})
 
+
+# Verified Measurement also has to be between 5000, 55000
+# If not, does not include data point in graph
+for index in range(0, len(salDateTrue)):
+    if (condData[index] <= 5000) or (condData[index] >= 55000):
+        unrefinedCondData = unrefinedCondData.drop(index)
+unrefinedCondData = unrefinedCondData.reset_index(drop=True)
 
 '''
 a, b = np.polyfit(date2num(salDateTrue), condData, 1)
@@ -172,7 +181,7 @@ for i in range(len(condData)):
 
 
 # Remove outliers by taking 10% of the regression line
-    
+# Use Julian Days for the time    
 #print('salDate length', len(salDate))
 #print("salDateTrue length", len(salDateTrue))
 
@@ -184,6 +193,7 @@ salDateTrueJulian = salDateTrue.copy()
 salDateInt = []
 #salDateIntHolder = []
 for date in salDateTrueOrdinal:
+    print(date)
     date = date.replace(" ", "")
     date = date.replace("/", "")
     date = date.replace(":", "")
@@ -223,15 +233,20 @@ condDataAry = np.array(condDataOR)
 dateStringUnrefinedCondData = pd.DataFrame({'Date': salDateTrueJulian, 'Conductiviy': condData, 'Temperature (C)': condTempData})   
 model = LinearRegression().fit(salDateTrueOrdinalAry.reshape(-1,1), condDataAry)
 r_sq = model.score(salDateTrueOrdinalAry.reshape(-1,1), condDataAry)
+print("intercept", model.intercept_)
+print("slope", model.coef_)
 #print('coefficient of determination:', r_sq)
-condDataFitPredAry = model.predict(salDateTrueOrdinalAry.reshape(-1,1))
+condDataFitPredList=[]
+for date in salDateInt:
+    condDataFitPredList.append((model.coef_*date)+model.intercept_)
+#condDataFitPredAry = model.predict(salDateTrueOrdinalAry.reshape(-1,1))
 #print("fit tester", condDataFitPredAry)
 
 condDataFitPredList = condDataFitPredAry.tolist()
 print(len(salDateTrueJulian))
 print('before cutting', len(condDataFitPredList))
 
-
+#print("list", condDataFitPredList)
 
 # Salinity dataframe to remove null values
 salinityDF = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData, 'Temperature (C)': usedTemperature, 'Conductivity': usedConductivity,
@@ -247,24 +262,27 @@ print(len(salDateTrue))
 salinityDF_copy = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData, 'Temperature (C)': usedTemperature, 'Conductivity': usedConductivity,
                           'Fit': condDataFitPredList})
 salinityDFSortedNOreset = salinityDF_copy.reset_index(drop=True)
-print(salinityDFSortedNOreset)
+#print(salinityDFSortedNOreset)
 
 print(len(condDataOR))
 if (len(condDataOR) == len(condDataFitPredList)):
     for index in range(0, len(condDataOR)):
+        #print(condDataFitPredList[index])
         max_bound = condDataFitPredList[index]*1.1
-        print("max", max_bound)
+        #print("max", max_bound)
         min_bound = condDataFitPredList[index]*0.9
-        print("min", min_bound)
-        print('data', condDataOR[index])
+        #print("min", min_bound)
+        #print('data', condDataOR[index])
         if (condDataOR[index] < min_bound) or (condDataOR[index] > max_bound):
             salinityDFSortedNOreset = salinityDFSortedNOreset.drop(index)
-            print("hi")
+            #print("hi")
 
 salinityDFSorted = salinityDF.loc[salinityDF['Salinity Value'] != ""]
 salinityDFSortedNOreset = salinityDFSortedNOreset.loc[salinityDFSortedNOreset['Salinity Value'] != ""]
 
 print('after cutting', len(salinityDFSortedNOreset.get("Date")))
+
+#print(salinityDFSortedNOreset.get("Fit"))
 
 salinityDFSorted.to_csv(os.path.dirname(os.path.abspath(__file__)) + 'Testing_before.csv')
 salinityDFSortedNOreset.to_csv(os.path.dirname(os.path.abspath(__file__)) + 'Testing_after.csv')
