@@ -58,7 +58,7 @@ print(salDate)
 
 # Salinity data
 for time in salDate:
-    timeObj = time.datetime.datetime.strptime('%Y/%m/%d %H:%M:%S')
+    timeObj = datetime.datetime.strptime(time, '%m/%d/%y %H:%M:%S')
     eastern = pytz.timezone('US/Eastern')
     realTimeObj = timeObj.astimezone(eastern)       # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
@@ -237,12 +237,12 @@ print("intercept", model.intercept_)
 print("slope", model.coef_)
 #print('coefficient of determination:', r_sq)
 condDataFitPredList=[]
-for date in salDateInt:
+for date in salDateJulian:
     condDataFitPredList.append((model.coef_*date)+model.intercept_)
 #condDataFitPredAry = model.predict(salDateTrueOrdinalAry.reshape(-1,1))
 #print("fit tester", condDataFitPredAry)
 
-condDataFitPredList = condDataFitPredAry.tolist()
+#condDataFitPredList = condDataFitPredAry.tolist()
 print(len(salDateTrueJulian))
 print('before cutting', len(condDataFitPredList))
 
