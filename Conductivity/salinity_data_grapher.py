@@ -164,7 +164,7 @@ def condSalConv(conductivity, temperature):
     except ValueError:
         print("Error: Input is not a float")
     
-        
+print("salinity", condSalConv(45000, 16))        
 
 # Converts all conductivity and temperature measurements to salinity
 # Rounds salinity conversions to 3 decimal places
