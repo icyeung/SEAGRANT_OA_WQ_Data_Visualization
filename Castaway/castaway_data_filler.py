@@ -37,6 +37,24 @@ def main():
 main()
 '''
 
+# how should this thing work
+# you input field log file (has a set format)
+# field log should be placed next to program for ease of access
+# program looks through dates in water collection date column
+# if date is between start and end date, then the following would apply
+# on the current date in the field log, looks for castaway file with that same date
+# if date is not possible, then will skip date entry in field log and print the date skipped
+# if date is possible, then the appropriate depths will be recorded based on bottle label
+# checks bottle string for depth indicator word
+# bottom = deepest depth - 0.15m
+# mid = middle depth measurement
+# top = 0.15m
+# shallow = middle depth measurement
+# salinity and temperature measurements are recorded
+# can be done by using column index
+# use dataframe if possible
+# program goes through table line by line
+
 def castawayRetriever (file_logger_input, start_date, end_date):
     # Used to find location of specified file within Python code folder
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
