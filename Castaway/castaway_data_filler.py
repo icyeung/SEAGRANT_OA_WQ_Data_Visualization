@@ -2,6 +2,7 @@ import pandas as pd
 
 import os
 import csv
+import datetime
 
 '''
 # semi-automated loop to merge files specified by used into one csv file
@@ -55,10 +56,44 @@ main()
 # use dataframe if possible
 # program goes through table line by line
 
+def labelDecoder(label_name):
+   label_split = label_name.split("-")
+   depth_code = label_split[1]
+   if depth_code.charAt(0) == "d":
+      depth_translated = "bottom"
+   elif depth_code.charAt(0) == "s":
+      depth_translated = "surface"
+   return depth_translated
+
 def castawayRetriever (file_logger_input, start_date, end_date):
+
+   start_date_dt = datetime.datetime.strptime(start_date, '%b %d %Y %I:%M%p')
+   end_date_dt = datetime.datetime.strptime(end_date, '%b %d %Y %I:%M%p')
+
    # Used to find location of specified file within Python code folder
    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
    logger_df = pd.read_csv(os.path.join(__location__, file_logger_input))
   
+   dates = logger_df["Date"]
+
+   for date in dates:
+      date = datetime.datetime.strptime(date, '%b %d %Y %I:%M%p')
+      if start_date_dt <= date <= end_date_dt:
+         print("Yes, in between")
+      else:
+         print("No, not in between")
+
+      print(logger_df.loc[date])
+      if logger_df.loc[date, "Depth_1"] == "":
+         label1 = logger_df.loc[date, "Label_1"]
+         print(label1)
+         if labelDecoder(label1) == "bottom":
+            time1 = logger_df.loc[date, ""]
+
+
    print(logger_df)
+
+# issue: dates repeat, so cannot really identify solely based on that
+#- could use index
+#- could use some sort of and? from dataframe

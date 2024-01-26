@@ -4,8 +4,13 @@ import csv
 import os
 import datetime
 
+# saves csv as dataframe
+# sorts by station
+# checks start date & end date
+# if there is no valid start or end date, uses entire time frame
+# 
 
-def buzzard_bay_grapher(file, station, title):
+def buzzard_bay_grapher(file, station, title, start_date, end_date):
 
     numofLinesS = 0
     date_list = []
