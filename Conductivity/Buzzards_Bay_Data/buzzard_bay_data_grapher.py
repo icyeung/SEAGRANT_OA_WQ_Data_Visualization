@@ -38,8 +38,5 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date):
                 numofLinesS += 1
     
     for date in date_list:
-    dateObj = datetime.datetime.strptime(time, '%m/%d/%y %H:%M:%S')
-    dateObjList.append(dateObj)
-
-
-    unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductiviy': condData, 'Temperature (C)': condTempData})
+        dateObj = datetime.datetime.strptime(date, '%m/%d/%y %H:%M:%S')
+        
