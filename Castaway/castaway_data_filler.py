@@ -2,8 +2,8 @@ import pandas as pd
 import glob
 import os
 import csv
-import datetime
 from decimal import Decimal
+import datetime
 
 # how should this thing work
 # you input field log file (has a set format)
@@ -128,29 +128,89 @@ def castawayFileChooser(date, label, collection_time):
 def castawayRetriever (file_logger_input, start_date, end_date):
 
    # Makes start and end dates datetime objects to be used in date interval checker
-   start_date_dt = datetime.datetime.strptime(start_date, '%m-%d-%Y')
-   end_date_dt = datetime.datetime.strptime(end_date, '%m-%d-%Y')
+   # start_date_dt = datetime.datetime.strptime(start_date, '%m-%d-%Y')
+   # end_date_dt = datetime.datetime.strptime(end_date, '%m-%d-%Y')
 
    # Used to find location of specified file within Python code folder
    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
    logger_df = pd.read_csv(os.path.join(__location__, file_logger_input))
   
-   dates = logger_df["Date"]
-   
-   logger_df_current = logger_df.loc[(logger_df["Date"] >= start_date) & (logger_df["Date"] <= end_date)]
+   print(logger_df["Date"])
+
+   # dates = logger_df["Date"]
+
+   '''
+   if (logger_df.loc[1, "Date"] >= start_date):
+      if (logger_df.loc[1, "Date"] <= end_date):
+         print("True, yay")
+      else:
+         print("boo", end_date)
+   '''
+   '''
+   print("length", len(logger_df))
+   if ((date1 <= date3) & (date1>= date2)):
+      print("yayyyyyyyy")
+   '''
+
+
+   # how about this
+   # we get list of date column
+   # and then we keep track of index number while subscripting through it
+   # for each date we go through,
+   # the date is converted to datetime object and then comparted using the "yayyyyy" code above
+   # if correct, the index number is added to "current" list
+   # index += 1
+      
+   m2, d2, y2 = [int(date) for date in start_date.split("-")]
+   date2 = datetime.datetime(y2, m2, d2)
+
+   m3, d3, y3 = [int(date) for date in end_date.split("-")]
+   date3 = datetime.datetime(y3, m3, d3)   
+
+   valid_date_list = []
+   valid_date_index_list = []
+   logger_date_index = 0
+
+   logger_dates_list = logger_df["Date"].tolist()
+   for date in logger_dates_list:
+      print(logger_date_index)
+      print("current date", date)
+      m1, d1, y1 = [int(date_part) for date_part in date.split("/")]
+      date1 = datetime.datetime(y1, m1, d1)
+      
+      if ((date1 <= date3) & (date1>= date2)):
+         print("yayyyyyyyy")
+         valid_date_list.append(date)
+         valid_date_index_list.append(logger_date_index)
+      else:
+         print("bruh is it working", date)
+      logger_date_index += 1
+
+   #logger_df_current = logger_df.loc[(date1 >= date2) and (date1 <= date3)]
+
+   #logger_df_current = logger_df.between_time(start_date, end_date)
+
+
+   #print((logger_df["Date"] >= start_date) & (logger_df["Date"] <= end_date))
+
+   # print("current time log", logger_df_current)
 
    # creates new dataframe for only dates needed to be filled in
    
-   # logger_df_current = logger_df.index.get_loc[(logger_df["Date"] >= start_date_dt) & (logger_df["Date"] =< end_date_dt)]
+   '''
+   for index in range(0, len(logger_df)):
+      logger_df_current = logger_df.index.get_loc[(logger_df.loc[index, "Date"] >= start_date) & (logger_df["Date"] <= end_date)]
 
    current_index_list = logger_df_current.index.to_list()
-
    print(logger_df_current)
-   print(current_index_list)
+   '''
+
+   # print(logger_df_current)
+   # print(current_index_list)
    # date interval checker
    # if date is in-between start and end interval, inputs values
-   for index in current_index_list:
+   for index in valid_date_index_list:
       date = logger_df.loc[index, "Date"]
       time = logger_df.loc[index, "TimeWaterCollection"]
       
@@ -196,9 +256,7 @@ def castawayRetriever (file_logger_input, start_date, end_date):
                logger_df.at[index, "Depth_4"] = round(castawayFileChooser(date, label4, time)[0], 3)
    print(logger_df)
    logger_df.to_csv("test_filler.csv")
-
-   
    return logger_df
    
-castawayRetriever("Field_LOG - Field_LOG.csv", "05-08-2021", "11-30-2022")
+castawayRetriever("Field_LOG - Field_LOG.csv", "05-11-2021", "11-30-2022")
    
