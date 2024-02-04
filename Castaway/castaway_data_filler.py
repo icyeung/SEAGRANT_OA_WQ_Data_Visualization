@@ -27,14 +27,14 @@ import datetime
 # Bottom or surface sample
 def labelDecoder(label_name):
    label_split = label_name.split("-")
-   print(label_split)
+   # print(label_split)
    depth_code = label_split[1]
-   print(depth_code)
+   # print(depth_code)
    if depth_code[0] == "d":
       depth_translated = "bottom"
    elif depth_code[0] == "s":
       depth_translated = "surface"
-   print(depth_translated)
+   # print(depth_translated)
    return depth_translated
 
 # Chooses appropriate castaway file and returns list with depth
@@ -48,12 +48,25 @@ def castawayFileChooser(date, label, collection_time):
    filetime_list = []
    filetime_conv_list = []
    for file in os.listdir("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data"):
-      print("file in directory:", file)
+      #print("file in directory:", file)
       breakdown = file.split("_")
-      print(breakdown)
-      if date in breakdown:
+      breakdown1 = breakdown[1]
+      mf, df, yf = [int(datef) for datef in breakdown1.split("-")]
+      datef = datetime.datetime(yf, mf, df)
+      #print(date)
+
+      md, dd, yd = [int(ddate) for ddate in date.split("-")]
+      print(md, dd, yd)
+      conv_date = datetime.datetime(yd, md, dd)
+
+
+      #print("breakdown", breakdown)
+      print("equal?", conv_date, datef)
+      if conv_date == datef :
+   
             filename_list.append(file)
-            print(file)
+            print(filename_list)
+            print("hell yeah")
             filetime = file.split("_")[3]
             filetime = filetime.replace(".csv", "")
 
@@ -91,18 +104,18 @@ def castawayFileChooser(date, label, collection_time):
 
             # Chooses file with minimum time difference
             min_time_diff = min(difference_list)
-            print("min time diff", min_time_diff)
+            # print("min time diff", min_time_diff)
             min_time_diff_index = difference_list.index(min_time_diff)
             opt_time = filename_list[min_time_diff_index]
 
             # Opens file with minimum time difference
 
-            print("opt_time", opt_time)
+            # print("opt_time", opt_time)
             with open(os.path.join("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data\\", opt_time)) as castaway_file:
                file = castaway_file.read()
                castaway_file_df = pd.read_csv(os.path.join("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data\\", opt_time), skiprows=28)
 
-            print(castaway_file_df)
+            # print(castaway_file_df)
 
             if label == "bottom":
                # Obtains column with max depth
@@ -136,22 +149,7 @@ def castawayRetriever (file_logger_input, start_date, end_date):
 
    logger_df = pd.read_csv(os.path.join(__location__, file_logger_input))
   
-   print(logger_df["Date"])
-
-   # dates = logger_df["Date"]
-
-   '''
-   if (logger_df.loc[1, "Date"] >= start_date):
-      if (logger_df.loc[1, "Date"] <= end_date):
-         print("True, yay")
-      else:
-         print("boo", end_date)
-   '''
-   '''
-   print("length", len(logger_df))
-   if ((date1 <= date3) & (date1>= date2)):
-      print("yayyyyyyyy")
-   '''
+   # print(logger_df["Date"])
 
 
    # how about this
@@ -174,27 +172,20 @@ def castawayRetriever (file_logger_input, start_date, end_date):
 
    logger_dates_list = logger_df["Date"].tolist()
    for date in logger_dates_list:
-      print(logger_date_index)
-      print("current date", date)
+      # print(logger_date_index)
+      # print("current date", date)
       m1, d1, y1 = [int(date_part) for date_part in date.split("/")]
       date1 = datetime.datetime(y1, m1, d1)
       
       if ((date1 <= date3) & (date1>= date2)):
-         print("yayyyyyyyy")
+         # print("yayyyyyyyy")
          valid_date_list.append(date)
          valid_date_index_list.append(logger_date_index)
       else:
          print("bruh is it working", date)
       logger_date_index += 1
-
-   #logger_df_current = logger_df.loc[(date1 >= date2) and (date1 <= date3)]
-
-   #logger_df_current = logger_df.between_time(start_date, end_date)
-
-
-   #print((logger_df["Date"] >= start_date) & (logger_df["Date"] <= end_date))
-
-   # print("current time log", logger_df_current)
+   
+   # print("list of indices", valid_date_index_list)
 
    # creates new dataframe for only dates needed to be filled in
    
@@ -210,7 +201,9 @@ def castawayRetriever (file_logger_input, start_date, end_date):
    # print(current_index_list)
    # date interval checker
    # if date is in-between start and end interval, inputs values
+   print("index list", valid_date_index_list)
    for index in valid_date_index_list:
+      print ("current index", index)
       date = logger_df.loc[index, "Date"]
       time = logger_df.loc[index, "TimeWaterCollection"]
       
@@ -219,8 +212,8 @@ def castawayRetriever (file_logger_input, start_date, end_date):
          if pd.isnull(logger_df.loc[index, "Depth_1"]):
             date = date.replace("/", "-")
             print("new date", date)
-            print(label1)
-            print("list", castawayFileChooser(date, label1, time))
+            #print(label1)
+            #print("list1", castawayFileChooser(date, label1, time))
             if castawayFileChooser(date, label1, time) != []:
                logger_df.at[index, "Depth_1"] = round(castawayFileChooser(date, label1, time)[0], 3)
       
@@ -228,9 +221,9 @@ def castawayRetriever (file_logger_input, start_date, end_date):
          label2 = labelDecoder(logger_df.loc[index, "Label_2"])
          if pd.isnull(logger_df.loc[index, "Depth_2"]):
             date = date.replace("/", "-")
-            print("new date", date)
-            print(label2)
-            print("list", castawayFileChooser(date, label2, time))
+            #print("new date", date)
+            #print(label2)
+            #print("list2", castawayFileChooser(date, label2, time))
             if castawayFileChooser(date, label2, time) != []:
                logger_df.at[index, "Depth_2"] = round(castawayFileChooser(date, label2, time)[0], 3)
 
@@ -238,25 +231,25 @@ def castawayRetriever (file_logger_input, start_date, end_date):
          label3 = labelDecoder(logger_df.loc[index, "Label_3"])
          if pd.isnull(logger_df.loc[index, "Depth_3"]):
             date = date.replace("/", "-")
-            print("new date", date)
-            print(label3)
-            print("list", castawayFileChooser(date, label3, time))
+            #print("new date", date)
+            #print(label3)
+            #print("list3", castawayFileChooser(date, label3, time))
             if castawayFileChooser(date, label3, time) != []:
                logger_df.at[index, "Depth_1"] = round(castawayFileChooser(date, label3, time)[0], 3)
 
       if not(pd.isnull(logger_df.loc[index, "Label_4"])):
          label4 = labelDecoder(logger_df.loc[index, "Label_4"])
-         print(label4)
+         #print(label4)
          if pd.isnull(logger_df.loc[index, "Depth_4"]):
             date = date.replace("/", "-")
-            print("new date", date)
-            print(label4)
-            print("list", castawayFileChooser(date, label4, time))
+            #print("new date", date)
+            #print(label4)
+            #print("list4", castawayFileChooser(date, label4, time))
             if castawayFileChooser(date, label4, time) != []:
                logger_df.at[index, "Depth_4"] = round(castawayFileChooser(date, label4, time)[0], 3)
-   print(logger_df)
+   #print(logger_df)
    logger_df.to_csv("test_filler.csv")
    return logger_df
    
-castawayRetriever("Field_LOG - Field_LOG.csv", "05-11-2021", "11-30-2022")
+castawayRetriever("Field_LOG - Field_LOG.csv", "05-07-2021", "12-01-2022")
    

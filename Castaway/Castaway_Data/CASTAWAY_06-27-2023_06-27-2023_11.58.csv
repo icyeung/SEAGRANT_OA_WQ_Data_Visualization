@@ -1,0 +1,34 @@
+% Device,11B100023
+% File name,11B100023_20230627_155822
+% Cast time (UTC),2023-06-27 15:58:22
+% Cast time (local),2023-06-27 11:58:22
+% Sample type,Cast
+% Cast data,Processed
+% Location source,Manual
+% Default latitude,32
+% Default altitude,0
+% Start latitude,
+% Start longitude,
+% Start altitude,
+% Start GPS horizontal error(Meter),
+% Start GPS vertical error(Meter),
+% Start GPS number of satellites,
+% End latitude,
+% End longitude,
+% End altitude,
+% End GPS horizontal error(Meter),
+% End GPS vertical error(Meter),
+% End GPS number of satellites,
+% Cast duration (Seconds),72.8
+% Samples per second,5
+% Electronics calibration date,0001-01-01
+% Conductivity calibration date,2011-02-25
+% Temperature calibration date,2011-02-25
+% Pressure calibration date,2011-02-25
+% 
+Pressure (Decibar),Depth (Meter),Temperature (Celsius),Conductivity (MicroSiemens per Centimeter),Specific conductance (MicroSiemens per Centimeter),Salinity (Practical Salinity Scale),Sound velocity (Meters per Second),Density (Kilograms per Cubic Meter)
+0.15,0.15066115541680125,22.404708490223303,37135.59531760127,39168.678070512848,24.906770821083647,1516.8751964518974,1016.4624171883876
+0.44999999999999996,0.45198838629709009,22.41524899355678,37087.038482944605,39108.766979146661,24.864622398288365,1516.8624059136364,1016.4290612212659
+0.74999999999999989,0.7533239666610495,22.407726352660017,37035.060451943238,39060.152533412125,24.830193791414526,1516.8097288944462,1016.4063945799155
+1.05,1.0546934196725168,22.400233614529323,36657.3125222687,38667.860606316026,24.553859618837947,1516.4931271908588,1016.2009873165481
+1.3146771284250107,1.3206022037780221,22.400342490565134,36702.786850608405,38715.740142504204,24.58747958022634,1516.5345326118552,1016.2275172366241
