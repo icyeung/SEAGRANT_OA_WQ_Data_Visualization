@@ -6,22 +6,15 @@ from decimal import Decimal
 import datetime
 
 # how should this thing work
-# you input field log file (has a set format)
-# field log should be placed next to program for ease of access
-# program looks through dates in water collection date column
-# if date is between start and end date, then the following would apply
-# on the current date in the field log, looks for castaway file with that same date
-# if date is not possible, then will skip date entry in field log and print the date skipped
-# if date is possible, then the appropriate depths will be recorded based on bottle label
-# checks bottle string for depth indicator word
-# bottom = deepest depth - 0.15m
-# mid = middle depth measurement
-# top = 0.15m
-# shallow = middle depth measurement
-# salinity and temperature measurements are recorded
-# can be done by using column index
-# use dataframe if possible
-# program goes through table line by line
+# Input: Castaway Files, Field log, date parameter
+# Output: Table with Sample #, Bottle Label, Sampling Date, Actual Depth, Salinity, Temperature, Date Processed (empty), Bottle Cleaned (empty), Observations (empty)
+# how to do this
+# dataframe with all appropriate columns is created
+# set sample number equal to index number
+# for each date in the logger that fits the date parameter
+# inputs sampling date into "Sampling Date"
+# 
+
 
 # Decodes bottle label
 # Bottom or surface sample
@@ -47,6 +40,7 @@ def castawayFileChooser(date, label, collection_time):
    filename_list = []
    filetime_list = []
    filetime_conv_list = []
+   used_files = []
    for file in os.listdir("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data"):
       #print("file in directory:", file)
       breakdown = file.split("_")
@@ -106,14 +100,14 @@ def castawayFileChooser(date, label, collection_time):
             min_time_diff = min(difference_list)
             # print("min time diff", min_time_diff)
             min_time_diff_index = difference_list.index(min_time_diff)
-            opt_time = filename_list[min_time_diff_index]
-
+            opt_time_file = filename_list[min_time_diff_index]
+            used_files.append(opt_time_file)
             # Opens file with minimum time difference
 
             # print("opt_time", opt_time)
-            with open(os.path.join("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data\\", opt_time)) as castaway_file:
+            with open(os.path.join("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data\\", opt_time_file)) as castaway_file:
                file = castaway_file.read()
-               castaway_file_df = pd.read_csv(os.path.join("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data\\", opt_time), skiprows=28)
+               castaway_file_df = pd.read_csv(os.path.join("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data\\", opt_time_file), skiprows=28)
 
             # print(castaway_file_df)
 
@@ -187,7 +181,15 @@ def castawayRetriever (file_logger_input, start_date, end_date):
    
    # print("list of indices", valid_date_index_list)
 
+   # creates new dataframe for only dates needed to be filled in
+   
+   '''
+   for index in range(0, len(logger_df)):
+      logger_df_current = logger_df.index.get_loc[(logger_df.loc[index, "Date"] >= start_date) & (logger_df["Date"] <= end_date)]
 
+   current_index_list = logger_df_current.index.to_list()
+   print(logger_df_current)
+   '''
 
    # print(logger_df_current)
    # print(current_index_list)
@@ -243,5 +245,4 @@ def castawayRetriever (file_logger_input, start_date, end_date):
    logger_df.to_csv("test_filler.csv")
    return logger_df
    
-castawayRetriever("Field_LOG - Field_LOG.csv", "05-07-2021", "12-01-2022")
-   
+castawayRetriever("test_filler.csv", "05-07-2021", "12-01-2022")
