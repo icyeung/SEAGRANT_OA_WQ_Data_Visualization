@@ -244,4 +244,3 @@ def castawayRetriever (file_logger_input, start_date, end_date):
    return logger_df
    
 castawayRetriever("Field_LOG - Field_LOG.csv", "05-07-2021", "12-01-2022")
-   
