@@ -5,23 +5,24 @@ import csv
 from decimal import Decimal
 import datetime
 
-# how should this thing work
-# you input field log file (has a set format)
-# field log should be placed next to program for ease of access
-# program looks through dates in water collection date column
-# if date is between start and end date, then the following would apply
-# on the current date in the field log, looks for castaway file with that same date
-# if date is not possible, then will skip date entry in field log and print the date skipped
-# if date is possible, then the appropriate depths will be recorded based on bottle label
-# checks bottle string for depth indicator word
-# bottom = deepest depth - 0.15m
-# mid = middle depth measurement
-# top = 0.15m
-# shallow = middle depth measurement
-# salinity and temperature measurements are recorded
-# can be done by using column index
-# use dataframe if possible
-# program goes through table line by line
+# Input: base table with bottle labels & dates
+# Output: Table with each row being a bottle from the base table
+
+# for name in file list, keep track of index for name
+# use index to retrieve the date_table
+# need name decoder to break down by -
+# keeps the first part as station
+# second part will be the location of sample
+# need to map the location name to the depth letter
+# surface = A
+# middle = C
+# bottom = E
+# break down "PROF_DATE_TIME_LOCAL" into date and time
+# use date to check
+# check conditions of "STAT_ID" == station name, "ORDERED_DEPTH_CODE" == depth letter, and break_down("PROF_DATE_TIME_LOCAL") == date_table
+# condition = df[parameters].index
+# if conditions do not fit, delete line using df.drop(condition, inplace = True)
+
 
 # Decodes bottle label
 # Bottom or surface sample
@@ -32,6 +33,8 @@ def labelDecoder(label_name):
    # print(depth_code)
    if depth_code[0] == "d":
       depth_translated = "bottom"
+   if depth_code[0] == "m":
+      depth_translated = "middle"
    elif depth_code[0] == "s":
       depth_translated = "surface"
    # print(depth_translated)
@@ -59,7 +62,6 @@ def castawayFileChooser(date, label, collection_time):
       print(md, dd, yd)
       conv_date = datetime.datetime(yd, md, dd)
 
-
       #print("breakdown", breakdown)
       print("equal?", conv_date, datef)
       if conv_date == datef :
@@ -77,11 +79,7 @@ def castawayFileChooser(date, label, collection_time):
             print(filetime)
             filetime_list.append(filetime)
             print(filetime_list)
-   
-   # for filename in glob.glob(directory + str(date)):
-      #filetime_list = []
-      #print(filename)
-      #filetime = filename.split("_")[3]
+
    
             # File time is converted from hour.min to float
             filetime_hour = int(float(filetime))
@@ -131,6 +129,8 @@ def castawayFileChooser(date, label, collection_time):
                output_list.append(max_depth-0.5)
                # output_list.append(max_depth_temp)
                # output_list.append(max_depth_sal)
+            if label == "middle":
+               print("get depth from MWRA Data")
             elif label == "surface":
                output_list.append(0.5)
 
@@ -138,7 +138,7 @@ def castawayFileChooser(date, label, collection_time):
 
 
 
-def castawayRetriever (file_logger_input, start_date, end_date):
+def MWRARetriever (bottle_inventory_input, mwra_data):
 
    # Makes start and end dates datetime objects to be used in date interval checker
    # start_date_dt = datetime.datetime.strptime(start_date, '%m-%d-%Y')
@@ -146,9 +146,23 @@ def castawayRetriever (file_logger_input, start_date, end_date):
 
    # Used to find location of specified file within Python code folder
    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+   folder = "MWRA_Data"
 
-   logger_df = pd.read_csv(os.path.join(__location__, file_logger_input))
+   data_location = os.path.join(__location__, folder)
+
+   bottle_name_df = pd.read_csv(os.path.join(__location__, bottle_inventory_input))
+
+   mwra_file_df = pd.read_csv(os.path.join(data_location, mwra_data))
   
+   bottle_list_index = 0
+   bottle_name_list = bottle_name_df["Bottle Label"].tolist()
+   bottle_date_list = bottle_name_df["Sampling Date"].tolist()
+
+   for name in bottle_name_list:
+      label = labelDecoder(name)
+      logger_date_index += 1
+
+   
    # print(logger_df["Date"])
 
 
@@ -193,54 +207,9 @@ def castawayRetriever (file_logger_input, start_date, end_date):
    # print(current_index_list)
    # date interval checker
    # if date is in-between start and end interval, inputs values
-   print("index list", valid_date_index_list)
-   for index in valid_date_index_list:
-      print ("current index", index)
-      date = logger_df.loc[index, "Date"]
-      time = logger_df.loc[index, "TimeWaterCollection"]
-      
-      if not(pd.isnull(logger_df.loc[index, "Label_1"])):
-         label1 = labelDecoder(logger_df.loc[index, "Label_1"])
-         if pd.isnull(logger_df.loc[index, "Depth_1"]):
-            date = date.replace("/", "-")
-            print("new date", date)
-            #print(label1)
-            #print("list1", castawayFileChooser(date, label1, time))
-            if castawayFileChooser(date, label1, time) != []:
-               logger_df.at[index, "Depth_1"] = round(castawayFileChooser(date, label1, time)[0], 3)
-      
-      if not(pd.isnull(logger_df.loc[index, "Label_2"])):
-         label2 = labelDecoder(logger_df.loc[index, "Label_2"])
-         if pd.isnull(logger_df.loc[index, "Depth_2"]):
-            date = date.replace("/", "-")
-            #print("new date", date)
-            #print(label2)
-            #print("list2", castawayFileChooser(date, label2, time))
-            if castawayFileChooser(date, label2, time) != []:
-               logger_df.at[index, "Depth_2"] = round(castawayFileChooser(date, label2, time)[0], 3)
-
-      if not(pd.isnull(logger_df.loc[index, "Label_3"])):
-         label3 = labelDecoder(logger_df.loc[index, "Label_3"])
-         if pd.isnull(logger_df.loc[index, "Depth_3"]):
-            date = date.replace("/", "-")
-            #print("new date", date)
-            #print(label3)
-            #print("list3", castawayFileChooser(date, label3, time))
-            if castawayFileChooser(date, label3, time) != []:
-               logger_df.at[index, "Depth_1"] = round(castawayFileChooser(date, label3, time)[0], 3)
-
-      if not(pd.isnull(logger_df.loc[index, "Label_4"])):
-         label4 = labelDecoder(logger_df.loc[index, "Label_4"])
-         #print(label4)
-         if pd.isnull(logger_df.loc[index, "Depth_4"]):
-            date = date.replace("/", "-")
-            #print("new date", date)
-            #print(label4)
-            #print("list4", castawayFileChooser(date, label4, time))
-            if castawayFileChooser(date, label4, time) != []:
-               logger_df.at[index, "Depth_4"] = round(castawayFileChooser(date, label4, time)[0], 3)
+   
    #print(logger_df)
    logger_df.to_csv("test_filler.csv")
    return logger_df
    
-castawayRetriever("Field_LOG - Field_LOG.csv", "05-07-2021", "12-01-2022")
+MWRARetriever("base_table - Sheet1.csv", "01-07-2021", "12-10-2022")

@@ -10,7 +10,7 @@
 8,9/28/2021,"41.657, -70.1157",West Harwich,pH Sensor,,,,Castaway,,,,,,,,,,,,,,,,Y,13:00,,3,HAR-d1,2.606,HAR-d2,2.606,HAR-s,0.5,,
 9,12/10/2021,"41.657, -70.1158",West Harwich,pH Sensor,,,,Castaway,,,,,,,,,,,,,,,,Y,10:00,,3,HAR-d1,2.115,HAR-d2,2.115,HAR-s,0.5,,
 10,12/10/2021,"41.6459, -70.6366",North Falmouth,pCO2,,,,Castaway,,,,,,,,,,,,,,,,Y,12:30,,2,NFal-d1,1.0,NFal-d2,1.0,,,,
-11,5/17/2022,"41.657, -70.1159",West Harwich,pH Sensor,,,,Castaway,,,,,,,,,,,,,,,,Y,9:30,,3,HAR-s,2.429,HAR-d1,2.429,HAR-d2,,,
+11,5/17/2022,"41.657, -70.1159",West Harwich,pH Sensor,,,,Castaway,,,,,,,,,,,,,,,,Y,9:30,,3,HAR-s,0.5,HAR-d1,2.429,HAR-d2,2.429,,
 12,5/17/2022,,Pocasset,pCO2,,,,Castaway,,,,,,,,,,,,,,,,Y,11:00,,2,POC-s1,1.5,POC-s2,1.5,,,,
 13,6/2/2022,,Pocasset,pCO2,,,,Castaway,,,,,,,,,,,,,,,,Y,10:20,,2,POC-s1,1.5,POC-s2,1.5,,,,
 14,6/2/2022,"41.657, -70.1160",West Harwich,pH Sensor,,,,Castaway,,,,,,,,,,,,,,,,Y,14:15,,3,HAR-d1,2.396,HAR-d2,2.396,HAR-s,0.5,,
