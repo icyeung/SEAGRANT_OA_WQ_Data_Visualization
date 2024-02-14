@@ -20,6 +20,9 @@ import datetime
 # break down "PROF_DATE_TIME_LOCAL" into date and time
 # use date to check
 # check conditions of "STAT_ID" == station name, "ORDERED_DEPTH_CODE" == depth letter, and break_down("PROF_DATE_TIME_LOCAL") == date_table
+# use concat to merge row to row in bottle name df
+
+
 # condition = df[parameters].index
 # if conditions do not fit, delete line using df.drop(condition, inplace = True)
 
