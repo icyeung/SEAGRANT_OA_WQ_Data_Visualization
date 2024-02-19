@@ -116,8 +116,6 @@ def castawayFileChooser(date, label, collection_time):
 
    return(output_list)
 
-
-
 def castawayRetriever (file_logger_input, start_date, end_date):
 
    # Makes start and end dates datetime objects to be used in date interval checker

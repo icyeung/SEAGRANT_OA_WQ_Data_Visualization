@@ -22,13 +22,23 @@ import datetime
 # check conditions of "STAT_ID" == station name, "ORDERED_DEPTH_CODE" == depth letter, and break_down("PROF_DATE_TIME_LOCAL") == date_table
 # use concat to merge row to row in bottle name df
 
+# if cannot find merging parameter, make row of new dataframe null
+# df.loc[len(df)] = pd.Series(dtype='float64')
+
+# new_row = df.loc[1].copy()
+# new_df = new_df._append(new_row)
 
 # condition = df[parameters].index
 # if conditions do not fit, delete line using df.drop(condition, inplace = True)
 
+# Deciphers station from label
+def stationDecoder(label_name):
+   label_split = label_name.split("-")
+   return label_split[0]
+
 
 # Decodes bottle label
-# Bottom or surface sample
+# Bottom or surface or middle sample
 def labelDecoder(label_name):
    label_split = label_name.split("-")
    # print(label_split)
@@ -36,110 +46,35 @@ def labelDecoder(label_name):
    # print(depth_code)
    if depth_code[0] == "d":
       depth_translated = "bottom"
-   if depth_code[0] == "m":
+   elif depth_code[0] == "m":
       depth_translated = "middle"
    elif depth_code[0] == "s":
       depth_translated = "surface"
    # print(depth_translated)
    return depth_translated
+print(labelDecoder("NO7-m2"))
+def MWRAlabelDecoder(depth_code):
+   label_translated = ""
+   if depth_code == "A":
+      label_translated = "surface"
+   elif depth_code == "C":
+      label_translated = "middle"
+   elif depth_code == "E":
+      label_translated = "bottom"
+   elif label_translated == "":
+      label_translated = "not it"
+   return label_translated
 
-# Chooses appropriate castaway file and returns list with depth
-def castawayFileChooser(date, label, collection_time):
-   # Return list [depth]
-   output_list = []
+def MWRAdateConverter(datetime):
+   date = (datetime.split(" "))[0]
+   return date
 
-   __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
-   filename_list = []
-   filetime_list = []
-   filetime_conv_list = []
-   for file in os.listdir("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data"):
-      #print("file in directory:", file)
-      breakdown = file.split("_")
-      breakdown1 = breakdown[1]
-      mf, df, yf = [int(datef) for datef in breakdown1.split("-")]
-      datef = datetime.datetime(yf, mf, df)
-      #print(date)
-
-      md, dd, yd = [int(ddate) for ddate in date.split("-")]
-      print(md, dd, yd)
-      conv_date = datetime.datetime(yd, md, dd)
-
-      #print("breakdown", breakdown)
-      print("equal?", conv_date, datef)
-      if conv_date == datef :
-   
-            filename_list.append(file)
-            print(filename_list)
-            print("hell yeah")
-            filetime = file.split("_")[3]
-            filetime = filetime.replace(".csv", "")
-
-            if len(filetime) > 5:
-               print('yay')
-               filetime = filetime[:-3]
-
-            print(filetime)
-            filetime_list.append(filetime)
-            print(filetime_list)
-
-   
-            # File time is converted from hour.min to float
-            filetime_hour = int(float(filetime))
-            filetime_minute = Decimal(float(filetime))
-            filetime_min_percent = round(filetime_minute/60, 4)
-            filetime_conv = float(filetime_hour + filetime_min_percent)
-            filetime_conv_list.append(filetime_conv)
-
-            # Collection time is converted from hour:min to float
-            collection_time_hour = int(collection_time.split(":")[0])
-            collection_time_minute = int(collection_time.split(":")[1])
-            collection_time_min_percent = round(collection_time_minute/60, 4)
-            collection_time_conv = float(collection_time_hour + collection_time_min_percent)
-
-            # Finds difference in collection time and time of file to look for which file to take info from
-            for time in filetime_conv_list:
-               difference_list = []
-               difference = abs(float(collection_time_conv-time))         
-               difference_list.append(difference)
-
-            # Chooses file with minimum time difference
-            min_time_diff = min(difference_list)
-            # print("min time diff", min_time_diff)
-            min_time_diff_index = difference_list.index(min_time_diff)
-            opt_time = filename_list[min_time_diff_index]
-
-            # Opens file with minimum time difference
-
-            # print("opt_time", opt_time)
-            with open(os.path.join("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data\\", opt_time)) as castaway_file:
-               file = castaway_file.read()
-               castaway_file_df = pd.read_csv(os.path.join("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Castaway\\Castaway_Data\\", opt_time), skiprows=28)
-
-            # print(castaway_file_df)
-
-            if label == "bottom":
-               # Obtains column with max depth
-               max_depth = castaway_file_df["Depth (Meter)"].max()
-               max_depth_index = castaway_file_df["Depth (Meter)"].idxmax()
-               print("max depth", max_depth)
-               #max_depth_index = castaway_file_df.query("`Depth (Meter)` == max_depth").index[0]
-               print("max depth index", max_depth_index)
-               # max_depth_temp = castaway_file_df.loc[max_depth_index, "Temperature (Celsius)"]
-               # print("max depth temp", max_depth_temp)
-               # max_depth_sal = castaway_file_df.loc[max_depth_index, "Salinity (Practical Salinity Scale)"]
-               # print("max depth sal", max_depth_sal)
-               output_list.append(max_depth-0.5)
-               # output_list.append(max_depth_temp)
-               # output_list.append(max_depth_sal)
-            if label == "middle":
-               print("get depth from MWRA Data")
-            elif label == "surface":
-               output_list.append(0.5)
-
-   return(output_list)
-
-
+def dateConverter(date):
+   m1, d1, y1 = [int(date) for date in date.split("/")]
+   if len(str(y1)) == 2:
+      y1 += 2000
+   date_trunc = datetime.datetime(y1, m1, d1)
+   return date_trunc
 
 def MWRARetriever (bottle_inventory_input, mwra_data):
 
@@ -156,63 +91,47 @@ def MWRARetriever (bottle_inventory_input, mwra_data):
    bottle_name_df = pd.read_csv(os.path.join(__location__, bottle_inventory_input))
 
    mwra_file_df = pd.read_csv(os.path.join(data_location, mwra_data))
-  
-   bottle_list_index = 0
-   bottle_name_list = bottle_name_df["Bottle Label"].tolist()
-   bottle_date_list = bottle_name_df["Sampling Date"].tolist()
 
-   for name in bottle_name_list:
-      label = labelDecoder(name)
-      logger_date_index += 1
+   rows_stored_df = pd.DataFrame()
+   rows_stored_df = pd.DataFrame(data=rows_stored_df, columns=mwra_file_df.columns)
+   print(rows_stored_df)
 
-   
-   # print(logger_df["Date"])
+   print("Mwra date", dateConverter(MWRAdateConverter(mwra_file_df.loc[1, "PROF_DATE_TIME_LOCAL"])))
+   print("bottle date", dateConverter(bottle_name_df.loc[0, "Sampling Date"]))
 
+   for indexA in range(0, len(bottle_name_df)):
+      #print("A:", indexA)
+      for indexB in range(0, len(mwra_file_df)):
+        # print("B:", indexB)
+         # checks date
 
-   # how about this
-   # we get list of date column
-   # and then we keep track of index number while subscripting through it
-   # for each date we go through,
-   # the date is converted to datetime object and then comparted using the "yayyyyy" code above
-   # if correct, the index number is added to "current" list
-   # index += 1
-      
-   m2, d2, y2 = [int(date) for date in start_date.split("-")]
-   date2 = datetime.datetime(y2, m2, d2)
+         if (dateConverter(MWRAdateConverter(mwra_file_df.loc[indexB, "PROF_DATE_TIME_LOCAL"])) == dateConverter(bottle_name_df.loc[indexA, "Sampling Date"])):
+            print("yay the date works")
 
-   m3, d3, y3 = [int(date) for date in end_date.split("-")]
-   date3 = datetime.datetime(y3, m3, d3)   
+         if (dateConverter(MWRAdateConverter(mwra_file_df.loc[indexB, "PROF_DATE_TIME_LOCAL"])) == dateConverter(bottle_name_df.loc[indexA, "Sampling Date"])) and (mwra_file_df.loc[indexB, "STAT_ID"] == stationDecoder(bottle_name_df.loc[indexA, "Bottle Label"])) and (MWRAlabelDecoder(mwra_file_df.loc[indexB, "SAMPLE_DEPTH_CODE"]) == labelDecoder(bottle_name_df.loc[indexA, "Bottle Label"])):
+            
+            print("Mwra date", dateConverter(MWRAdateConverter(mwra_file_df.loc[indexB, "PROF_DATE_TIME_LOCAL"])))
+            print("bottle date", dateConverter(bottle_name_df.loc[indexA, "Sampling Date"]))
+         
+            print("Mwra station", mwra_file_df.loc[indexB, "STAT_ID"])
+            print("bottle station", stationDecoder(bottle_name_df.loc[indexA, "Bottle Label"]))
 
-   valid_date_list = []
-   valid_date_index_list = []
-   logger_date_index = 0
+            print("mwra depth", MWRAlabelDecoder(mwra_file_df.loc[indexB, "ORDERED_DEPTH_CODE"]))
+            print("bottle depth", labelDecoder(bottle_name_df.loc[indexA, "Bottle Label"]))
+            
+            
+            new_row = mwra_file_df.loc[indexB].copy()
+            rows_stored_df.loc[indexA] = new_row
+            print("yay")
+            break
+   print(rows_stored_df)
 
-   logger_dates_list = logger_df["Date"].tolist()
-   for date in logger_dates_list:
-      # print(logger_date_index)
-      # print("current date", date)
-      m1, d1, y1 = [int(date_part) for date_part in date.split("/")]
-      date1 = datetime.datetime(y1, m1, d1)
-      
-      if ((date1 <= date3) & (date1>= date2)):
-         # print("yayyyyyyyy")
-         valid_date_list.append(date)
-         valid_date_index_list.append(logger_date_index)
-      else:
-         print("bruh is it working", date)
-      logger_date_index += 1
-   
-   # print("list of indices", valid_date_index_list)
+   output_df = pd.concat([bottle_name_df, rows_stored_df], axis=1)
+   '''
+   if len(bottle_name_df) == len(rows_stored_df):
+      print("maybe it works?")
+   ''' 
+   output_df.to_csv("mwra_filler.csv")
+   return output_df
 
-
-
-   # print(logger_df_current)
-   # print(current_index_list)
-   # date interval checker
-   # if date is in-between start and end interval, inputs values
-   
-   #print(logger_df)
-   logger_df.to_csv("test_filler.csv")
-   return logger_df
-   
-MWRARetriever("base_table - Sheet1.csv", "01-07-2021", "12-10-2022")
+MWRARetriever("base_table - Sheet1.csv", "MWRA_TA_DIC_2017_to_2022.csv")
