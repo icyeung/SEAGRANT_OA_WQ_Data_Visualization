@@ -29,7 +29,7 @@ def labelDecoder(label_name):
    return depth_translated
 
 # Chooses appropriate castaway file and returns list with depth
-def castawayFileChooser(date, label, collection_time):
+def castawayFileChooser(date, label, collection_time, special_case):
    # Return list [depth]
    output_list = []
 
@@ -107,9 +107,24 @@ def castawayFileChooser(date, label, collection_time):
                output_list.append(max_depth_temp)
                output_list.append(max_depth_sal)
 
-            elif label == "surface":
+            
+            elif (label == "surface") and not(special_case):
                output_list.append(0.5)
                surface_depth = 0.5
+               castaway_depths_list = castaway_file_df["Depth (Meter)"]
+               minimum_depth_diff_list = []
+               for depth in castaway_depths_list:
+                  difference_depth = abs(surface_depth-depth)
+                  minimum_depth_diff_list.append(difference_depth)
+               ideal_depth_index = minimum_depth_diff_list.index(min(minimum_depth_diff_list))
+               ideal_depth = castaway_file_df.loc[ideal_depth_index, "Depth (Meter)"]
+               ideal_depth_temp = castaway_file_df.loc[ideal_depth_index, "Temperature (Celsius)"]
+               ideal_depth_sal = castaway_file_df.loc[ideal_depth_index, "Salinity (Practical Salinity Scale)"]
+               output_list.append(ideal_depth_temp)
+               output_list.append(ideal_depth_sal)
+            elif(label == "surface") and (special_case):
+               output_list.append(1.5)
+               surface_depth = 1.5
                castaway_depths_list = castaway_file_df["Depth (Meter)"]
                minimum_depth_diff_list = []
                for depth in castaway_depths_list:
@@ -180,6 +195,11 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
    for index in valid_date_index_list:
       date = logger_df.loc[index, "Date"]
       time = logger_df.loc[index, "TimeWaterCollection"]
+
+      if logger_df.loc[index, "LocationName"] == "Pocasset":
+         station_case = True
+      else:
+         station_case = False
       
       if not(pd.isnull(logger_df.loc[index, "Label_1"])):
          label1 = labelDecoder(logger_df.loc[index, "Label_1"])
@@ -187,11 +207,11 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Label_1"]
          output_df.at[output_index, "Bottle_Number"] = output_index+1
          date = date.replace("/", "-")
-         if castawayFileChooser(date, label1, time) != []:
-            output_df.at[output_index, "Actual_Depth"] = round(castawayFileChooser(date, label1, time)[0], 3)
-         if len(castawayFileChooser(date, label1, time)) == 3:
-            output_df.at[output_index, "Temperature"] = round(castawayFileChooser(date, label1, time)[1], 3)
-            output_df.at[output_index, "Salinity"] = round(castawayFileChooser(date, label1, time)[2], 3)
+         if castawayFileChooser(date, label1, time, station_case) != []:
+            output_df.at[output_index, "Actual_Depth"] = round(castawayFileChooser(date, label1, time, station_case)[0], 3)
+         if len(castawayFileChooser(date, label1, time, station_case)) == 3:
+            output_df.at[output_index, "Temperature"] = round(castawayFileChooser(date, label1, time, station_case)[1], 3)
+            output_df.at[output_index, "Salinity"] = round(castawayFileChooser(date, label1, time, station_case)[2], 3)
          output_index += 1
 
       
@@ -201,11 +221,11 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Label_2"]
          output_df.at[output_index, "Bottle_Number"] = output_index+1
          date = date.replace("/", "-")
-         if castawayFileChooser(date, label2, time) != []:
-            output_df.at[output_index, "Actual_Depth"] = round(castawayFileChooser(date, label2, time)[0], 3)
-         if len(castawayFileChooser(date, label2, time)) == 3:
-            output_df.at[output_index, "Temperature"] = round(castawayFileChooser(date, label2, time)[1], 3)
-            output_df.at[output_index, "Salinity"] = round(castawayFileChooser(date, label2, time)[2], 3)
+         if castawayFileChooser(date, label2, time, station_case) != []:
+            output_df.at[output_index, "Actual_Depth"] = round(castawayFileChooser(date, label2, time, station_case)[0], 3)
+         if len(castawayFileChooser(date, label2, time, station_case)) == 3:
+            output_df.at[output_index, "Temperature"] = round(castawayFileChooser(date, label2, time, station_case)[1], 3)
+            output_df.at[output_index, "Salinity"] = round(castawayFileChooser(date, label2, time, station_case)[2], 3)
          else:
             print("something broke")
             break
@@ -217,11 +237,11 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Label_3"]
          output_df.at[output_index, "Bottle_Number"] = output_index+1
          date = date.replace("/", "-")
-         if castawayFileChooser(date, label3, time) != []:
-            output_df.at[output_index, "Actual_Depth"] = round(castawayFileChooser(date, label3, time)[0], 3)
-         if len(castawayFileChooser(date, label3, time)) == 3:
-            output_df.at[output_index, "Temperature"] = round(castawayFileChooser(date, label3, time)[1], 3)
-            output_df.at[output_index, "Salinity"] = round(castawayFileChooser(date, label3, time)[2], 3)
+         if castawayFileChooser(date, label3, time, station_case) != []:
+            output_df.at[output_index, "Actual_Depth"] = round(castawayFileChooser(date, label3, time, station_case)[0], 3)
+         if len(castawayFileChooser(date, label3, time, station_case)) == 3:
+            output_df.at[output_index, "Temperature"] = round(castawayFileChooser(date, label3, time, station_case)[1], 3)
+            output_df.at[output_index, "Salinity"] = round(castawayFileChooser(date, label3, time, station_case)[2], 3)
          else:
             print("something broke")
             break
@@ -233,17 +253,17 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Label_4"]
          output_df.at[output_index, "Bottle_Number"] = output_index+1
          date = date.replace("/", "-")
-         if castawayFileChooser(date, label4, time) != []:
-            output_df.at[output_index, "Actual_Depth"] = round(castawayFileChooser(date, label4, time)[0], 3)
-         if len(castawayFileChooser(date, label4, time)) == 3:
-            output_df.at[output_index, "Temperature"] = round(castawayFileChooser(date, label4, time)[1], 3)
-            output_df.at[output_index, "Salinity"] = round(castawayFileChooser(date, label4, time)[2], 3)
+         if castawayFileChooser(date, label4, time, station_case) != []:
+            output_df.at[output_index, "Actual_Depth"] = round(castawayFileChooser(date, label4, time, station_case)[0], 3)
+         if len(castawayFileChooser(date, label4, time, station_case)) == 3:
+            output_df.at[output_index, "Temperature"] = round(castawayFileChooser(date, label4, time, station_case)[1], 3)
+            output_df.at[output_index, "Salinity"] = round(castawayFileChooser(date, label4, time, station_case)[2], 3)
          else:
             print("something broke")
             break
          output_index += 1
       
-   output_df.to_csv("test_bottle_filler.csv", index=False)
+   output_df.to_csv("test_bottle_filler_castaway.csv", index=False)
    return logger_df
    
-bottleTableFiller("test_filler.csv", "05-07-2021", "12-01-2022")
+bottleTableFiller("Field_LOG - Field_LOG.csv", "01-01-2022", "12-10-2022")

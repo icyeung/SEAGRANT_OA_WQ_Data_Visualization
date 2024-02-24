@@ -36,7 +36,7 @@ def labelDecoder(label_name):
    return depth_translated
 
 # Chooses appropriate castaway file and returns list with depth
-def castawayFileChooser(date, label, collection_time):
+def castawayFileChooser(date, label, collection_time, special_case):
    output_list = []
 
    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -111,8 +111,10 @@ def castawayFileChooser(date, label, collection_time):
                max_depth = castaway_file_df["Depth (Meter)"].max()
                max_depth_index = castaway_file_df["Depth (Meter)"].idxmax()
                output_list.append(max_depth-0.5)
-            elif label == "surface":
+            elif (label == "surface") and not(special_case):
                output_list.append(0.5)
+            elif(label == "surface") and (special_case):
+               output_list.append(1.5)
 
    return(output_list)
 
@@ -166,34 +168,39 @@ def castawayRetriever (file_logger_input, start_date, end_date):
       print ("current index", index)
       date = logger_df.loc[index, "Date"]
       time = logger_df.loc[index, "TimeWaterCollection"]
+      if logger_df.loc[index, "LocationName"] == "Pocasset":
+         station_case = True
+      else:
+         station_case = False
+
       
       if not(pd.isnull(logger_df.loc[index, "Label_1"])):
          label1 = labelDecoder(logger_df.loc[index, "Label_1"])
          if pd.isnull(logger_df.loc[index, "Depth_1"]):
             date = date.replace("/", "-")
-            if castawayFileChooser(date, label1, time) != []:
-               logger_df.at[index, "Depth_1"] = round(castawayFileChooser(date, label1, time)[0], 3)
+            if castawayFileChooser(date, label1, time, station_case) != []:
+               logger_df.at[index, "Depth_1"] = round(castawayFileChooser(date, label1, time, station_case)[0], 3)
       
       if not(pd.isnull(logger_df.loc[index, "Label_2"])):
          label2 = labelDecoder(logger_df.loc[index, "Label_2"])
          if pd.isnull(logger_df.loc[index, "Depth_2"]):
             date = date.replace("/", "-")
-            if castawayFileChooser(date, label2, time) != []:
-               logger_df.at[index, "Depth_2"] = round(castawayFileChooser(date, label2, time)[0], 3)
+            if castawayFileChooser(date, label2, time, station_case) != []:
+               logger_df.at[index, "Depth_2"] = round(castawayFileChooser(date, label2, time, station_case)[0], 3)
 
       if not(pd.isnull(logger_df.loc[index, "Label_3"])):
          label3 = labelDecoder(logger_df.loc[index, "Label_3"])
          if pd.isnull(logger_df.loc[index, "Depth_3"]):
             date = date.replace("/", "-")
-            if castawayFileChooser(date, label3, time) != []:
-               logger_df.at[index, "Depth_3"] = round(castawayFileChooser(date, label3, time)[0], 3)
+            if castawayFileChooser(date, label3, time, station_case) != []:
+               logger_df.at[index, "Depth_3"] = round(castawayFileChooser(date, label3, time, station_case)[0], 3)
 
       if not(pd.isnull(logger_df.loc[index, "Label_4"])):
          label4 = labelDecoder(logger_df.loc[index, "Label_4"])
          if pd.isnull(logger_df.loc[index, "Depth_4"]):
             date = date.replace("/", "-")
-            if castawayFileChooser(date, label4, time) != []:
-               logger_df.at[index, "Depth_4"] = round(castawayFileChooser(date, label4, time)[0], 3)
+            if castawayFileChooser(date, label4, time, station_case) != []:
+               logger_df.at[index, "Depth_4"] = round(castawayFileChooser(date, label4, time, station_case)[0], 3)
 
    logger_df.to_csv("test_filler.csv")
    return logger_df

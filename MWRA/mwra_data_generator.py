@@ -131,7 +131,7 @@ def MWRARetriever (bottle_inventory_input, mwra_data):
    if len(bottle_name_df) == len(rows_stored_df):
       print("maybe it works?")
    ''' 
-   output_df.to_csv("mwra_filler.csv")
+   output_df.to_csv("mwra_filler_2022.csv")
    return output_df
 
 MWRARetriever("base_table - Sheet1.csv", "MWRA_TA_DIC_2017_to_2022.csv")
