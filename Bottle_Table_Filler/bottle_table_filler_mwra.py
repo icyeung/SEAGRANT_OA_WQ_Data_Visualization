@@ -60,7 +60,7 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
          print("bruh is it working", date)
       logger_date_index += 1
 
-   output_df["Sampling Date"] = valid_date_list
+   output_df["Sampling_Date"] = valid_date_list
    output_index = 0
 
    output_df["Bottle_Label"] = output_df["Bottle_Label"].astype(str)
