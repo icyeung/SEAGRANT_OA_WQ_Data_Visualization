@@ -134,7 +134,7 @@ pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get
 
 
 # Saves dataframes to csv files
-pco2DF.to_excel("pco2_Data_Compiled.xlsx")
+pco2DF.to_excel("pco2_Total_Data_Compiled_Annual.xlsx")
 
 pco2DF['Date'] = pd.to_datetime(pco2DF['Date'])
 

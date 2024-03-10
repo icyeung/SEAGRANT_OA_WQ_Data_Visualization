@@ -185,14 +185,14 @@ for dateValue in extractedData.get("Date"):
 
 
 # Creates dataframes of data grapher without outliers
-pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"),
+pHDF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"),
                        "pH": extractedData.get("pH"), "Battery": extractedData.get("Battery")})
 
 
 # Saves dataframes to csv files
-pco2DF.to_excel("pco2_Data_Compiled.xlsx")
+pHDF.to_csv("pH_Data_Compiled.csv")
 
-pco2DF['Date'] = pd.to_datetime(pco2DF['Date'])
+pHDF['Date'] = pd.to_datetime(pHDF['Date'])
 
 
 # Histogram of CO2 measurements
@@ -231,7 +231,7 @@ def grapher(time, tempC, pH, batteryV, name):
     
 
     
-    # CO2 plot
+    # pH plot
     ax2 = ax1.twinx()
     p2 = ax2.plot(x, py, color = 'c', linestyle = 'solid', label = "pH")
     ax2.set_ylabel("pH")
