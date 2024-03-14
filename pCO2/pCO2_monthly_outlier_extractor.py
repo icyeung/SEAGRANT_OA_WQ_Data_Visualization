@@ -46,7 +46,7 @@ xDataTrueNO = []    # No outlier times
 
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pco2_2023_updated_missing_latest_1.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pCO2_2023_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
