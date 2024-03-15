@@ -7,28 +7,52 @@ from datetime import datetime as dt
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 
-# PCO2
-# get one file of pco2 processed data for each year
+# pH
+# get one file of pH processed data for each year
 # input each year as a series
-# plot temperature and co2
-# potential issues: need to figure out how to make the x axis equal, graph on same y axis scale
+# plot temperature and pH
+# potential issues: need to figure out how to make the x axis equal, graoh on same y axis scale
 
 
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-pco2_2021_data = pd.read_csv(os.path.join(__location__, "pco2_2021_Total_Data_Compiled_Monthly.xlsx"))
+pH_2019_data = pd.read_csv(os.path.join(__location__, "pH_Data_2019_Compiled_Monthly.csv"))
 
-pco2_2022_data = pd.read_csv(os.path.join(__location__, "pco2_2022_Total_Data_Compiled_Monthly.xlsx"))
+pH_2020_data = pd.read_csv(os.path.join(__location__, "pH_Data_2020_Compiled_Monthly.csv"))
 
-pco2_2023_data = pd.read_csv(os.path.join(__location__, "pco2_2023_Total_Data_Compiled_Monthly.xlsx"))
+pH_2021_data = pd.read_csv(os.path.join(__location__, "pH_Data_2021_Compiled_Monthly.csv"))
+
+pH_2022_data = pd.read_csv(os.path.join(__location__, "pH_Data_2022_Compiled_Monthly.csv"))
+
+pH_2023_data = pd.read_csv(os.path.join(__location__, "pH_Data_2023_Compiled_Monthly.csv"))
 
 
+data_2019 = pH_2019_data["pH"]
+temp_2019 = pH_2019_data["Temperature (C)"]
+date_2019 = pH_2019_data["Date"]
+date_2019_revised = []
+for date in date_2019:
+    date_no_year = '{:%m-%d %H:%M:%S}'.format(dt.strptime(date, '%Y-%m-%d %H:%M:%S'))
+    date_no_year = str(date_no_year)
+    dt_date_no_year = dt.strptime(date_no_year, "%m-%d %H:%M:%S")
+    date_2019_revised.append(dt_date_no_year)
 
 
-data_2021 = pco2_2021_data["CO2"]
-temp_2021 = pco2_2021_data["Temperature (C)"]
-date_2021 = pco2_2021_data["Date"]
+data_2020 = pH_2020_data["pH"]
+temp_2020 = pH_2020_data["Temperature (C)"]
+date_2020 = pH_2020_data["Date"]
+date_2020_revised = []
+for date in date_2020:
+    date_no_year = '{:%m-%d %H:%M:%S}'.format(dt.strptime(date, '%Y-%m-%d %H:%M:%S'))
+    date_no_year = str(date_no_year)
+    dt_date_no_year = dt.strptime(date_no_year, "%m-%d %H:%M:%S")
+    date_2020_revised.append(dt_date_no_year)
+
+
+data_2021 = pH_2021_data["pH"]
+temp_2021 = pH_2021_data["Temperature (C)"]
+date_2021 = pH_2021_data["Date"]
 date_2021_revised = []
 for date in date_2021:
     date_no_year = '{:%m-%d %H:%M:%S}'.format(dt.strptime(date, '%Y-%m-%d %H:%M:%S'))
@@ -37,10 +61,9 @@ for date in date_2021:
     date_2021_revised.append(dt_date_no_year)
 
 
-
-data_2022 = pco2_2022_data["CO2"]
-temp_2022 = pco2_2022_data["Temperature (C)"]
-date_2022 = pco2_2022_data["Date"]
+data_2022 = pH_2022_data["pH"]
+temp_2022 = pH_2022_data["Temperature (C)"]
+date_2022 = pH_2022_data["Date"]
 date_2022_revised = []
 for date in date_2022:
     date_no_year = '{:%m-%d %H:%M:%S}'.format(dt.strptime(date, '%Y-%m-%d %H:%M:%S'))
@@ -49,10 +72,9 @@ for date in date_2022:
     date_2022_revised.append(dt_date_no_year)
 
 
-
-data_2023 = pco2_2023_data["CO2"]
-temp_2023 = pco2_2023_data["Temperature (C)"]
-date_2023 = pco2_2023_data["Date"]
+data_2023 = pH_2023_data["pH"]
+temp_2023 = pH_2023_data["Temperature (C)"]
+date_2023 = pH_2023_data["Date"]
 date_2023_revised = []
 for date in date_2023:
     date_no_year = '{:%m-%d %H:%M:%S}'.format(dt.strptime(date, '%Y-%m-%d %H:%M:%S'))
@@ -63,9 +85,11 @@ for date in date_2023:
 
     # Salinity plot
 fig, ax1 = plt.subplots(figsize=(14,7))
-p1a = ax1.plot(date_2021_revised, data_2021, color = 'b', linestyle = 'solid', label = '2021')
-p1b = ax1.plot(date_2022_revised, data_2022, color = "g", linestyle = 'solid', label = '2022')
-p1c = ax1.plot(date_2023_revised, data_2023, color = "r", linestyle = 'solid', label = '2023')
+p1a = ax1.plot(date_2019_revised, data_2019, color = 'r', linestyle = 'solid', label = '2019')
+p1b = ax1.plot(date_2020_revised, data_2020, color = 'g', linestyle = 'solid', label = '2020')
+p1c = ax1.plot(date_2021_revised, data_2021, color = 'b', linestyle = 'solid', label = '2021')
+p1d = ax1.plot(date_2022_revised, data_2022, color = "m", linestyle = 'solid', label = '2022')
+p1e = ax1.plot(date_2023_revised, data_2023, color = "c", linestyle = 'solid', label = '2023')
 
     # Sets x-axis as Dates
 date_form = DateFormatter("%m-%d")
@@ -91,7 +115,14 @@ ax2.set_ylabel("Temperature (C)")
     # Sets title, adds a grid, and shows legend
 plt.tight_layout()
 plt.subplots_adjust(top=0.95)
-plt.title("pCO2 (2021-2023)", loc='center')
+plt.title("pH (2019-2023)", loc='center')
 plt.grid(True)
-plt.legend(handles=p1a+p1b+p1c)
+plt.legend(handles=p1a+p1b+p1c+p1d+p1e)
+
+
+my_path = os.path.dirname(os.path.abspath(__file__))
+
+# Saves without outliers graph to specified name in folder
+plt.savefig(my_path + '\\pH_2019_2023_Graph_No_Outliers.png')
+
 plt.show()

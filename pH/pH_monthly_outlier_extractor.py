@@ -65,7 +65,7 @@ def is_float(string):
 
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pH_2021_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'pH_2023_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
@@ -171,13 +171,13 @@ def timeConverter (date):
 # Original Data    
 for dateValue in xData:
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2022)
+    trueDate = dateValue.replace(year = 2023)
     xDataTrueO.append(trueDate)
 
 # Data with no outliers
 for dateValue in extractedData.get("Date"):
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2022)
+    trueDate = dateValue.replace(year = 2023)
     xDataTrueNO.append(trueDate)
 
 
@@ -190,7 +190,7 @@ pHDF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("
 
 
 # Saves dataframes to csv files
-pHDF.to_csv("pH_Data_Compiled.csv")
+pHDF.to_csv("pH_Data_2023_Compiled.csv")
 
 pHDF['Date'] = pd.to_datetime(pHDF['Date'])
 
@@ -264,25 +264,26 @@ def grapher(time, tempC, pH, batteryV, name):
 
 # Plots graph without outliers
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("pH"), extractedData.get("Battery"), 
-        "2021 pH Data (No Outliers)")
+        "2023 pH Data (No Outliers)")
 
 # Finds location of .py program
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pH_Graphs\\pH_2021_Graph_No_Outliers_Monthly.png')
+#plt.savefig(my_path + '\\pH_Graphs\\pH_2021_Graph_No_Outliers_Monthly.png')
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, pyData, byData, "2021 pH Data (With Outliers) Monthly")
+grapher(xDataTrueO, tyData, pyData, byData, "2023 pH Data (With Outliers) Monthly")
 
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\pH_Graphs\\pH_2021_Graph_With_Outliers_Monthly.png')
+#plt.savefig(my_path + '\\pH_Graphs\\pH_2021_Graph_With_Outliers_Monthly.png')
 
 # Displays figures
 plt.show()
 
+'''
 # Scaling data
 # scaled point = (x-min)/(max-min)
 # Input data that is to be scaled and empty list that scaled data is saved in
@@ -306,6 +307,6 @@ minMax(extractedData.get("Battery"), scaledValueBattery)
 
 phDFscaled = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": scaledValueTemp, "pH": scaledValuePH, 
                              "Battery": scaledValueBattery})
-
+'''
 
 
