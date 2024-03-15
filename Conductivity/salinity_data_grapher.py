@@ -74,45 +74,6 @@ for index in range(0, len(salDateTrue)):
         unrefinedCondData = unrefinedCondData.drop(index)
 unrefinedCondData = unrefinedCondData.reset_index(drop=True)
 
-'''
-a, b = np.polyfit(date2num(salDateTrue), condData, 1)
-plt.plot(date2num(salDateTrue), a*date2num(salDateTrue) + b)
-'''
-
-'''
-
-def extractOutliers(start, end, intervalName):
-    outlierDataHolder = []
-    intervalDf = unrefinedCondData.loc[(unrefinedCondData['Date'] >= start) & (unrefinedCondData['Date'] < end)]
-    bOutliers = len(intervalDf.get('Date'))        # Number of datapoints before outliers are removed
-    outlierDataHolder.append(bOutliers)
-    noOutliersDf = IQR(completeRowData)
-    aOutliers = len(noOutliersDf.get('Date'))      # Number of datapoints after outliers are removed
-    outlierDataHolder.append(aOutliers)
-    nOutliers = bOutliers - aOutliers              # Number of outliers
-    outlierDataHolder.append(nOutliers)
-    outlierData.append(outlierDataHolder)
-    return noOutliersDf
-
-# Identifies and extracts outliers using a monthly interval
-januaryDf = extractOutliers(1, 32, "January")
-februaryDf = extractOutliers(32, 60, "February")
-marchDf = extractOutliers(60, 91, "March")
-aprilDf = extractOutliers(91, 121, "April")
-mayDf = extractOutliers(121, 152, "May")
-juneDf = extractOutliers(152, 182, "June")
-julyDF = extractOutliers(182, 213, "July")
-augustDf = extractOutliers(213, 244, "August")
-septemberDf = extractOutliers(244, 274, "September")
-octoberDf = extractOutliers(274, 305, "October")
-novemberDf = extractOutliers(305, 335, "November")
-decemberDf = extractOutliers(335, 366, "December")
-
-# Displays table with # of outliers taken out per month
-print("")
-print(pd.DataFrame(outlierData, headersV, headersH))
-print("")
-'''
 
 # Conductivity conversion to salinity
 # Conversion function
