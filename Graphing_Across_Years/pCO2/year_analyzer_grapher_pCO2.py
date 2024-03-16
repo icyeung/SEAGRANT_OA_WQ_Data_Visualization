@@ -63,9 +63,9 @@ for date in date_2023:
 
     # Salinity plot
 fig, ax1 = plt.subplots(figsize=(14,7))
-p1a = ax1.plot(date_2021_revised, data_2021, color = 'b', linestyle = 'solid', label = '2021', linewidth=0.35)
-p1b = ax1.plot(date_2022_revised, data_2022, color = "g", linestyle = 'solid', label = '2022', linewidth=0.35)
-p1c = ax1.plot(date_2023_revised, data_2023, color = "r", linestyle = 'solid', label = '2023', linewidth=0.35)
+p1a = ax1.plot(date_2021_revised, data_2021, color = 'b', linestyle = 'solid', label = '2021', linewidth=0.75)
+p1b = ax1.plot(date_2022_revised, data_2022, color = "g", linestyle = 'solid', label = '2022', linewidth=0.75)
+p1c = ax1.plot(date_2023_revised, data_2023, color = "r", linestyle = 'solid', label = '2023', linewidth=0.75)
 
     # Sets x-axis as Dates
 date_form = DateFormatter("%m-%d")
