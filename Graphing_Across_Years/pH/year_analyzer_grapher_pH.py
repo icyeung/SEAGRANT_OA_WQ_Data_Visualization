@@ -98,7 +98,7 @@ ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays 
 ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
     
     # Sets axis labels and changes font color of "Salinity" label for easy viewing
-ax1.set_ylabel("pCO2")
+ax1.set_ylabel("pH")
 ax1.set_xlabel("Dates (MM-DD)")
 ax1.yaxis.label.set_color("k")
     
