@@ -176,8 +176,8 @@ ax1.yaxis.label.set_color("k")
 
 # Graphs NOAA data
 ax2 = ax1.twinx()
-p2a = ax2.scatter(NOAA_date_high_revised, NOAA_data_high, color = 'g', marker = "*", label = 'High Tide')
-p2b = ax2.scatter(NOAA_date_low_revised, NOAA_data_low, color = 'r', marker = "^", label = 'Low Tide')
+p2a = ax2.scatter(NOAA_date_high_revised, NOAA_data_high, color = 'g', marker = "*", label = 'Monument Beach- High Tide')
+p2b = ax2.scatter(NOAA_date_low_revised, NOAA_data_low, color = 'r', marker = "^", label = 'Monument Beach- Low Tide')
 ax2.set_ylabel("Tide Height (cm)")
 
 
