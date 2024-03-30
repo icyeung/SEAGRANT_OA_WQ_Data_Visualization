@@ -31,7 +31,7 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 
 pH_section_data = pd.read_csv(os.path.join(__location__, "pH_2022_subsection_oct.csv"))
 
-NOAA_tidal_data = pd.read_csv(os.path.join(__location__, "NOAA_Tidal_HL_2022_Dennisport.csv"))
+NOAA_tidal_data = pd.read_csv(os.path.join(__location__, "NOAA_Tidal_HL_2022_Dennisport_GMT.csv"))
 
 
 # Need to cut out section of NOAA_tidal_data that fits with date range of pco2_section_data
