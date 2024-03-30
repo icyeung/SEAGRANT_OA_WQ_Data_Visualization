@@ -1,3 +1,12 @@
+# Create graph overlay of water sampling date and pco2 or ph
+# y-axis would be total alkalinity/DIC and calculated pco2/ph 
+# maybe use 2020 as an example (not 2022 as it has the errors)
+
+# use data from 2017-2022 mwra
+# tco2=dic
+# ta
+# out vlues are calculated
+
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,6 +15,7 @@ import csv
 from datetime import datetime as dt
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
+import pytz
 
 # Create graph overlay of water sampling date and pco2 or ph
 # y-axis would be total alkalinity/DIC and calculated pco2/ph 
@@ -22,9 +32,9 @@ import matplotlib.dates as mdates
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-measured_pH_data_df = pd.read_csv("C:\\Users\\isabe\\source\\repos\\SEAGRANT_OA_WQ_Data_Visualization\\Graphing_Across_Years\\pH\\pH_Data_2021_Compiled_Monthly.csv")
+measured_pCO2_data_df = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Graphing_Across_Years\\pCO2\\pco2_2021_Total_Data_Compiled_Monthly.csv")
 
-MWRA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\SEAGRANT_OA_WQ_Data_Visualization\\MWRA\\MWRA_Data\\MWRA_TA_DIC_2017_to_2022_v20240325.csv")
+MWRA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\MWRA\\MWRA_Data\\MWRA_TA_DIC_2017_to_2022_v20240330.csv")
 
 MWRA_trunc_df = pd.DataFrame()
 MWRA_trunc_df = pd.DataFrame(data=MWRA_trunc_df, columns=MWRA_data.columns)
@@ -56,7 +66,7 @@ def commonDataRange(data_df, start_date, end_date):
     for date in logger_dates_list:
         date = str(date)
         date = date.split(" ")[0]
-        print(date)
+        #print(date)
         m1, d1, y1 = [int(date_part) for date_part in date.split("/")]
         date1 = dt(y1, m1, d1)
       
@@ -67,11 +77,16 @@ def commonDataRange(data_df, start_date, end_date):
             print("bruh it's working?", date)
         logger_date_index += 1
     
-    data_df = data_df.drop(invalid_date_index_list)
+    print("Index to drop:", invalid_date_index_list)
+    
     data_df = data_df.reset_index()
+    data_df = data_df.drop(invalid_date_index_list)
+    
     data_df = data_df.drop(columns = "index")
     
     return data_df
+
+print(MWRA_trunc_df)
 
 
 MWRA_fitted_data = commonDataRange(MWRA_trunc_df, "01-01-2021", "12-31-2021")
@@ -115,14 +130,14 @@ print("another part done?")
 
 
 # pH 2022 data section is good
-measured_pH_data = measured_pH_data_df["pH"]
-pH_date = measured_pH_data_df["Date"]
-pH_date_revised = []
-for date in pH_date:
+measured_pCO2_data = measured_pCO2_data_df["CO2"]
+pCO2_date = measured_pCO2_data_df["Date"]
+pCO2_date_revised = []
+for date in pCO2_date:
     date_no_year = '{:%m-%d %H:%M:%S}'.format(dt.strptime(date, '%Y-%m-%d %H:%M:%S'))
     date_no_year = str(date_no_year)
     dt_date_no_year = dt.strptime(date_no_year, "%m-%d %H:%M:%S")
-    pH_date_revised.append(dt_date_no_year)
+    pCO2_date_revised.append(dt_date_no_year)
 
 
 
@@ -130,7 +145,7 @@ for date in pH_date:
 # Need to decipher MWRA data
 TA_data = MWRA_fitted_data["TA in (mmol/kgSW)"]
 DIC_data = MWRA_fitted_data["TCO2 in (mmol/kgSW)"]
-cal_pH_data = MWRA_fitted_data["pH out"]
+cal_pCO2_data = MWRA_fitted_data["pCO2 out (matm)"]
 MWRA_date = MWRA_fitted_data["PROF_DATE_TIME_LOCAL"]
 MWRA_date_revised = []
 
@@ -150,18 +165,31 @@ for date in MWRA_date:
     else:
         revised_MWRA_list.append(date)
 
+revised_MWRA_list_GMT = []
 
+utc = pytz.utc
+eastern = pytz.timezone('US/Eastern')
+fmt = '%m/%d/%Y %H:%M'
 for date in revised_MWRA_list:
+    date=dt.strptime(date,"%m/%d/%Y %H:%M")
+    date_eastern=eastern.localize(date,is_dst=None)
+    date_utc=date_eastern.astimezone(utc)
+    date_utc = date_utc.replace(tzinfo=None)
+    revised_MWRA_list_GMT.append(date_utc)
+    
+print(revised_MWRA_list_GMT)
+
+for date in revised_MWRA_list_GMT:
     print(date)
-    date_no_year = '{:%m-%d %H:%M}'.format(dt.strptime(date, '%m/%d/%Y %H:%M'))
+    date_no_year = '{:%m-%d %H:%M}'.format(dt.strptime(str(date), '%Y-%m-%d %H:%M:%S'))
     date_no_year = str(date_no_year)
     dt_date_no_year = dt.strptime(date_no_year, "%m-%d %H:%M")
     MWRA_date_revised.append(dt_date_no_year)
 
 
 fig, ax1 = plt.subplots(figsize=(14,7))
-p1 = ax1.plot(pH_date_revised, measured_pH_data, color = "b", linestyle = 'solid', label = 'Measured pH', linewidth=0.75)
-p4 = ax1.scatter(MWRA_date_revised, cal_pH_data, color = 'c', marker = "D", label = "Calculated pH")
+p1 = ax1.plot(pCO2_date_revised, measured_pCO2_data, color = "b", linestyle = 'solid', label = 'Measured pCO2', linewidth=0.75)
+p4 = ax1.scatter(MWRA_date_revised, cal_pCO2_data, color = 'c', marker = "D", label = "Calculated pCO2")
 # Sets x-axis as Dates
 date_form = DateFormatter("%m-%d")
 ax1.xaxis.set_major_formatter(date_form)
@@ -169,21 +197,21 @@ ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays 
 #ax1.xaxis.set_major_locator(mdates.DayLocator(interval = 2))       # Indicates each day (without label) on x-axis
     
 # Sets axis labels and changes font color of "pco2" label for easy viewing
-ax1.set_ylabel("Measured pH")
+ax1.set_ylabel("pCO2 (matm)")
 ax1.set_xlabel("Dates (MM-DD)")
 ax1.yaxis.label.set_color("k")
-ax1.legend()  
+#ax1.legend()  
 
 ax2 = ax1.twinx()
 p2 = ax2.scatter(MWRA_date_revised, TA_data, color = 'g', marker = "*", label = 'TA')
 ax2.set_ylabel("TA (mmol/kgSW)")
-ax2.legend(loc = 'lower center')
+#ax2.legend(loc = 'lower center')
 
 ax3 = ax1.twinx()
 p3 = ax3.scatter(MWRA_date_revised, DIC_data, color = 'r', marker = "^", label = "TCO2")
 ax3.set_ylabel("TOC2 (mmol/kgSW)")
 ax3.spines["right"].set_position(("outward", 60))
-ax3.legend(loc = 'lower center')
+#ax3.legend(loc = 'lower center')
 
 '''
 handles, labels = ax1.get_legend_handles_labels()
@@ -194,11 +222,12 @@ plt.figlegend(handles, labels, loc='upper center')
 # Sets title, adds a grid, and shows legend
 plt.tight_layout()
 plt.subplots_adjust(top=0.95)
-plt.title("pH: Calculated vs Measured (2021)", loc='center')
+plt.title("pCO2: Calculated vs Measured (2021)", loc='center')
+fig.legend(loc = 'upper center', ncol = 1, borderaxespad=4)
 plt.grid(True)
 
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\ph_calculated_vs_measured_2021_Graph_No_Outliers.png')
+plt.savefig(my_path + '\\pCO2_calculated_vs_measured_2021_Graph_No_Outliers.png')
 plt.show()
