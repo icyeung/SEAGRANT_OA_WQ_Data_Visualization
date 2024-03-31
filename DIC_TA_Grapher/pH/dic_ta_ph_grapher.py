@@ -151,6 +151,25 @@ sample_name = MWRA_fitted_data["Station_D"]
 MWRA_date_revised = []
 
 
+# Create new dataframe with the above lists
+# Go through all bottle names using index for range(0, len(dataframe))
+# If bottle name.split("-")[1][0] == "b" or "d", then adds that index to bottom_list
+# If bottle name.split("-")[1][0] == "s", then adds that index to top_list
+
+# Goes through dataframe for each list and the index is used to obtain the cells for the columns
+# Graphs accordingly
+
+
+
+# To determine H/L:
+# Obtains list of dates and time
+# Separates date and time 
+# If date matches, creates list of times on that date
+# Uses searcher function on time list
+# Once time is determined, 
+# If "High/Low" is H for time before and L for time after, tide is outgoing
+# If "High/Low" is L for time before and H for time after, tide is incoming
+
 revised_MWRA_list = []
 for date in MWRA_date:
     time = date.split(" ")[1]
