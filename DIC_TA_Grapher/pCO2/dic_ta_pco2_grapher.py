@@ -229,5 +229,5 @@ plt.grid(True)
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pCO2_calculated_vs_measured_2021_Graph_No_Outliers.png')
+plt.savefig(my_path + '\\pCO2_calculated_vs_measured_2021_Graph_No_Outliers_v1.png')
 plt.show()

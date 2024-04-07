@@ -32,11 +32,11 @@ import pytz
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-measured_pH_data_df = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Graphing_Across_Years\\pH\\pH_Data_2021_Compiled_Monthly.csv")
+measured_pCO2_data_df = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Graphing_Across_Years\\pCO2\\pco2_2021_Total_Data_Compiled_Monthly.csv")
 
 MWRA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\MWRA\\MWRA_Data\\MWRA_TA_DIC_2017_to_2022_v20240330.csv")
 
-NOAA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\DIC_TA_Grapher\\pH\\Tidal_Data\\NOAA_Tidal_HL_2021_Dennisport_GMT.csv", delimiter="\t")
+NOAA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\DIC_TA_Grapher\\pCO2\\Tidal_Data\\NOAA_Tidal_HL_2021_Monument_Beach_GMT.csv", delimiter="\t")
 
 MWRA_trunc_df = pd.DataFrame()
 MWRA_trunc_df = pd.DataFrame(data=MWRA_trunc_df, columns=MWRA_data.columns)
@@ -175,14 +175,14 @@ print("another part done?")
 
 # pH 2021 data section is good
 # converts pH date to mm/dd format by dropping year
-measured_pH_data = measured_pH_data_df["pH"]
-pH_date = measured_pH_data_df["Date"]
-pH_date_revised = []
-for date in pH_date:
+measured_pCO2_data = measured_pCO2_data_df["CO2"]
+pCO2_date = measured_pCO2_data_df["Date"]
+pCO2_date_revised = []
+for date in pCO2_date:
     date_no_year = '{:%m-%d %H:%M:%S}'.format(dt.strptime(date, '%Y-%m-%d %H:%M:%S'))
     date_no_year = str(date_no_year)
     dt_date_no_year = dt.strptime(date_no_year, "%m-%d %H:%M:%S")
-    pH_date_revised.append(dt_date_no_year)
+    pCO2_date_revised.append(dt_date_no_year)
 
 
 
@@ -190,7 +190,7 @@ for date in pH_date:
 # Need to decipher MWRA data
 TA_data = MWRA_fitted_data["TA in (mmol/kgSW)"]
 DIC_data = MWRA_fitted_data["TCO2 in (mmol/kgSW)"]
-cal_pH_data = MWRA_fitted_data["pH out"]
+cal_pCO2_data = MWRA_fitted_data["pCO2 out (matm)"]
 MWRA_date = MWRA_fitted_data["PROF_DATE_TIME_LOCAL"]
 sample_name = MWRA_fitted_data["Station_D"]
 MWRA_date_revised = []
@@ -241,7 +241,7 @@ for date in revised_MWRA_list_GMT:
 # Goes through dataframe for each list and the index is used to obtain the cells for the columns
 # Graphs accordingly
 
-processed_MWRA_fitted_df = pd.DataFrame({"PROF_DATE_TIME_LOCAL": MWRA_date, "GMT_Time": MWRA_date_revised, "Station_D": sample_name, "pH out": cal_pH_data, "TA in (mmol/kgSW)": TA_data, "TCO2 in (mmol/kgSW)": DIC_data})
+processed_MWRA_fitted_df = pd.DataFrame({"PROF_DATE_TIME_LOCAL": MWRA_date, "GMT_Time": MWRA_date_revised, "Station_D": sample_name, "pCO2 out (matm)": cal_pCO2_data, "TA in (mmol/kgSW)": TA_data, "TCO2 in (mmol/kgSW)": DIC_data})
 
 print(processed_MWRA_fitted_df)
 
@@ -273,12 +273,12 @@ print("bottom water samples", bottom_df)
 print("top water samples", top_df)
 
 bottom_date_GMT = bottom_df["GMT_Time"]
-bottom_cal_pH_data = bottom_df["pH out"]
+bottom_cal_pCO2_data = bottom_df["pCO2 out (matm)"]
 bottom_TA_data = bottom_df["TA in (mmol/kgSW)"]
 bottom_DIC_data = bottom_df["TCO2 in (mmol/kgSW)"]
 
 top_date_GMT = top_df["GMT_Time"]
-top_cal_pH_data = top_df["pH out"]
+top_cal_pCO2_data = top_df["pCO2 out (matm)"]
 top_TA_data = top_df["TA in (mmol/kgSW)"]
 top_DIC_data = top_df["TCO2 in (mmol/kgSW)"]
 
@@ -367,9 +367,9 @@ print("out", outgoing_time_list)
 
 # Graphing
 fig, ax1 = plt.subplots(figsize=(14,7))
-p1 = ax1.plot(pH_date_revised, measured_pH_data, color = "b", linestyle = 'solid', label = 'Measured pH', linewidth=0.75)
-p4 = ax1.scatter(bottom_date_GMT, bottom_cal_pH_data, color = 'teal', marker = "D", label = "Calculated pH- Bottom Sample", zorder=3)
-p5 = ax1.scatter(top_date_GMT, top_cal_pH_data, color = 'cyan', marker = "D", label = "Calculated pH- Top Sample", zorder=3)
+p1 = ax1.plot(pCO2_date_revised, measured_pCO2_data, color = "b", linestyle = 'solid', label = 'Measured pCO2', linewidth=0.75)
+p4 = ax1.scatter(bottom_date_GMT, bottom_cal_pCO2_data, color = 'teal', marker = "D", label = "Calculated pCO2- Bottom Sample", zorder=3)
+p5 = ax1.scatter(top_date_GMT, top_cal_pCO2_data, color = 'cyan', marker = "D", label = "Calculated pCO2- Top Sample", zorder=3)
 # Sets x-axis as Dates
 date_form = DateFormatter("%m-%d")
 ax1.xaxis.set_major_formatter(date_form)
@@ -377,7 +377,7 @@ ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays 
 #ax1.xaxis.set_major_locator(mdates.DayLocator(interval = 2))       # Indicates each day (without label) on x-axis
     
 # Sets axis labels and changes font color of "pco2" label for easy viewing
-ax1.set_ylabel("pH")
+ax1.set_ylabel("pCO2 (matm)")
 ax1.set_xlabel("Dates (MM-DD)")
 ax1.yaxis.label.set_color("k")
 #ax1.legend()  
@@ -413,12 +413,12 @@ plt.figlegend(handles, labels, loc='upper center')
 plt.grid(True)
 plt.tight_layout()
 plt.subplots_adjust(top=0.95)
-plt.title("pH: Calculated vs Measured (2021)", loc='center')
-fig.legend(loc = 'upper center', ncol = 2, borderaxespad=4)
+plt.title("pCO2: Calculated vs Measured (2021)", loc='center')
+fig.legend(loc = 'upper center', ncol = 3, borderaxespad=4)
 
 
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\ph_calculated_vs_measured_2021_Graph_No_Outliers.png')
+plt.savefig(my_path + '\\pco2_calculated_vs_measured_2021_Graph_No_Outliers.png')
 plt.show()
