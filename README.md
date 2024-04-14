@@ -1,4 +1,4 @@
-# pCO2-Data
+# Ocean Acidification
 
-##### -Documentation in 'pCO2 Data Visualization.ipynb'
+##### -Documentation in 'Ocean_Acidification_Water_Quality_Data_Visualization'
 ##### -More information in pCO2 Data Grapher Slides

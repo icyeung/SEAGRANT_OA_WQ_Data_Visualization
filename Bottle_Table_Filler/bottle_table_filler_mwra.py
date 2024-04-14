@@ -6,7 +6,7 @@ from decimal import Decimal
 import datetime
 
 # how should this thing work
-# Input: bast_table - Sheet1.csv, date parameter
+# Input: base_table - Sheet1.csv, date parameter
 # Output: Table with Sample #, Bottle Label, Sampling Date, Actual Depth, Salinity, Temperature, Date Processed (empty), Bottle Cleaned (empty), Observations (empty)
 # how to do this
 # dataframe with all appropriate columns is created
