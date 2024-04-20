@@ -14,7 +14,7 @@ import datetime
 # for each date in the logger that fits the date parameter
 # inputs sampling date into "Sampling Date"
 
-output_column_names = ["Bottle_Number", "Bottle_Label", "Sampling_Date", "Actual_Depth", "Salinity", "Temperature", "Date_Processed", "Bottle_Cleaned", "Observations"]
+output_column_names = ["Bottle_Number", "Bottle_Label", "Sampling_Date", "Sampling_Time_LST", "Actual_Depth", "Salinity", "Temperature", "Date_Processed", "Bottle_Cleaned", "Observations"]
 output_df = pd.DataFrame(columns = output_column_names)
 
 # Decodes bottle label
@@ -143,7 +143,7 @@ def castawayFileChooser(date, label, collection_time, special_case):
 
 def bottleTableFiller (file_logger_input, start_date, end_date):
 
-   output_column_names = ["Bottle_Number", "Bottle_Label", "Sampling_Date", "Actual_Depth", "Salinity", "Temperature", "Date_Processed", "Bottle_Cleaned", "Observations"]
+   output_column_names = ["Bottle_Number", "Bottle_Label", "Sampling_Date", "Sampling_Time_LST", "Actual_Depth", "Salinity", "Temperature", "Date_Processed", "Bottle_Cleaned", "Observations"]
    output_df = pd.DataFrame(columns = output_column_names)
 
    # Makes start and end dates datetime objects to be used in date interval checker
@@ -174,6 +174,8 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
    valid_date_index_list = []
    logger_date_index = 0
 
+   valid_date_time_list = []
+
    logger_dates_list = logger_df["Date"].tolist()
    for date in logger_dates_list:
       m1, d1, y1 = [int(date_part) for date_part in date.split("/")]
@@ -182,12 +184,14 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
       if ((date1 <= date3) & (date1>= date2)):
          valid_date_list.append(date)
          valid_date_index_list.append(logger_date_index)
+         valid_date_time_list.append(logger_df.loc[logger_date_index, "TimeWaterCollection"])
       else:
          print("bruh is it working", date)
       logger_date_index += 1
 
 
    output_df["Sampling_Date"] = valid_date_list
+   output_df["Sampling_Time_LST"] = valid_date_time_list
    output_index = 0
 
    # date interval checker
@@ -204,6 +208,7 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
       if not(pd.isnull(logger_df.loc[index, "Label_1"])):
          label1 = labelDecoder(logger_df.loc[index, "Label_1"])
          output_df.at[output_index, "Sampling_Date"] = date
+         output_df.at[output_index, "Sampling_Time_LST"] = time
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Label_1"]
          output_df.at[output_index, "Bottle_Number"] = output_index+1
          date = date.replace("/", "-")
@@ -218,6 +223,7 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
       if not(pd.isnull(logger_df.loc[index, "Label_2"])):
          label2 = labelDecoder(logger_df.loc[index, "Label_2"])
          output_df.at[output_index, "Sampling_Date"] = date
+         output_df.at[output_index, "Sampling_Time_LST"] = time
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Label_2"]
          output_df.at[output_index, "Bottle_Number"] = output_index+1
          date = date.replace("/", "-")
@@ -234,6 +240,7 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
       if not(pd.isnull(logger_df.loc[index, "Label_3"])):
          label3 = labelDecoder(logger_df.loc[index, "Label_3"])
          output_df.at[output_index, "Sampling_Date"] = date
+         output_df.at[output_index, "Sampling_Time_LST"] = time
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Label_3"]
          output_df.at[output_index, "Bottle_Number"] = output_index+1
          date = date.replace("/", "-")
@@ -250,6 +257,7 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
       if not(pd.isnull(logger_df.loc[index, "Label_4"])):
          label4 = labelDecoder(logger_df.loc[index, "Label_4"])
          output_df.at[output_index, "Sampling_Date"] = date
+         output_df.at[output_index, "Sampling_Time_LST"] = time
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Label_4"]
          output_df.at[output_index, "Bottle_Number"] = output_index+1
          date = date.replace("/", "-")

@@ -19,7 +19,7 @@ import datetime
 
 def bottleTableFiller (file_logger_input, start_date, end_date):
 
-   output_column_names = ["Bottle_Number", "Bottle_Label", "Sampling_Date", "Actual_Depth", "Salinity", "Temperature", "Date_Processed", "Bottle_Cleaned", "Observations"]
+   output_column_names = ["Bottle_Number", "Bottle_Label", "Sampling_Date", "Sampling_Time_LST", "Actual_Depth", "Salinity", "Temperature", "Date_Processed", "Bottle_Cleaned", "Observations"]
    output_df = pd.DataFrame(columns = output_column_names, dtype=str)
 
    print(output_df)
@@ -65,8 +65,14 @@ def bottleTableFiller (file_logger_input, start_date, end_date):
 
    output_df["Bottle_Label"] = output_df["Bottle_Label"].astype(str)
 
+   print(valid_date_index_list)
 
    for index in valid_date_index_list:
+         print(index)
+         #sampling_time = str(logger_df.loc[index, "PROF_DATE_TIME_LOCAL"]).split(" ")[1]
+         date_time = str(logger_df.loc[index, "PROF_DATE_TIME_LOCAL"])
+         if date_time != "nan":
+            output_df.at[output_index, "Sampling_Time_LST"] = date_time.split(" ")[1]
          output_df.at[output_index, "Bottle_Number"] = output_index + 1
          output_df.at[output_index, "Bottle_Label"] = logger_df.loc[index, "Bottle Label"]
          output_df.at[output_index, "Actual_Depth"] = logger_df.loc[index, "DEPTH (m)"]

@@ -32,11 +32,11 @@ import pytz
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-measured_pCO2_data_df = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Graphing_Across_Years\\pCO2\\pco2_2022_Total_Data_Compiled_Monthly.csv")
+measured_pCO2_data_df = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Graphing_Across_Years\\pCO2\\pco2_2023_Total_Data_Compiled_Monthly.csv")
 
 MWRA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\MWRA\\MWRA_Data\\MWRA_TA_DIC_2017_to_2022_v20240330.csv")
 
-NOAA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\DIC_TA_Grapher\\pCO2\\Tidal_Data\\NOAA_Tidal_HL_2022_Chappaquoit_Point_GMT.csv", delimiter=",")
+NOAA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\DIC_TA_Grapher\\pCO2\\Tidal_Data\\NOAA_Tidal_HL_2023_Chappaquoit_Point_GMT.csv", delimiter=",")
 
 MWRA_trunc_df = pd.DataFrame()
 MWRA_trunc_df = pd.DataFrame(data=MWRA_trunc_df, columns=MWRA_data.columns)
@@ -92,7 +92,7 @@ def commonDataRange_MWRA(data_df, start_date, end_date):
 print(MWRA_trunc_df)
 
 # Obtains desired time frame from MWRA data
-MWRA_fitted_data = commonDataRange_MWRA(MWRA_trunc_df, "01-01-2022", "12-31-2022")
+MWRA_fitted_data = commonDataRange_MWRA(MWRA_trunc_df, "01-01-2023", "12-31-2023")
 print(MWRA_fitted_data)
 
 def commonDataRange_NOAA(data_df, start_date, end_date):
@@ -132,7 +132,7 @@ def commonDataRange_NOAA(data_df, start_date, end_date):
     
     return data_df
 
-NOAA_fitted_data = commonDataRange_NOAA(NOAA_data, "01-01-2022", "12-31-2022")
+NOAA_fitted_data = commonDataRange_NOAA(NOAA_data, "01-01-2023", "12-31-2023")
 
 print("yay, time is done?")
 
@@ -346,24 +346,51 @@ for date in revised_MWRA_list_GMT:
     index = 0
 
     NOAA_tide_day_data_df = NOAA_tide_day_data_df.reset_index()
-    while index+1 < len(NOAA_time_list):
-        if time_num > NOAA_tide_day_data_df.loc[index, "Time"] and time_num < NOAA_tide_day_data_df.loc[index+1, "Time"]:
+
+    print(NOAA_tide_day_data_df)
+    tide_type = ""
+    while (index+1) < len(NOAA_time_list):
+        print("tide index", index)
+        print("hi")
+        print(time_num)
+        if time_num > str(NOAA_tide_day_data_df.loc[index, "DateTime"]).split(" ")[1] and time_num < str(NOAA_tide_day_data_df.loc[index+1, "DateTime"]).split(" ")[1]:
             start_type = NOAA_tide_day_data_df.loc[index, "High/Low"]
             print("start type", start_type)
             end_type = NOAA_tide_day_data_df.loc[index+1, "High/Low"]
             print("end type", end_type)
             if start_type == "H" and end_type == "L":
                 tide_type = "outgoing"
+                tide_type_list.append(tide_type)
             if start_type == "L" and end_type == "H":
                 tide_type = "incoming"
+                tide_type_list.append(tide_type)
             break
         elif time_num == NOAA_tide_day_data_df.loc[index, "Time"]:
             tide_type = NOAA_tide_day_data_df.loc[index, "High/Low"]
+            tide_type_list.append(tide_type)
             break
+        elif time_num < str(NOAA_tide_day_data_df.loc[index, "DateTime"]).split(" ")[1]:
+            if NOAA_tide_day_data_df.loc[index, "High/Low"] == "H":
+                tide_type = "incoming"
+                tide_type_list.append(tide_type)
+                break
+            if NOAA_tide_day_data_df.loc[index, "High/Low"] == "L":
+                tide_type = "outgoing"
+                tide_type_list.append(tide_type)
+                break
+        elif (index+2)==len(NOAA_time_list) and time_num > str(NOAA_tide_day_data_df.loc[index+1, "DateTime"]).split(" ")[1]:
+            if NOAA_tide_day_data_df.loc[index+1, "High/Low"] == "H":
+                tide_type = "outgoing"
+                tide_type_list.append(tide_type)
+                break
+            if NOAA_tide_day_data_df.loc[index+1, "High/Low"] == "L":
+                tide_type = "incoming"
+                tide_type_list.append(tide_type)
+                break
         else:
             index += 1
         print("tide type", tide_type)
-    tide_type_list.append(tide_type)
+    
 
 print(tide_type_list)
 print("list", MWRA_date_revised)
@@ -392,9 +419,9 @@ print("out", outgoing_time_list)
 # Graphing
 fig, ax1 = plt.subplots(figsize=(14,7))
 p1 = ax1.plot(pCO2_date_revised, measured_pCO2_data, color = "b", linestyle = 'solid', label = 'Measured pCO2', linewidth=0.75)
-p4 = ax1.scatter(bottom_date_GMT, bottom_cal_pCO2_data, color = 'teal', marker = "D", label = "Calculated pCO2- Bottom Sample", zorder=3)
-p5 = ax1.scatter(top_date_GMT, top_cal_pCO2_data, color = 'cyan', marker = "D", label = "Calculated pCO2- Top Sample", zorder=3)
-p12 = ax1.scatter(mid_date_GMT, mid_cal_pCO2_data, color = 'dodgerblue', marker = "D", label = "Calculated pCO2- Middle Sample", zorder=3)
+#p4 = ax1.scatter(bottom_date_GMT, bottom_cal_pCO2_data, color = 'olivedrab', marker = "D", label = "Calculated pCO2- Bottom Sample", zorder=3)
+#p5 = ax1.scatter(top_date_GMT, top_cal_pCO2_data, color = 'greenyellow', marker = "D", label = "Calculated pCO2- Top Sample", zorder=3)
+p12 = ax1.scatter(mid_date_GMT, mid_cal_pCO2_data, color = 'teal', marker = "D", label = "Calculated pCO2- Middle Sample", zorder=3)
 # Sets x-axis as Dates
 date_form = DateFormatter("%m-%d")
 ax1.xaxis.set_major_formatter(date_form)
@@ -408,15 +435,15 @@ ax1.yaxis.label.set_color("k")
 #ax1.legend()  
 
 ax2 = ax1.twinx()
-p2 = ax2.scatter(bottom_date_GMT, bottom_TA_data, color = 'darkviolet', marker = "*", label = 'TA- Bottom Sample')
-p6 = ax2.scatter(top_date_GMT, top_TA_data, color = 'fuchsia', marker = "*", label = 'TA- Top Sample')
+#p2 = ax2.scatter(bottom_date_GMT, bottom_TA_data, color = 'darkviolet', marker = "*", label = 'TA- Bottom Sample')
+#p6 = ax2.scatter(top_date_GMT, top_TA_data, color = 'fuchsia', marker = "*", label = 'TA- Top Sample')
 p13 = ax2.scatter(mid_date_GMT, mid_TA_data, color = 'violet', marker = "*", label = 'TA- Middle Sample')
 ax2.set_ylabel("TA (mmol/kgSW)")
 #ax2.legend(loc = 'lower center')
 
 ax3 = ax1.twinx()
-p3 = ax3.scatter(bottom_date_GMT, bottom_DIC_data, color = 'maroon', marker = "^", label = "TCO2- Bottom Sample")
-p7 = ax3.scatter(top_date_GMT, top_DIC_data, color = 'salmon', marker = "^", label = "TCO2- Top Sample")
+#p3 = ax3.scatter(bottom_date_GMT, bottom_DIC_data, color = 'maroon', marker = "^", label = "TCO2- Bottom Sample")
+#p7 = ax3.scatter(top_date_GMT, top_DIC_data, color = 'salmon', marker = "^", label = "TCO2- Top Sample")
 p14 = ax3.scatter(mid_date_GMT, mid_DIC_data, color = 'orangered', marker = "^", label = "TCO2- Middle Sample")
 ax3.set_ylabel("TOC2 (mmol/kgSW)")
 ax3.spines["right"].set_position(("outward", 60))
@@ -440,12 +467,12 @@ plt.figlegend(handles, labels, loc='upper center')
 plt.grid(True)
 plt.tight_layout()
 plt.subplots_adjust(top=0.95)
-plt.title("pCO2: Calculated vs Measured (2022)", loc='center')
+plt.title("pCO2: Calculated vs Measured (2023)", loc='center')
 fig.legend(loc = 'upper center', ncol = 3, borderaxespad=4)
 
 
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pco2_calculated_vs_measured_2022_Chappaquoit_Point_Graph_No_Outliers.png')
+plt.savefig(my_path + '\\pco2_calculated_vs_measured_2023_Chappaquoit_Point_Graph_No_Outliers.png')
 plt.show()
