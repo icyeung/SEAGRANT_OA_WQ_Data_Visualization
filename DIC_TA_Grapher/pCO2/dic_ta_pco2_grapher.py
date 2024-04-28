@@ -32,11 +32,11 @@ import pytz
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-measured_pCO2_data_df = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Graphing_Across_Years\\pCO2\\pco2_2023_Total_Data_Compiled_Monthly.csv")
+measured_pCO2_data_df = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Graphing_Across_Years\\pCO2\\pco2_2022_Total_Data_Compiled_Monthly.csv")
 
 MWRA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\MWRA\\MWRA_Data\\MWRA_TA_DIC_2017_to_2022_v20240330.csv")
 
-NOAA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\DIC_TA_Grapher\\pCO2\\Tidal_Data\\NOAA_Tidal_HL_2023_Chappaquoit_Point_GMT.csv", delimiter=",")
+NOAA_data = pd.read_csv("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\DIC_TA_Grapher\\pCO2\\Tidal_Data\\NOAA_Tidal_HL_2022_Monument_Beach_GMT.csv", delimiter=",")
 
 MWRA_trunc_df = pd.DataFrame()
 MWRA_trunc_df = pd.DataFrame(data=MWRA_trunc_df, columns=MWRA_data.columns)
@@ -92,7 +92,7 @@ def commonDataRange_MWRA(data_df, start_date, end_date):
 print(MWRA_trunc_df)
 
 # Obtains desired time frame from MWRA data
-MWRA_fitted_data = commonDataRange_MWRA(MWRA_trunc_df, "01-01-2023", "12-31-2023")
+MWRA_fitted_data = commonDataRange_MWRA(MWRA_trunc_df, "01-01-2022", "12-31-2022")
 print(MWRA_fitted_data)
 
 def commonDataRange_NOAA(data_df, start_date, end_date):
@@ -132,7 +132,7 @@ def commonDataRange_NOAA(data_df, start_date, end_date):
     
     return data_df
 
-NOAA_fitted_data = commonDataRange_NOAA(NOAA_data, "01-01-2023", "12-31-2023")
+NOAA_fitted_data = commonDataRange_NOAA(NOAA_data, "01-01-2022", "12-31-2022")
 
 print("yay, time is done?")
 
@@ -450,8 +450,8 @@ ax3.spines["right"].set_position(("outward", 60))
 #ax3.legend(loc = 'lower center')
 
 ax4 = ax1.twinx()
-p8 = ax4.scatter(incoming_time_list, incoming_list, color = "k", marker = "+", label = "Chappaquoit Point- Incoming Tide")
-p9 = ax4.scatter(outgoing_time_list, outgoing_list, color = "k", marker = "_", label = "Chappaquoit Point- Outgoing Tide")
+p8 = ax4.scatter(incoming_time_list, incoming_list, color = "k", marker = "+", label = "Incoming Tide- Monument Beach")
+p9 = ax4.scatter(outgoing_time_list, outgoing_list, color = "k", marker = "_", label = "Outgoing Tide- Monument Beach")
 #p10 = ax4.scatter(high_time_list, high_list, color = "green", marker = 6, label = "High Tide")
 #p11 = ax4.scatter(low_time_list, low_list, color = "green", marker = 7, label = "Low Tide")
 ax4.set_ylim([0, 5])
@@ -467,12 +467,12 @@ plt.figlegend(handles, labels, loc='upper center')
 plt.grid(True)
 plt.tight_layout()
 plt.subplots_adjust(top=0.95)
-plt.title("pCO2: Calculated vs Measured (2023)", loc='center')
+plt.title("pCO2: Calculated vs Measured (2022)", loc='center')
 fig.legend(loc = 'upper center', ncol = 3, borderaxespad=4)
 
 
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pco2_calculated_vs_measured_2023_Chappaquoit_Point_Graph_No_Outliers.png')
+plt.savefig(my_path + '\\pco2_calculated_vs_measured_2022_Monument_Beach_Graph_No_Outliers.png')
 plt.show()
