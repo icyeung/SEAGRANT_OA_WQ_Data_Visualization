@@ -336,7 +336,7 @@ grapher(salinityDFSortedNOreset.get("Date"), salinityDFSortedNOreset.get("Salini
 # Saves without outliers graph to specified name in folder
 plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_Without_Outliers.png', dpi=2000)
 
-salinityDFSortedNOreset.to_csv(my_path + '\\Conductivity_Data_NO\\Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv')
+salinityDFSortedNOreset.to_csv(my_path + '\\Conductivity_Data_NO\\Salinity_Carolina_Pocasset_10-24-23_1.csv')
 
 print("fitted length", len(salinityDFSortedNOreset.get("Fit")))
 

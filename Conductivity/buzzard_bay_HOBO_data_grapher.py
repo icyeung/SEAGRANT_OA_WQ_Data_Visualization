@@ -281,7 +281,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
             #print(row)
             # Checks if time entry has corresponding Time and Verified Measurement
             # If not, does not include data point in graph
-            if not row[1] == "" and not row[3] == "" and not row[10] == "" and not row[19] == "" and not row[21] == "" and numofLinesS > 0:
+            if not row[1] == "" and not row[3] == "" and not row[10] == "" and not row[19] == "" and not row[21] == "" and row[30] == "" and numofLinesS > 0:
                 if row[1] == station:
                     #print("hi")
                     if commonDataRange(row[3], start_date, end_date):
@@ -383,8 +383,11 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
         HOBO2_data_time_converted_list_2.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
     HOBO_2_part2_fx["Date (DT)"] = HOBO2_data_time_converted_list_2
     '''
+
+    print(len(BB_df))
+
     fig, ax1 = plt.subplots(figsize=(14,7))
-    p1 = ax1.plot(BB_df["DateTime"], BB_df["Salinity"], color = "g", linestyle = 'solid', label = 'BB', linewidth=0.75)
+    p1 = ax1.plot(BB_df["DateTime"], BB_df["Salinity"], color = "g", marker = "o", linestyle = 'solid', label = 'BB', linewidth=0.75)
     p2 = ax1.plot(HOBO_1_part1_fx["Date (DT)"], HOBO_1_part1_fx["Salinity Value"], color = 'b', linestyle = '-', label = "HOBO #1", linewidth = 0.75)
     #p3 = ax1.plot(HOBO_2_part1_fx["Date (DT)"], HOBO_2_part1_fx["Salinity Value"], color = 'r', linestyle = '-', label = "HOBO #2", linewidth = 0.75)
     #p4 = ax1.plot(HOBO_1_part2_fx["Date (DT)"], HOBO_1_part2_fx["Salinity Value"], color = 'cyan', linestyle = '-', label = "HOBO #1", linewidth = 0.75)
@@ -415,14 +418,14 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
     my_path = os.path.dirname(os.path.abspath(__file__))
 
     # Saves without outliers graph to specified name in folder
-    plt.savefig(my_path + '\\BB_vs_HOBO_' + station + '_' + year + '.png')
+    #plt.savefig(my_path + '\\BB_vs_HOBO_' + station + '_' + year + '_no_flags' +'.png')
     plt.show()
 
 
 
 #buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) vs HOBO 2021", "1/1/2021", "12/31/2021", "2021", "Salinity_Carolina_FiddlersCove_9-28-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
 
-buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022", "Salinity_Carolina_Pocasset_12_9_22_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
+#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022", "Salinity_Carolina_Pocasset_12_9_22_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
 
-#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2023", "1/1/2023", "12/31/2023", "2023", "Salinity_Carolina_Pocasset_12_9_22_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
+buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2023", "1/1/2023", "12/31/2023", "2023", "Salinity_Carolina_Pocasset_12_9_22_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
 

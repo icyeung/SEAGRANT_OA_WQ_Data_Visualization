@@ -50,7 +50,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
             #print(row)
             # Checks if time entry has corresponding Time and Verified Measurement
             # If not, does not include data point in graph
-            if not row[1] == "" and not row[3] == "" and not row[10] == "" and not row[19] == "" and not row[21] == "" and numofLinesS > 0:
+            if not row[1] == "" and not row[3] == "" and not row[10] == "" and not row[19] == "" and not row[21] == "" and row[30] == "" and numofLinesS > 0:
                 if row[1] == station:
                     #print("hi")
                     if commonDataRange(row[3], start_date, end_date):
@@ -130,14 +130,15 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
         HOBO1_data_time_converted_list.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
     HOBO_1_part1_fx["Date (DT)"] = HOBO1_data_time_converted_list
 
-    '''
+    
     HOBO2_data_time_converted_list = []
     for date in HOBO_2_part1["Date (Corrected)"]:
         #print(HOBO_file1)
-        print("hi", date)
+        #print("hi", date)
         HOBO2_data_time_converted_list.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
     HOBO_2_part1_fx["Date (DT)"] = HOBO2_data_time_converted_list
 
+    '''
     HOBO1_data_time_converted_list_2 = []
     for date in HOBO_1_part2["Date (Corrected)"]:
         #print(HOBO_file1)
@@ -153,88 +154,99 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
     HOBO_2_part2_fx["Date (DT)"] = HOBO2_data_time_converted_list_2
     '''
 
-    print(BB_df)
+    #print(BB_df)
 
-    
-    chosen_datetimes = []
-    BB_datetimes = []
-    for indexA in range(0, len(BB_df)):
-        possible_times = []
-        possible_times_index = []
-        BB_date = (BB_df.loc[indexA, "DateTime"]).strftime("%Y-%m-%d %H:%M:%S").split(" ")[0]
-        BB_time = (BB_df.loc[indexA, "DateTime"]).strftime("%Y-%m-%d %H:%M:%S").split(" ")[1]
+    def diff_list_cal(HOBO_df):
+        HOBO_df = pd.DataFrame(HOBO_df)
+        chosen_datetimes = []
+        BB_datetimes = []
+        for indexA in range(0, len(BB_df)):
+            possible_times = []
+            possible_times_index = []
+            BB_date = (BB_df.loc[indexA, "DateTime"]).strftime("%Y-%m-%d %H:%M:%S").split(" ")[0]
+            BB_time = (BB_df.loc[indexA, "DateTime"]).strftime("%Y-%m-%d %H:%M:%S").split(" ")[1]
 
-        for indexB in range(0, len(HOBO_1_part1_fx)):
-            HOBO_date = (HOBO_1_part1_fx.loc[indexB, "Date (DT)"]).strftime("%Y-%m-%d %H:%M:%S").split(" ")[0]
-            HOBO_time = (HOBO_1_part1_fx.loc[indexB, "Date (DT)"]).strftime("%Y-%m-%d %H:%M:%S").split(" ")[1]
+            for indexB in range(0, len(HOBO_df)):
+                HOBO_date = (HOBO_df.loc[indexB, "Date (DT)"]).strftime("%Y-%m-%d %H:%M:%S").split(" ")[0]
+                HOBO_time = (HOBO_df.loc[indexB, "Date (DT)"]).strftime("%Y-%m-%d %H:%M:%S").split(" ")[1]
 
-            #print(HOBO_time)
+                #print(HOBO_time)
 
-            if BB_date == HOBO_date:
-                possible_times.append(HOBO_date + " " + HOBO_time)
-                possible_times_index.append(indexB)
+                if BB_date == HOBO_date:
+                    possible_times.append(HOBO_date + " " + HOBO_time)
+                    possible_times_index.append(indexB)
 
-        if possible_times != []:
-            BB_time_hour = int(BB_time.split(":")[0])
-            BB_time_minute = int(BB_time.split(":")[1])
-            BB_time_min_percent = round(BB_time_minute/60, 4)
-            BB_time_conv = float(BB_time_hour + BB_time_min_percent)
-            difference_list = []
-            
-            for HOBO_time_date in possible_times:
-                HOBO_time_time = HOBO_time_date.split(" ")[1]
-                HOBO_time_hour = int(HOBO_time_time.split(":")[0])
-                HOBO_time_minute = int(HOBO_time_time.split(":")[1])
-                HOBO_time_min_percent = round(HOBO_time_minute/60, 4)
-                HOBO_time_conv = float(HOBO_time_hour + HOBO_time_min_percent)
+            if possible_times != []:
+                BB_time_hour = int(BB_time.split(":")[0])
+                BB_time_minute = int(BB_time.split(":")[1])
+                BB_time_min_percent = round(BB_time_minute/60, 4)
+                BB_time_conv = float(BB_time_hour + BB_time_min_percent)
+                difference_list = []
                 
-                difference = abs(float(BB_time_conv-HOBO_time_conv))         
-                difference_list.append(difference)
+                for HOBO_time_date in possible_times:
+                    HOBO_time_time = HOBO_time_date.split(" ")[1]
+                    HOBO_time_hour = int(HOBO_time_time.split(":")[0])
+                    HOBO_time_minute = int(HOBO_time_time.split(":")[1])
+                    HOBO_time_min_percent = round(HOBO_time_minute/60, 4)
+                    HOBO_time_conv = float(HOBO_time_hour + HOBO_time_min_percent)
+                    
+                    difference = abs(float(BB_time_conv-HOBO_time_conv))         
+                    difference_list.append(difference)
 
-            # Chooses file with minimum time difference
-            min_time_diff = min(difference_list)
-            min_time_diff_index = difference_list.index(min_time_diff)
-            opt_time = possible_times[min_time_diff_index]
-            chosen_date = str(opt_time)
-            chosen_datetimes.append(chosen_date)
-            BB_datetimes.append(BB_date + " " + BB_time)
+                # Chooses file with minimum time difference
+                min_time_diff = min(difference_list)
+                min_time_diff_index = difference_list.index(min_time_diff)
+                opt_time = possible_times[min_time_diff_index]
+                chosen_date = str(opt_time)
+                chosen_datetimes.append(chosen_date)
+                BB_datetimes.append(BB_date + " " + BB_time)
 
-        print("HOBO list", chosen_datetimes)
-        print(len(chosen_datetimes))
-        print("BB list", BB_datetimes)
-        print(len(BB_datetimes))
+            print("HOBO list", chosen_datetimes)
+            print(len(chosen_datetimes))
+            print("BB list", BB_datetimes)
+            print(len(BB_datetimes))
 
-    HOBO_common_date_index_list = []
-    for date1 in chosen_datetimes:
-        HOBO_common_date_index = HOBO_1_part1_fx.loc[HOBO_1_part1_fx["Date (DT)"] == date1].index[0]
-        HOBO_common_date_index_list.append(HOBO_common_date_index)
-    
-    print(HOBO_common_date_index_list)
+        HOBO_common_date_index_list = []
+        for date1 in chosen_datetimes:
+            HOBO_common_date_index = HOBO_df.loc[HOBO_df["Date (DT)"] == date1].index[0]
+            HOBO_common_date_index_list.append(HOBO_common_date_index)
+        
+        #print(HOBO_common_date_index_list)
 
-    BB_common_date_index_list = []
-    for date2 in BB_datetimes:
-        BB_common_date_index = BB_df.loc[BB_df["DateTime"] == date2].index[0]
-        BB_common_date_index_list.append(BB_common_date_index)
+        BB_common_date_index_list = []
+        for date2 in BB_datetimes:
+            BB_common_date_index = BB_df.loc[BB_df["DateTime"] == date2].index[0]
+            BB_common_date_index_list.append(BB_common_date_index)
 
-    print(BB_common_date_index_list)
+        #print(BB_common_date_index_list)
 
-    sal_diff_list = []
-    for indexCommon in range(0, len(BB_common_date_index_list)):
-        HOBO_salinity = HOBO_1_part1_fx.loc[HOBO_common_date_index_list[indexCommon], "Salinity Value"]
-        BB_salinity = BB_df.loc[BB_common_date_index_list[indexCommon], "Salinity"]
-        sal_diff = HOBO_salinity - BB_salinity
-        sal_diff_list.append(sal_diff)
+        sal_diff_list = []
+        for indexCommon in range(0, len(BB_common_date_index_list)):
+            HOBO_salinity = HOBO_df.loc[HOBO_common_date_index_list[indexCommon], "Salinity Value"]
+            BB_salinity = BB_df.loc[BB_common_date_index_list[indexCommon], "Salinity"]
+            sal_diff = HOBO_salinity - BB_salinity
+            sal_diff_list.append(sal_diff)
 
-    chosen_datetime_time_converted_list = []
-    for date in chosen_datetimes:
-        #print(HOBO_file1)
-        #print("hi", date)
-        chosen_datetime_time_converted_list.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
+        chosen_datetime_time_converted_list = []
+        for date in chosen_datetimes:
+            #print(HOBO_file1)
+            #print("hi", date)
+            chosen_datetime_time_converted_list.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
+
+        return [chosen_datetime_time_converted_list, sal_diff_list]
+
+
+    HOBO_1 = diff_list_cal(HOBO_1_part1_fx)
+    print("yayyyy one worked")
+    print(HOBO_1_part1_fx)
+    print(HOBO_2_part1_fx)
+    HOBO_2 = diff_list_cal(HOBO_2_part1_fx)
 
     fig, ax1 = plt.subplots(figsize=(14,7))
     #p1 = ax1.plot(BB_df["DateTime"], BB_df["Salinity"], color = "g", linestyle = 'solid', label = 'BB', linewidth=0.75)
     #p2 = ax1.plot(HOBO_1_part1_fx["Date (DT)"], HOBO_1_part1_fx["Salinity Value"], color = 'b', linestyle = '-', label = "HOBO #1", linewidth = 0.75)
-    p3 = ax1.plot(chosen_datetime_time_converted_list, sal_diff_list, color = 'b', linestyle = '-', label = "Difference Between HOBO #1 and BB", linewidth = 0.75)
+    p3 = ax1.plot(HOBO_1[0], HOBO_1[1], color = 'b', linestyle = '-', label = "Difference Between HOBO #1 and BB", linewidth = 0.75)
+    p4 = ax1.plot(HOBO_2[0], HOBO_2[1], color = 'r', linestyle = '-', label = "Difference Between HOBO #2 and BB", linewidth = 0.75)
     #p3 = ax1.plot(HOBO_2_part1_fx["Date (DT)"], HOBO_2_part1_fx["Salinity Value"], color = 'r', linestyle = '-', label = "HOBO #2", linewidth = 0.75)
     #p4 = ax1.plot(HOBO_1_part2_fx["Date (DT)"], HOBO_1_part2_fx["Salinity Value"], color = 'cyan', linestyle = '-', label = "HOBO #1", linewidth = 0.75)
     #p5 = ax1.plot(HOBO_2_part2_fx["Date (DT)"], HOBO_2_part2_fx["Salinity Value"], color = 'orange', linestyle = '-', label = "HOBO #2", linewidth = 0.75)
@@ -264,7 +276,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
     my_path = os.path.dirname(os.path.abspath(__file__))
 
     # Saves without outliers graph to specified name in folder
-    #plt.savefig(my_path + '\\BB_vs_HOBO_' + station + '_' + year + '.png')
+    #plt.savefig(my_path + '\\BB_vs_HOBO_' + station + '_' + year + "_no_flags" + '.png')
     plt.show()
 
 
