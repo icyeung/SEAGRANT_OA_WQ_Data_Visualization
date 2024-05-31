@@ -49,8 +49,8 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
                     if commonDataRange(row[3], start_date, end_date):
                         raw_date_list.append(row[3])
                         raw_time_list.append(row[10])
-                        temp_list.append(row[19])
-                        salinity_list.append(row[21])
+                        temp_list.append(float(row[19]))
+                        salinity_list.append(float(row[21]))
                         numofLinesS += 1
             elif numofLinesS <= 0:
                 numofLinesS += 1
@@ -108,7 +108,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     #ax1.legend()  
 
     ax2 = ax1.twinx()
-    p13 = ax2.scatter(BB_df["DateTime"], BB_df["Salinity"], color = 'g', linestyle = 'solid', label = 'Temperature')
+    p13 = ax2.plot(BB_df["DateTime"], BB_df["Salinity"], color = 'g', linestyle = 'solid', label = 'Temperature')
     ax2.set_ylabel("Temperature (C)")
     
     plt.grid(True)
@@ -125,8 +125,8 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     plt.show()
 
 
-#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) 2021", "1/1/2021", "12/31/2021", "2021")
+buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) 2021", "1/1/2021", "12/31/2021", "2021")
 
 #buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022")
 
-buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2023", "1/1/2023", "12/31/2023", "2023")
+#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2023", "1/1/2023", "12/31/2023", "2023")

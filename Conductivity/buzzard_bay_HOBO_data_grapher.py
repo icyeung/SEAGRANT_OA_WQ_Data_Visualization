@@ -31,7 +31,7 @@ def commonDataRange(date, start_date, end_date):
         return True
     else:
         return False
-    
+'''    
 def HOBO_grapher(file):
     # Used to find location of specified file within Python code folder
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -62,16 +62,18 @@ def HOBO_grapher(file):
     with open(os.path.join(__location__, file)) as csvfile:
         lines = csv.reader(csvfile, delimiter=',')
         for row in lines:
+            print(row)
       
             # Checks if time entry has corresponding Time and Verified Measurement
             # If not, does not include data point in graph
-            if not row[0] == "-" and not row[1] == "-" and not row[2] == "-" and not row[0] == "" and not row[1] == "" and not row[2] == "" and numofLinesS > 0:
-                salDate.append(row[0])
-                print(row[0])
-                condData.append(float(row[1]))
-                condTempData.append(float(row[2]))
-                numofLinesS += 1
-            elif numofLinesS <= 0:
+            if numofLinesS > 1:
+                if not row[0] == "-" and not row[1] == "-" and not row[2] == "-" and not row[0] == "" and not row[1] == "" and not row[2] == "":
+                    salDate.append(row[0])
+                    print(row[0])
+                    condData.append(float(row[1]))
+                    condTempData.append(float(row[2]))
+                    numofLinesS += 1
+            elif numofLinesS <= 1:
                 numofLinesS += 1
             
     print(salDate)
@@ -84,7 +86,7 @@ def HOBO_grapher(file):
         salDateTrue.append(realTimeObj)
 
 
-    unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductiviy': condData, 'Temperature (C)': condTempData})
+    unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductiviy': condData, 'Temperature (F)': condTempData})
 
 
     # Verified Measurement also has to be between 5000, 55000
@@ -93,6 +95,13 @@ def HOBO_grapher(file):
         if (condData[index] <= 5000) or (condData[index] >= 55000):
             unrefinedCondData = unrefinedCondData.drop(index)
     unrefinedCondData = unrefinedCondData.reset_index(drop=True)
+
+    condTempDataC = []
+
+    for temp in unrefinedCondData["Temperature (F)"]:
+        tempC = (temp-32)/1.8
+        condTempDataC.append(tempC)
+    unrefinedCondData["Temperature (C)"] = condTempDataC
 
 
     # Conductivity conversion to salinity
@@ -150,14 +159,14 @@ def HOBO_grapher(file):
     # Converts all conductivity and temperature measurements to salinity
     # Rounds salinity conversions to 3 decimal places
     for i in range(len(condData)):
-        salinity = condSalConv(condData[i-1], condTempData[i-1])
+        salinity = condSalConv(condData[i-1], condTempDataC[i-1])
         #print(salinity)
     
         if salinity != "":
             salinity = round(float(salinity), 3)
     
         convertedSalinityData.append(salinity)
-        usedTemperature.append(condTempData[i-1])
+        usedTemperature.append(condTempDataC[i-1])
         usedConductivity.append(condData[i-1])
 
 
@@ -248,19 +257,13 @@ def HOBO_grapher(file):
 
     print('after cutting', len(salinityDFSortedNOreset.get("Date")))
     return salinityDFSortedNOreset
-
-print(HOBO_grapher("Salinity_Carolina_FiddlersCove_9-28-21_1.csv"))
-HOBO_1_part1 = HOBO_grapher("Salinity_Carolina_FiddlersCove_9-28-21_1.csv")
-
-HOBO_1_part2 = HOBO_grapher("Salinity_Carolina_FiddlersCove_12-10-21_1.csv")
-
-print(HOBO_grapher("Salinity_Carolina_FiddlersCove_9-28-21_2.csv"))
-HOBO_2_part1 = HOBO_grapher("Salinity_Carolina_FiddlersCove_9-28-21_2.csv")
-
-HOBO_2_part2 = HOBO_grapher("Salinity_Carolina_FiddlersCove_12-10-21_2.csv")
+'''
 
 
-def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
+
+
+
+def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_file1, HOBO_file2, HOBO_file3, HOBO_file4):
 
     numofLinesS = 0
     raw_date_list = []
@@ -270,7 +273,9 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-    with open(os.path.join(__location__, "\\Buzzards_Bay_Data\\" + file),'r') as csvfile:
+    file_BB = "Buzzards_Bay_Data\\" + file
+
+    with open(os.path.join(__location__, file_BB),'r') as csvfile:
         lines = csv.reader(csvfile, delimiter=',')
         for row in lines:
             #print(row)
@@ -278,12 +283,12 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
             # If not, does not include data point in graph
             if not row[1] == "" and not row[3] == "" and not row[10] == "" and not row[19] == "" and not row[21] == "" and numofLinesS > 0:
                 if row[1] == station:
-                    print("hi")
+                    #print("hi")
                     if commonDataRange(row[3], start_date, end_date):
                         raw_date_list.append(row[3])
                         raw_time_list.append(row[10])
-                        temp_list.append(row[19])
-                        salinity_list.append(row[21])
+                        temp_list.append(float(row[19]))
+                        salinity_list.append(float(row[21]))
                         numofLinesS += 1
             elif numofLinesS <= 0:
                 numofLinesS += 1
@@ -325,9 +330,65 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
         BB_data_datetime_combined_list.append(dt.combine(BB_data_date_converted_list[index], BB_data_time_converted_list[index].time()))
 
     BB_df = pd.DataFrame({"DateTime": BB_data_datetime_combined_list, "Temperature": temp_list, "Salinity": salinity_list})
+    
+    HOBO_1_part1 = pd.read_csv(os.path.join(__location__, "Conductivity_Data_NO\\" + HOBO_file1), delimiter=",")
 
+    HOBO_1_part2 = pd.read_csv(os.path.join(__location__, "Conductivity_Data_NO\\" + HOBO_file2), delimiter=",")
+
+    HOBO_2_part1 = pd.read_csv(os.path.join(__location__, "Conductivity_Data_NO\\" + HOBO_file3), delimiter=",")
+
+    HOBO_2_part2 = pd.read_csv(os.path.join(__location__, "Conductivity_Data_NO\\" + HOBO_file4), delimiter=",")
+
+    def convertTime(df):
+        graphingTime = []
+        for date in df["Date"]:
+            dateNew = date[:-6]
+            print(dateNew)
+            graphingTime.append(dateNew)
+        df["Date (Corrected)"] = graphingTime
+        return(df)
+
+    HOBO_1_part1_fx = convertTime(HOBO_1_part1)
+    #print(HOBO_1_part1_fx)
+    HOBO_1_part2_fx = convertTime(HOBO_1_part2)
+    HOBO_2_part1_fx = convertTime(HOBO_2_part1)
+    HOBO_2_part2_fx = convertTime(HOBO_2_part2)
+    
+    HOBO1_data_time_converted_list = []
+    for date in HOBO_1_part1["Date (Corrected)"]:
+        print(HOBO_file1)
+        print("hi", date)
+        HOBO1_data_time_converted_list.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
+    HOBO_1_part1_fx["Date (DT)"] = HOBO1_data_time_converted_list
+
+    '''
+    HOBO2_data_time_converted_list = []
+    for date in HOBO_2_part1["Date (Corrected)"]:
+        #print(HOBO_file1)
+        print("hi", date)
+        HOBO2_data_time_converted_list.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
+    HOBO_2_part1_fx["Date (DT)"] = HOBO2_data_time_converted_list
+
+    HOBO1_data_time_converted_list_2 = []
+    for date in HOBO_1_part2["Date (Corrected)"]:
+        #print(HOBO_file1)
+        print("hi", date)
+        HOBO1_data_time_converted_list_2.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
+    HOBO_1_part2_fx["Date (DT)"] = HOBO1_data_time_converted_list_2
+
+    HOBO2_data_time_converted_list_2 = []
+    for date in HOBO_2_part2["Date (Corrected)"]:
+        #print(HOBO_file1)
+        print("hi", date)
+        HOBO2_data_time_converted_list_2.append(dt.strptime(date, "%Y-%m-%d %H:%M:%S"))
+    HOBO_2_part2_fx["Date (DT)"] = HOBO2_data_time_converted_list_2
+    '''
     fig, ax1 = plt.subplots(figsize=(14,7))
-    p1 = ax1.plot(BB_df["DateTime"], BB_df["Salinity"], color = "b", linestyle = 'solid', label = 'Salinity', linewidth=0.75)
+    p1 = ax1.plot(BB_df["DateTime"], BB_df["Salinity"], color = "g", linestyle = 'solid', label = 'BB', linewidth=0.75)
+    p2 = ax1.plot(HOBO_1_part1_fx["Date (DT)"], HOBO_1_part1_fx["Salinity Value"], color = 'b', linestyle = '-', label = "HOBO #1", linewidth = 0.75)
+    #p3 = ax1.plot(HOBO_2_part1_fx["Date (DT)"], HOBO_2_part1_fx["Salinity Value"], color = 'r', linestyle = '-', label = "HOBO #2", linewidth = 0.75)
+    #p4 = ax1.plot(HOBO_1_part2_fx["Date (DT)"], HOBO_1_part2_fx["Salinity Value"], color = 'cyan', linestyle = '-', label = "HOBO #1", linewidth = 0.75)
+    #p5 = ax1.plot(HOBO_2_part2_fx["Date (DT)"], HOBO_2_part2_fx["Salinity Value"], color = 'orange', linestyle = '-', label = "HOBO #2", linewidth = 0.75)
     # Sets x-axis as Dates
     date_form = DateFormatter("%m-%d")
     ax1.xaxis.set_major_formatter(date_form)
@@ -340,27 +401,28 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     ax1.yaxis.label.set_color("k")
     #ax1.legend()  
 
-    ax2 = ax1.twinx()
-    p13 = ax2.scatter(BB_df["DateTime"], BB_df["Salinity"], color = 'g', linestyle = 'solid', label = 'Temperature')
-    ax2.set_ylabel("Temperature (C)")
+    #ax2 = ax1.twinx()
+    #p13 = ax2.plot(BB_df["DateTime"], BB_df["Salinity"], color = 'g', linestyle = 'solid', label = 'Temperature')
+    #ax2.set_ylabel("Temperature (C)")
     
     plt.grid(True)
     plt.tight_layout()
     plt.subplots_adjust(top=0.95)
     plt.title(title, loc='center')
-    fig.legend(loc = 'upper center', ncol = 3, borderaxespad=4)
+    fig.legend(loc = 'upper right', ncol = 3, borderaxespad=4)
 
 
     my_path = os.path.dirname(os.path.abspath(__file__))
 
     # Saves without outliers graph to specified name in folder
-    plt.savefig(my_path + '\\BB_' + station + '_' + year + '.png')
+    plt.savefig(my_path + '\\BB_vs_HOBO_' + station + '_' + year + '.png')
     plt.show()
 
 
-#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) 2021", "1/1/2021", "12/31/2021", "2021")
 
-#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022")
+#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) vs HOBO 2021", "1/1/2021", "12/31/2021", "2021", "Salinity_Carolina_FiddlersCove_9-28-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
 
-#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2023", "1/1/2023", "12/31/2023", "2023")
+buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022", "Salinity_Carolina_Pocasset_12_9_22_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
+
+#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2023", "1/1/2023", "12/31/2023", "2023", "Salinity_Carolina_Pocasset_12_9_22_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
 

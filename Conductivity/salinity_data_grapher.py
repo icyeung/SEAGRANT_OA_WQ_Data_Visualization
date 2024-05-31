@@ -36,23 +36,26 @@ salinityDates = []
 salinityValues = []
 usedTemperature = []
 usedConductivity = []
+usedTime = []
 
 
 # Takes out empty values in salinity data set
-with open(os.path.join(__location__, 'Salinity_Carolina_12-10-21.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'Salinity_Carolina_FiddlersCove_12-10-21_1.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
+            print(row)
       
-        # Checks if time entry has corresponding Time and Verified Measurement
-        # If not, does not include data point in graph
-        if not row[0] == "-" and not row[1] == "-" and not row[2] == "-" and not row[0] == "" and not row[1] == "" and not row[2] == "" and numofLinesS > 0:
-            salDate.append(row[0])
-            print(row[0])
-            condData.append(float(row[1]))
-            condTempData.append(float(row[2]))
-            numofLinesS += 1
-        elif numofLinesS <= 0:
-            numofLinesS += 1
+            # Checks if time entry has corresponding Time and Verified Measurement
+            # If not, does not include data point in graph
+            if numofLinesS > 1:
+                if not row[0] == "-" and not row[1] == "-" and not row[2] == "-" and not row[0] == "" and not row[1] == "" and not row[2] == "":
+                    salDate.append(row[0])
+                    print(row[0])
+                    condData.append(float(row[1]))
+                    condTempData.append(float(row[2]))
+                    numofLinesS += 1
+            elif numofLinesS <= 1:
+                numofLinesS += 1
             
 print(salDate)
 
@@ -64,7 +67,14 @@ for time in salDate:
     salDateTrue.append(realTimeObj)
 
 
-unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductiviy': condData, 'Temperature (C)': condTempData})
+unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductivity': condData, 'Temperature (F)': condTempData})
+
+condTempDataC = []
+
+for temp in unrefinedCondData["Temperature (F)"]:
+    tempC = (temp-32)/1.8
+    condTempDataC.append(tempC)
+unrefinedCondData["Temperature (C)"] = condTempDataC
 
 
 # Verified Measurement also has to be between 5000, 55000
@@ -73,6 +83,8 @@ for index in range(0, len(salDateTrue)):
     if (condData[index] <= 5000) or (condData[index] >= 55000):
         unrefinedCondData = unrefinedCondData.drop(index)
 unrefinedCondData = unrefinedCondData.reset_index(drop=True)
+
+
 
 
 # Conductivity conversion to salinity
@@ -129,16 +141,17 @@ print("salinity", condSalConv(45000, 16))
 
 # Converts all conductivity and temperature measurements to salinity
 # Rounds salinity conversions to 3 decimal places
-for i in range(len(condData)):
-    salinity = condSalConv(condData[i-1], condTempData[i-1])
+for i in range(len(unrefinedCondData)):
+    salinity = condSalConv(unrefinedCondData.loc[i, "Conductivity"], unrefinedCondData.loc[i, "Temperature (C)"])
     #print(salinity)
     
     if salinity != "":
         salinity = round(float(salinity), 3)
     
-    convertedSalinityData.append(salinity)
-    usedTemperature.append(condTempData[i-1])
-    usedConductivity.append(condData[i-1])
+        convertedSalinityData.append(salinity)
+        usedTime.append(unrefinedCondData.loc[i, "Date"])
+        usedTemperature.append(unrefinedCondData.loc[i, "Temperature (C)"])
+        usedConductivity.append(unrefinedCondData.loc[i, "Conductivity"])
 
 
 # Remove outliers by taking 10% of the regression line
@@ -146,7 +159,7 @@ for i in range(len(condData)):
 #print('salDate length', len(salDate))
 #print("salDateTrue length", len(salDateTrue))
 
-salDateTrueJulian = salDateTrue.copy()
+salDateTrueJulian = usedTime.copy()
 
 # Converts dates to ints
 # Not used as there are jumps due to the date format not being continuous as an int
@@ -167,9 +180,9 @@ for date in salDateTrueOrdinal:
 '''
 
 
-salDateJulian = []
+salDateJulianOR = []
 #salDateJulianHolder = []
-for date in salDateTrueJulian:
+for date in usedTime:
     year = date.year
     month = date.month
     day = date.day
@@ -178,27 +191,27 @@ for date in salDateTrueJulian:
     second = date.second
     ts = pd.Timestamp(year, month, day, hour, second)
     jd = ts.to_julian_date()
-    salDateJulian.append(jd)
-print(salDateJulian)
+    salDateJulianOR.append(jd)
+print(salDateJulianOR)
 
 #print("length of salDateInt", len(salDateInt))
 #print("length of salDateTrueOrdinal", len(salDateTrueOrdinal))
 
-salDateTrueOrdinalAry = np.array(salDateJulian)
+salDateTrueOrdinalAry = np.array(salDateJulianOR)
 #salDateTrueOrdinal.toArray(salDateTrueOrdinalAry)
 
 condDataOR = usedConductivity.copy()
 condDataAry = np.array(condDataOR)
 #condData.toArray(condDataAry)
 
-dateStringUnrefinedCondData = pd.DataFrame({'Date': salDateTrueJulian, 'Conductiviy': condData, 'Temperature (C)': condTempData})   
+#dateStringUnrefinedCondData = pd.DataFrame({'Date': salDateTrueJulian, 'Conductiviy': condData, 'Temperature (C)': condTempDataC})   
 model = LinearRegression().fit(salDateTrueOrdinalAry.reshape(-1,1), condDataAry)
 r_sq = model.score(salDateTrueOrdinalAry.reshape(-1,1), condDataAry)
 print("intercept", model.intercept_)
 print("slope", model.coef_)
 #print('coefficient of determination:', r_sq)
 condDataFitPredList=[]
-for date in salDateJulian:
+for date in salDateJulianOR:
     condDataFitPredList.append((model.coef_*date)+model.intercept_)
 #condDataFitPredAry = model.predict(salDateTrueOrdinalAry.reshape(-1,1))
 #print("fit tester", condDataFitPredAry)
@@ -210,7 +223,7 @@ print('before cutting', len(condDataFitPredList))
 #print("list", condDataFitPredList)
 
 # Salinity dataframe to remove null values
-salinityDF = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData, 'Temperature (C)': usedTemperature, 'Conductivity': usedConductivity,
+salinityDF = pd.DataFrame({'Date': salDateTrueJulian, 'Salinity Value': convertedSalinityData, 'Temperature (C)': usedTemperature, 'Conductivity': usedConductivity,
                           'Fit': condDataFitPredList})
 print(len(salDateTrue))
 #print(salinityDF)
@@ -220,7 +233,7 @@ print(len(salDateTrue))
 
 # print(salinityDFSorted)
 
-salinityDF_copy = pd.DataFrame({'Date': salDateTrue, 'Salinity Value': convertedSalinityData, 'Temperature (C)': usedTemperature, 'Conductivity': usedConductivity,
+salinityDF_copy = pd.DataFrame({'Date': salDateTrueJulian, 'Salinity Value': convertedSalinityData, 'Temperature (C)': usedTemperature, 'Conductivity': usedConductivity,
                           'Fit': condDataFitPredList})
 salinityDFSortedNOreset = salinityDF_copy.reset_index(drop=True)
 #print(salinityDFSortedNOreset)
@@ -322,6 +335,8 @@ grapher(salinityDFSortedNOreset.get("Date"), salinityDFSortedNOreset.get("Salini
 
 # Saves without outliers graph to specified name in folder
 plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_Without_Outliers.png', dpi=2000)
+
+salinityDFSortedNOreset.to_csv(my_path + '\\Conductivity_Data_NO\\Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv')
 
 print("fitted length", len(salinityDFSortedNOreset.get("Fit")))
 
