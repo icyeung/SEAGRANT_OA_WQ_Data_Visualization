@@ -422,6 +422,7 @@ p1 = ax1.plot(pCO2_date_revised, measured_pCO2_data, color = "b", linestyle = 's
 #p4 = ax1.scatter(bottom_date_GMT, bottom_cal_pCO2_data, color = 'olivedrab', marker = "D", label = "Calculated pCO2- Bottom Sample", zorder=3)
 #p5 = ax1.scatter(top_date_GMT, top_cal_pCO2_data, color = 'greenyellow', marker = "D", label = "Calculated pCO2- Top Sample", zorder=3)
 p12 = ax1.scatter(mid_date_GMT, mid_cal_pCO2_data, color = 'teal', marker = "D", label = "Calculated pCO2- Middle Sample", zorder=3)
+
 # Sets x-axis as Dates
 date_form = DateFormatter("%m-%d")
 ax1.xaxis.set_major_formatter(date_form)

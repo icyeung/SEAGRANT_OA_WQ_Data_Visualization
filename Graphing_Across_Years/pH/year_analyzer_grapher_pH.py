@@ -86,10 +86,10 @@ for date in date_2023:
     # Salinity plot
 fig, ax1 = plt.subplots(figsize=(14,7))
 p1a = ax1.plot(date_2019_revised, data_2019, color = 'r', linestyle = 'solid', label = '2019', linewidth=0.85)
-p1b = ax1.plot(date_2020_revised, data_2020, color = 'g', linestyle = 'solid', label = '2020', linewidth=0.85)
-p1c = ax1.plot(date_2021_revised, data_2021, color = 'b', linestyle = 'solid', label = '2021', linewidth=0.85)
-p1d = ax1.plot(date_2022_revised, data_2022, color = "m", linestyle = 'solid', label = '2022', linewidth=0.85)
-p1e = ax1.plot(date_2023_revised, data_2023, color = "c", linestyle = 'solid', label = '2023', linewidth=0.85)
+#p1b = ax1.plot(date_2020_revised, data_2020, color = 'g', linestyle = 'solid', label = '2020', linewidth=0.85)
+#p1c = ax1.plot(date_2021_revised, data_2021, color = 'b', linestyle = 'solid', label = '2021', linewidth=0.85)
+#p1d = ax1.plot(date_2022_revised, data_2022, color = "m", linestyle = 'solid', label = '2022', linewidth=0.85)
+#p1e = ax1.plot(date_2023_revised, data_2023, color = "c", linestyle = 'solid', label = '2023', linewidth=0.85)
 
     # Sets x-axis as Dates
 date_form = DateFormatter("%m-%d")
@@ -115,14 +115,14 @@ ax2.set_ylabel("Temperature (C)")
     # Sets title, adds a grid, and shows legend
 plt.tight_layout()
 plt.subplots_adjust(top=0.95)
-plt.title("pH (2019-2023)", loc='center')
+plt.title("pH-SAMI Dennis (2019)", loc='center')
 plt.grid(True)
-plt.legend(handles=p1a+p1b+p1c+p1d+p1e)
+plt.legend(handles=p1a)
 
 
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pH_2019_2023_Graph_No_Outliers.png')
+plt.savefig(my_path + '\\pH_2019_Graph_No_Outliers.png')
 
 plt.show()

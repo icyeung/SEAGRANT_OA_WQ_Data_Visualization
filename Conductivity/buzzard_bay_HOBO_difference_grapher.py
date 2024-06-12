@@ -35,10 +35,14 @@ def commonDataRange(date, start_date, end_date):
 def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_file1, HOBO_file2, HOBO_file3, HOBO_file4):
 
     numofLinesS = 0
-    raw_date_list = []
-    raw_time_list = []
-    temp_list = []
-    salinity_list = []
+    raw_date_shallow_list = []
+    raw_date_deep_list = []
+    raw_time_shallow_list = []
+    raw_time_deep_list = []
+    temp_shallow_list = []
+    temp_deep_list = []
+    salinity_shallow_list = []
+    salinity_deep_list = []
     
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -54,15 +58,22 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
                 if row[1] == station:
                     #print("hi")
                     if commonDataRange(row[3], start_date, end_date):
-                        raw_date_list.append(row[3])
-                        raw_time_list.append(row[10])
-                        temp_list.append(float(row[19]))
-                        salinity_list.append(float(row[21]))
-                        numofLinesS += 1
+                        if float(row[13]) < 1:
+                            raw_date_shallow_list.append(row[3])
+                            raw_time_shallow_list.append(row[10])
+                            temp_shallow_list.append(float(row[19]))
+                            salinity_shallow_list.append(float(row[21]))
+                            numofLinesS += 1
+                        if float(row[13]) >= 1:
+                            raw_date_deep_list.append(row[3])
+                            raw_time_deep_list.append(row[10])
+                            temp_deep_list.append(float(row[19]))
+                            salinity_deep_list.append(float(row[21]))
+                            numofLinesS += 1
             elif numofLinesS <= 0:
                 numofLinesS += 1
     
-    print(raw_date_list)
+    #print(raw_date_list)
 
     def timeConverterto24(time):
         ending = time.split(" ")[-1]
@@ -76,29 +87,49 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
         converted_time_dt = dt.strptime(converted_time, "%H:%M")
         return converted_time_dt
 
-    BB_data_time_converted_list = []
-    for time in raw_time_list:
-        BB_data_time_converted_list.append(timeConverterto24(time))
+    BB_data_time_shallow_converted_list = []
+    for time in raw_time_shallow_list:
+        BB_data_time_shallow_converted_list.append(timeConverterto24(time))
     #print("time", NOAA_tidal_data_time_converted_list)
 
-    BB_data_date_converted_list = []    
-    for date in raw_date_list:
-        BB_data_date_converted_list.append(dt.strptime(date, "%m/%d/%Y"))
+    BB_data_time_deep_converted_list = []
+    for time in raw_time_deep_list:
+        BB_data_time_deep_converted_list.append(timeConverterto24(time))
+    #print("time", NOAA_tidal_data_time_converted_list)
+
+    BB_data_date_shallow_converted_list = []    
+    for date in raw_date_shallow_list:
+        BB_data_date_shallow_converted_list.append(dt.strptime(date, "%m/%d/%Y"))
     #print("date", NOAA_tidal_data_date_converted_list)
 
-    if len(BB_data_date_converted_list) == len(BB_data_time_converted_list):
-        print("yayyyyy")
+    BB_data_date_deep_converted_list = []    
+    for date in raw_date_deep_list:
+        BB_data_date_deep_converted_list.append(dt.strptime(date, "%m/%d/%Y"))
+    #print("date", NOAA_tidal_data_date_converted_list)
+
+    if len(BB_data_date_shallow_converted_list) == len(BB_data_time_shallow_converted_list):
+        print("shallow: yayyyyy")
     else:
-        print("OOps", "date", len(BB_data_date_converted_list), "time", len(BB_data_time_converted_list))
+        print("OOps, shallow: ", "date", len(BB_data_date_shallow_converted_list), "time", len(BB_data_time_shallow_converted_list))
+
+    if len(BB_data_date_deep_converted_list) == len(BB_data_time_deep_converted_list):
+        print("deep: yayyyyy")
+    else:
+        print("OOps, high: ", "date", len(BB_data_date_deep_converted_list), "time", len(BB_data_time_deep_converted_list))
 
     #print(BB_data_date_converted_list)
 
 
-    BB_data_datetime_combined_list = []
-    for index in range(0, len(BB_data_date_converted_list)):
-        BB_data_datetime_combined_list.append(dt.combine(BB_data_date_converted_list[index], BB_data_time_converted_list[index].time()))
+    BB_data_datetime_shallow_combined_list = []
+    for index in range(0, len(BB_data_date_shallow_converted_list)):
+        BB_data_datetime_shallow_combined_list.append(dt.combine(BB_data_date_shallow_converted_list[index], BB_data_time_shallow_converted_list[index].time()))
 
-    BB_df = pd.DataFrame({"DateTime": BB_data_datetime_combined_list, "Temperature": temp_list, "Salinity": salinity_list})
+    BB_data_datetime_deep_combined_list = []
+    for index in range(0, len(BB_data_date_deep_converted_list)):
+        BB_data_datetime_deep_combined_list.append(dt.combine(BB_data_date_deep_converted_list[index], BB_data_time_deep_converted_list[index].time()))
+
+    BB_shallow_df = pd.DataFrame({"DateTime": BB_data_datetime_shallow_combined_list, "Temperature": temp_shallow_list, "Salinity": salinity_shallow_list})
+    BB_deep_df = pd.DataFrame({"DateTime": BB_data_datetime_deep_combined_list, "Temperature": temp_deep_list, "Salinity": salinity_deep_list})
     
     HOBO_1_part1 = pd.read_csv(os.path.join(__location__, "Conductivity_Data_NO\\" + HOBO_file1), delimiter=",")
 
@@ -156,7 +187,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
 
     #print(BB_df)
 
-    def diff_list_cal(HOBO_df):
+    def diff_list_cal(HOBO_df, BB_df):
         HOBO_df = pd.DataFrame(HOBO_df)
         chosen_datetimes = []
         BB_datetimes = []
@@ -236,17 +267,19 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
         return [chosen_datetime_time_converted_list, sal_diff_list]
 
 
-    HOBO_1 = diff_list_cal(HOBO_1_part1_fx)
+    HOBO_1_shallow = diff_list_cal(HOBO_1_part1_fx, BB_shallow_df)
+    HOBO_1_deep = diff_list_cal(HOBO_1_part1_fx, BB_deep_df)
     print("yayyyy one worked")
     print(HOBO_1_part1_fx)
     print(HOBO_2_part1_fx)
-    HOBO_2 = diff_list_cal(HOBO_2_part1_fx)
+    #HOBO_2 = diff_list_cal(HOBO_2_part1_fx)
 
     fig, ax1 = plt.subplots(figsize=(14,7))
     #p1 = ax1.plot(BB_df["DateTime"], BB_df["Salinity"], color = "g", linestyle = 'solid', label = 'BB', linewidth=0.75)
     #p2 = ax1.plot(HOBO_1_part1_fx["Date (DT)"], HOBO_1_part1_fx["Salinity Value"], color = 'b', linestyle = '-', label = "HOBO #1", linewidth = 0.75)
-    p3 = ax1.plot(HOBO_1[0], HOBO_1[1], color = 'b', linestyle = '-', label = "Difference Between HOBO #1 and BB", linewidth = 0.75)
-    p4 = ax1.plot(HOBO_2[0], HOBO_2[1], color = 'r', linestyle = '-', label = "Difference Between HOBO #2 and BB", linewidth = 0.75)
+    p3 = ax1.scatter(HOBO_1_shallow[0], HOBO_1_shallow[1], color = 'b', linestyle = '-', label = "Difference Between HOBO #1 and BB (Shallow)", linewidth = 0.75)
+    p5 = ax1.scatter(HOBO_1_deep[0], HOBO_1_deep[1], color = 'r', linestyle = '-', label = "Difference Between HOBO #1 and BB (Deep)", linewidth = 0.75)
+    #p4 = ax1.plot(HOBO_2[0], HOBO_2[1], color = 'r', linestyle = '-', label = "Difference Between HOBO #2 and BB", linewidth = 0.75)
     #p3 = ax1.plot(HOBO_2_part1_fx["Date (DT)"], HOBO_2_part1_fx["Salinity Value"], color = 'r', linestyle = '-', label = "HOBO #2", linewidth = 0.75)
     #p4 = ax1.plot(HOBO_1_part2_fx["Date (DT)"], HOBO_1_part2_fx["Salinity Value"], color = 'cyan', linestyle = '-', label = "HOBO #1", linewidth = 0.75)
     #p5 = ax1.plot(HOBO_2_part2_fx["Date (DT)"], HOBO_2_part2_fx["Salinity Value"], color = 'orange', linestyle = '-', label = "HOBO #2", linewidth = 0.75)
@@ -270,7 +303,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
     plt.tight_layout()
     plt.subplots_adjust(top=0.95)
     plt.title(title, loc='center')
-    fig.legend(loc = 'upper right', ncol = 3, borderaxespad=4)
+    fig.legend(loc = 'upper center', ncol = 1, borderaxespad=4)
 
 
     my_path = os.path.dirname(os.path.abspath(__file__))
