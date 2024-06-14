@@ -314,7 +314,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year, HOBO_f
 
 
 
-buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) vs HOBO 2021", "1/1/2021", "12/31/2021", "2021", "Salinity_Carolina_FiddlersCove_9-28-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
+buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) vs HOBO 2021 Difference", "1/1/2021", "12/31/2021", "2021", "Salinity_Carolina_FiddlersCove_9-28-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
 
 #buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022", "Salinity_Carolina_Pocasset_12_9_22_1_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_1_NO.csv", "Salinity_Carolina_FiddlersCove_9-28-21_2_NO.csv", "Salinity_Carolina_FiddlersCove_12-10-21_2_NO.csv")
 
