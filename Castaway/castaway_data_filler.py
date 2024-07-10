@@ -163,6 +163,7 @@ def castawayRetriever (file_logger_input, start_date, end_date):
 
    # date interval checker
    # if date is in-between start and end interval, inputs values
+   # if location is Pocasset, inputs depth as 1.5m
    print("index list", valid_date_index_list)
    for index in valid_date_index_list:
       print ("current index", index)
