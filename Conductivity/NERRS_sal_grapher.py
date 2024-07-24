@@ -124,7 +124,7 @@ def NERRS_sal_grapher(file_location, date_start, date_end, trunc_date_start, tru
     ax1.xaxis.set_major_locator(mdates.DayLocator(interval = 7))       # Indicates each day (without label) on x-axis
 
     ax1.set_xlim([trunc_date_start, trunc_date_end])
-    #ax1.set_ylim(26, 33)
+    # ax1.set_ylim(26, 33)
         
     # Sets axis labels 
     ax1.set_xlabel("Dates (MM-DD)")
@@ -148,13 +148,13 @@ def NERRS_sal_grapher(file_location, date_start, date_end, trunc_date_start, tru
 
 
 # Sage Lot 2020
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Sage_Lot\\wqbslwq2020.csv",
                   "01-01-2020", "12-31-2020",
                   datetime.date(2020, 1, 1), datetime.date(2020, 12, 31),
                   'NERRS Waquoit Bay (Sage Lot) 2020 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2020_Sage_Lot.png')
-
+'''
 
 # Sage Lot 2020 (zoomed in)
 '''
@@ -166,13 +166,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 '''
 
 # Sage Lot 2021
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Sage_Lot\\wqbslwq2021.csv",
                   "01-01-2021", "12-31-2021",
                   datetime.date(2021, 1, 1), datetime.date(2021, 12, 31),
                   'NERRS Waquoit Bay (Sage Lot) 2021 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2021_Sage_Lot.png')
-
+'''
 
 # Sage Lot 2021 (zoomed in)
 '''
@@ -184,13 +184,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 '''
 
 # Sage Lot 2022
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Sage_Lot\\wqbslwq2022.csv",
                   "01-01-2022", "12-31-2022",
                   datetime.date(2022, 1, 1), datetime.date(2022, 12, 31),
                   'NERRS Waquoit Bay (Sage Lot) 2022 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2022_Sage_Lot.png')
-
+'''
 
 # Sage Lot 2022 (zoomed in)
 '''
@@ -202,13 +202,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 '''
 
 # Sage Lot 2023
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Sage_Lot\\wqbslwq2023.csv",
                   "01-01-2023", "12-31-2023",
                   datetime.date(2023, 1, 1), datetime.date(2023, 12, 31),
                   'NERRS Waquoit Bay (Sage Lot) 2023 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2023_Sage_Lot.png')
-
+'''
 
 # Sage Lot 2023 (zoomed in)
 '''
@@ -222,13 +222,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 
 
 # Metoxit Point 2020
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Metoxit_Point\\wqbmpwq2020.csv",
                   "01-01-2020", "12-31-2020",
                   datetime.date(2020, 1, 1), datetime.date(2020, 12, 31),
                   'NERRS Waquoit Bay (Metoxit Point) 2020 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2020_Metoxit_Point.png')
-
+'''
 
 # Metoxit Point 2020 (zoomed in)
 '''
@@ -240,13 +240,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 '''
 
 # Metoxit Point 2021
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Metoxit_Point\\wqbmpwq2021.csv",
                   "01-01-2021", "12-31-2021",
                   datetime.date(2021, 1, 1), datetime.date(2021, 12, 31),
                   'NERRS Waquoit Bay (Metoxit Point) 2021 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2021_Metoxit_Point.png')
-
+'''
 
 # Metoxit Point 2021 (zoomed in)
 '''
@@ -258,13 +258,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 '''
 
 # Metoxit Point 2022
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Metoxit_Point\\wqbmpwq2022.csv",
                   "01-01-2022", "12-31-2022",
                   datetime.date(2022, 1, 1), datetime.date(2022, 12, 31),
                   'NERRS Waquoit Bay (Metoxit Point) 2022 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2022_Metoxit_Point.png')
-
+'''
 
 # Metoxit Point (zoomed in)
 '''
@@ -277,13 +277,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 
 
 # Metoxit Point 2023
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Metoxit_Point\\wqbmpwq2023.csv",
                   "01-01-2023", "12-31-2023",
                   datetime.date(2023, 1, 1), datetime.date(2023, 12, 31),
                   'NERRS Waquoit Bay (Metoxit Point) 2023 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2023_Metoxit_Point.png')
-
+'''
 
 # Metoxit Point 2023 (zoomed in)
 '''
@@ -297,13 +297,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 
 
 # Menauhant 2020
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Menauhant\\wqbmhwq2020.csv",
                   "01-01-2020", "12-31-2020",
                   datetime.date(2020, 1, 1), datetime.date(2020, 12, 31),
                   'NERRS Waquoit Bay (Menauhant) 2020 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2020_Menauhant.png')
-
+'''
 
 # Menauhant 2020 (zoomed in)
 '''
@@ -314,14 +314,23 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2020_Menauhant_zoomed_in.png')
 '''
 
-# Menauhant 2021
+# Menauhant 2020 (outliers removed)
 
+NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Menauhant\\wqbmhwq2020.csv",
+                  "01-01-2020", "12-31-2020",
+                  datetime.date(2020, 1, 1), datetime.date(2020, 12, 31),
+                  'NERRS Waquoit Bay (Menauhant) 2020 Salinity (Outliers Removed)',
+                  '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2020_Menauhant_outliers_removed.png')
+
+
+# Menauhant 2021
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Menauhant\\wqbmhwq2021.csv",
                   "01-01-2021", "12-31-2021",
                   datetime.date(2021, 1, 1), datetime.date(2021, 12, 31),
                   'NERRS Waquoit Bay (Menauhant) 2021 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2021_Menauhant.png')
-
+'''
 
 # Menauhant 2021 (zoomed in)
 '''
@@ -332,14 +341,23 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2021_Menauhant_zoomed_in.png')
 '''
 
-# Menauhant 2022
+# Menauhant 2021 (outliers removed)
 
+NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Menauhant\\wqbmhwq2021.csv",
+                  "01-01-2021", "12-31-2021",
+                  datetime.date(2021, 1, 1), datetime.date(2021, 12, 31),
+                  'NERRS Waquoit Bay (Menauhant) 2021 Salinity (Outliers Removed)',
+                  '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2021_Menauhant_outliers_removed.png')
+
+
+# Menauhant 2022
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Menauhant\\wqbmhwq2022.csv",
                   "01-01-2022", "12-31-2022",
                   datetime.date(2022, 1, 1), datetime.date(2022, 12, 31),
                   'NERRS Waquoit Bay (Menauhant) 2022 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2022_Menauhant.png')
-
+'''
 
 # Menauhant 2022 (zoomed in)
 '''
@@ -348,6 +366,15 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
                   datetime.date(2022, 1, 1), datetime.date(2022, 12, 31),
                   'NERRS Waquoit Bay (Menauhant) 2022 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2022_Menauhant_zoomed_in.png')
+'''
+
+# Menauhant 2022 (outliers removed)
+'''
+NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Menauhant\\wqbmhwq2022.csv",
+                  "01-01-2022", "12-31-2022",
+                  datetime.date(2022, 1, 1), datetime.date(2022, 12, 31),
+                  'NERRS Waquoit Bay (Menauhant) 2022 Salinity (Outliers Removed)',
+                  '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2022_Menauhant_outliers_removed.png')
 '''
 
 # Menauhant 2023
@@ -368,16 +395,24 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2023_Menauhant_zoomed_in.png')
 '''
 
+# Menauhant 2023 (outliers removed)
+'''
+NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Menauhant\\wqbmhwq2023.csv",
+                  "01-01-2023", "12-31-2023",
+                  datetime.date(2023, 1, 1), datetime.date(2023, 12, 31),
+                  'NERRS Waquoit Bay (Menauhant) 2023 Salinity (Outliers Removed)',
+                  '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2023_Menauhant_outliers_removed.png')
+'''
 
 
 # Childs River 2020
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Childs_River\\wqbcrwq2020.csv",
                   "01-01-2020", "12-31-2020",
                   datetime.date(2020, 1, 1), datetime.date(2020, 12, 31),
                   'NERRS Waquoit Bay (Childs River) 2020 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2020_Childs_River.png')
-
+'''
 
 # Childs River 2020 (zoomed in)
 '''
@@ -389,13 +424,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 '''
 
 # Childs River 2021
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Childs_River\\wqbcrwq2021.csv",
                   "01-01-2021", "12-31-2021",
                   datetime.date(2021, 1, 1), datetime.date(2021, 12, 31),
                   'NERRS Waquoit Bay (Childs River) 2021 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2021_Childs_River.png')
-
+'''
 
 # Childs River 2021 (zoomed in)
 '''
@@ -407,13 +442,13 @@ NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\
 '''
 
 # Childs River 2023
-
+'''
 NERRS_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\NERRS_Waquoit_Bay_Raw_Data\\Childs_River\\wqbcrwq2023.csv",
                   "01-01-2023", "12-31-2023",
                   datetime.date(2023, 1, 1), datetime.date(2023, 12, 31),
                   'NERRS Waquoit Bay (Childs River) 2023 Salinity',
                   '\\Conductivity_Graphs\\NERRS_Graphs\\NERRS_Salinity_2023_Childs_River.png')
-
+'''
 
 # Childs River 2023 (zoomed in)
 '''
