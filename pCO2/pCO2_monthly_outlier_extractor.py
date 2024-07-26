@@ -46,7 +46,7 @@ xDataTrueNO = []    # No outlier times
 
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pCO2_2018_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'SAMI_pCO2\\pCO2_Annual_Compiled_Data\\pCO2_2023_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
@@ -172,7 +172,7 @@ pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get
 
 
 # Saves dataframes to csv files
-pco2DF.to_csv("pco2_2018_Total_Data_Compiled_Monthly.csv")
+#pco2DF.to_csv("pco2_2021_Total_Data_Compiled_Monthly.csv")
 
 pco2DF['Date'] = pd.to_datetime(pco2DF['Date'])
 
@@ -194,7 +194,7 @@ def grapher(time, tempC, CO2, batteryV, name):
     cy = CO2
     by = batteryV
 
-    fig, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots(figsize=(14,7))
     #fig.subplots_adjust(right = 0.75)
     p1 = ax1.plot(x, ty, color = 'm', linestyle = 'solid', label = 'Temperature (C)')
 
@@ -237,19 +237,19 @@ def grapher(time, tempC, CO2, batteryV, name):
 
 # Plots graph without outliers
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), 
-        "2018 pCO2 Data (No Outliers)")
+        "2023 pCO2 Data (No Outliers)")
 
 # Finds location of .py program
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2018_Graph_No_Outliers_Monthly.png')
+plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2023_Graph_No_Outliers_Monthly.png')
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, cyData, byData, "2018 pCO2 Data (With Outliers)")
+grapher(xDataTrueO, tyData, cyData, byData, "2023 pCO2 Data (With Outliers)")
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2018_Graph_With_Outliers.png')
+plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2023_Graph_With_Outliers.png')
 
 
 # Displays figures

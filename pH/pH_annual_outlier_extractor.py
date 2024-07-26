@@ -63,7 +63,7 @@ def is_float(string):
 
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'pH_2019_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'SAMI_pH\\pH_Annual_Compiled_Data\\pH_2023_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
@@ -177,7 +177,7 @@ def grapher(time, tempC, pH, batteryV, name):
     py = pH
     by = batteryV
 
-    fig, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots(figsize=(14,7))
     #fig.subplots_adjust(right = 0.75)
     p1 = ax1.plot(x, ty, color = 'm', linestyle = 'solid', label = 'Temperature (C)')
 
@@ -228,21 +228,21 @@ def grapher(time, tempC, pH, batteryV, name):
 
 # Plots graph without outliers
 grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("pH"), extractedData.get("Battery"), 
-        "2019 pH Data (No Outliers) Annual")
+        "2023 pH Data (No Outliers) Annual")
 
 # Finds location of .py program
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pH_Graphs\\pH_2019_Graph_No_Outliers_Annual.png')
+plt.savefig(my_path + '\\pH_Graphs\\pH_2023_Graph_No_Outliers_Annual.png')
 
 # Plots graph with outliers
-grapher(xDataTrueO, tyData, pyData, byData, "2019 pH Data (With Outliers) Annual")
+grapher(xDataTrueO, tyData, pyData, byData, "2023 pH Data (With Outliers) Annual")
 
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\pH_Graphs\\pH_2019_Graph_With_Outliers_Annual.png')
+plt.savefig(my_path + '\\pH_Graphs\\pH_2023_Graph_With_Outliers_Annual.png')
 
 
 
