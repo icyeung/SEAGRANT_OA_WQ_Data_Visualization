@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jun 11 20:48:54 2023
-
-@author: isabe
-"""
-
 import pandas as pd
 
 # semi-automated loop to merge files specified by used into one csv file

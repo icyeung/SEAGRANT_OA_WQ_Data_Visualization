@@ -352,7 +352,7 @@ fig.legend(loc = 'upper left', ncol = 2, borderaxespad=4)
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\CCS_Salinity_Tide_2022_Harwich_v2.png')
+#plt.savefig(my_path + '\\CCS_Salinity_Tide_2022_Harwich_v2.png')
 plt.show()
 
 
