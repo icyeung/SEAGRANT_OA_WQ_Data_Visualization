@@ -37,7 +37,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-    with open(os.path.join(__location__, file),'r') as csvfile:
+    with open((file),'r') as csvfile:
         lines = csv.reader(csvfile, delimiter=',')
         for row in lines:
             #print(row)
@@ -94,12 +94,12 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     BB_df = pd.DataFrame({"DateTime": BB_data_datetime_combined_list, "Temperature": temp_list, "Salinity": salinity_list})
 
     fig, ax1 = plt.subplots(figsize=(14,7))
-    p1 = ax1.plot(BB_df["DateTime"], BB_df["Salinity"], color = "b", linestyle = 'solid', label = 'Salinity', linewidth=0.75)
+    p1 = ax1.plot(BB_df["DateTime"], BB_df["Salinity"], "-o", color = "b", label = 'Salinity', linewidth=0.75)
     # Sets x-axis as Dates
     date_form = DateFormatter("%m-%d")
     ax1.xaxis.set_major_formatter(date_form)
-    ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 2))     # Displays x-axis label every 14 days
-    #ax1.xaxis.set_major_locator(mdates.DayLocator(interval = 2))       # Indicates each day (without label) on x-axis
+    ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 1))     # Displays x-axis label every 14 days
+    ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
     
     # Sets axis labels and changes font color of "pco2" label for easy viewing
     ax1.set_ylabel("Salinity (%.)")
@@ -107,9 +107,11 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     ax1.yaxis.label.set_color("k")
     #ax1.legend()  
 
+    
     ax2 = ax1.twinx()
-    p13 = ax2.plot(BB_df["DateTime"], BB_df["Salinity"], color = 'g', linestyle = 'solid', label = 'Temperature')
+    p13 = ax2.plot(BB_df["DateTime"], BB_df["Temperature"], "-o", color = 'g', label = 'Temperature')
     ax2.set_ylabel("Temperature (C)")
+    
     
     plt.grid(True)
     plt.tight_layout()
@@ -121,14 +123,14 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     my_path = os.path.dirname(os.path.abspath(__file__))
 
     # Saves without outliers graph to specified name in folder
-    plt.savefig(my_path + '\\BB_' + station + '_' + year + '.png')
+    plt.savefig(my_path + '\\Conductivity_Graphs\\BBC_Graphs\\BB_' + station + '_' + year + '_Sal_with_Temp.png')
     plt.show()
 
 
-#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) 2021", "1/1/2021", "12/31/2021", "2021")
+buzzard_bay_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\Buzzards_Bay_Coalition_Data\\bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) 2021", "1/1/2021", "12/31/2021", "2021")
 
-#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022")
+#buzzard_bay_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\Buzzards_Bay_Coalition_Data\\bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022")
 
-#buzzard_bay_grapher("bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2023", "1/1/2023", "12/31/2023", "2023")
+#buzzard_bay_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\Buzzards_Bay_Coalition_Data\\bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2023", "1/1/2023", "12/31/2023", "2023")
 
-buzzard_bay_grapher("bbcdata1992to2020-ver07May2021.csv", "CI1", "Buzzard's Bay Salinity: CI1 2021", "1/1/2021", "12/31/2021", "2021")
+#buzzard_bay_grapher("\\Sourced_Data\\Buzzards_Bay_Coalition_Data\\bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "CI1", "Buzzard's Bay Salinity: CI1 2021", "1/1/2021", "12/31/2021", "2021")
