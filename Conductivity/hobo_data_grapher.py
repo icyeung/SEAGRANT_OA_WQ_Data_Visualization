@@ -12,7 +12,6 @@ from matplotlib.dates import date2num
 from sklearn.linear_model import LinearRegression
 
 
-
 # Used to find location of specified file within Python code folder
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
@@ -40,7 +39,7 @@ usedTime = []
 
 
 # Takes out empty values in salinity data set
-with open(os.path.join(__location__, 'Salinity_Carolina_FiddlersCove_12-10-21_1.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'HOBO_Data\\Conductivity_Data_With_Outliers\\Salinity_Carolina_Pocasset_6-2-22_2.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
             print(row)
@@ -61,20 +60,22 @@ print(salDate)
 
 # Salinity data
 for time in salDate:
-    timeObj = datetime.datetime.strptime(time, '%m/%d/%y %H:%M:%S')
+    timeObj = datetime.datetime.strptime(time, '%m/%d/%Y %H:%M')
     eastern = pytz.timezone('US/Eastern')
     realTimeObj = timeObj.astimezone(eastern)       # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
 
 
-unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductivity': condData, 'Temperature (F)': condTempData})
+unrefinedCondData = pd.DataFrame({'Date': salDateTrue, 'Conductivity': condData, 'Temperature (C)': condTempData})
 
 condTempDataC = []
 
+'''
 for temp in unrefinedCondData["Temperature (F)"]:
     tempC = (temp-32)/1.8
     condTempDataC.append(tempC)
 unrefinedCondData["Temperature (C)"] = condTempDataC
+'''
 
 
 # Verified Measurement also has to be between 5000, 55000
@@ -83,6 +84,8 @@ for index in range(0, len(salDateTrue)):
     if (condData[index] <= 5000) or (condData[index] >= 55000):
         unrefinedCondData = unrefinedCondData.drop(index)
 unrefinedCondData = unrefinedCondData.reset_index(drop=True)
+
+print(unrefinedCondData)
 
 
 
@@ -143,7 +146,7 @@ print("salinity", condSalConv(45000, 16))
 # Rounds salinity conversions to 3 decimal places
 for i in range(len(unrefinedCondData)):
     salinity = condSalConv(unrefinedCondData.loc[i, "Conductivity"], unrefinedCondData.loc[i, "Temperature (C)"])
-    #print(salinity)
+    print("here", salinity)
     
     if salinity != "":
         salinity = round(float(salinity), 3)
@@ -318,25 +321,25 @@ def grapher(salDate, salValue, tempValue, condValue, fitValue, name):
 
 # Plots graph with outliers
 grapher(salinityDFSorted.get("Date"), salinityDFSorted.get("Salinity Value"), salinityDFSorted.get("Temperature (C)"),
-        salinityDFSorted.get("Conductivity"), salinityDFSorted.get("Fit"), "12-10-21 (1) Conductivity Data (With Outliers)")
+        salinityDFSorted.get("Conductivity"), salinityDFSorted.get("Fit"), "6-2-22 (2) Pocasset Conductivity Data (With Outliers)")
 
 # Finds location of .py program
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_With_Outliers.png', dpi=2000)
+plt.savefig(my_path + '\\Conductivity_Graphs\\HOBO_Graphs\\Conductivity_6-2-22_2_Pocasset_Graph_With_Outliers.png', dpi=2000)
 
 print("no fit lenth", len(salinityDFSorted.get("Fit")))
 
 
 # Plots graph without outliers
 grapher(salinityDFSortedNOreset.get("Date"), salinityDFSortedNOreset.get("Salinity Value"), salinityDFSortedNOreset.get("Temperature (C)"),
-        salinityDFSortedNOreset.get("Conductivity"), salinityDFSortedNOreset.get("Fit"), "12-10-21 (1) Conductivity Data (Without Outliers)")
+        salinityDFSortedNOreset.get("Conductivity"), salinityDFSortedNOreset.get("Fit"), "6-2-22 (2) Pocasset Conductivity Data (Without Outliers)")
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\Conductivity_Graphs\\Conductivity_12-10-21_1_Graph_Without_Outliers.png', dpi=2000)
+plt.savefig(my_path + '\\Conductivity_Graphs\\HOBO_Graphs\\Conductivity_6-2-22_2_Pocasset_Graph_Without_Outliers.png', dpi=2000)
 
-salinityDFSortedNOreset.to_csv(my_path + '\\Conductivity_Data_NO\\Salinity_Carolina_Pocasset_10-24-23_1.csv')
+salinityDFSortedNOreset.to_csv(my_path + '\\HOBO_Data\\Conductivity_Data_No_Outliers\\Salinity_Carolina_Pocasset_6-2-22_2_NO.csv')
 
 print("fitted length", len(salinityDFSortedNOreset.get("Fit")))
 

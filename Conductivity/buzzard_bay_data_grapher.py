@@ -45,7 +45,6 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
             # If not, does not include data point in graph
             if not row[1] == "" and not row[3] == "" and not row[10] == "" and not row[19] == "" and not row[21] == "" and numofLinesS > 0:
                 if row[1] == station:
-                    print("hi")
                     if commonDataRange(row[3], start_date, end_date):
                         raw_date_list.append(row[3])
                         raw_time_list.append(row[10])
@@ -101,13 +100,13 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 1))     # Displays x-axis label every 14 days
     ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates each day (without label) on x-axis
     
-    # Sets axis labels and changes font color of "pco2" label for easy viewing
+    # Sets axis labels and changes font color of "Salinity" label for easy viewing
     ax1.set_ylabel("Salinity (%.)")
     ax1.set_xlabel("Dates (MM-DD)")
     ax1.yaxis.label.set_color("k")
     #ax1.legend()  
 
-    
+    # Temperature
     ax2 = ax1.twinx()
     p13 = ax2.plot(BB_df["DateTime"], BB_df["Temperature"], "-o", color = 'g', label = 'Temperature')
     ax2.set_ylabel("Temperature (C)")
@@ -127,7 +126,7 @@ def buzzard_bay_grapher(file, station, title, start_date, end_date, year):
     plt.show()
 
 
-buzzard_bay_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\Buzzards_Bay_Coalition_Data\\bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) 2021", "1/1/2021", "12/31/2021", "2021")
+#buzzard_bay_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\Buzzards_Bay_Coalition_Data\\bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "FC1X", "Buzzard's Bay Salinity: Fiddler's Cove (FC1X) 2021", "1/1/2021", "12/31/2021", "2021")
 
 #buzzard_bay_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\Buzzards_Bay_Coalition_Data\\bbcdata1992to2023-ver23May2024-export_FC_PR.csv", "PR1", "Buzzard's Bay Salinity: Pocasset River (PR1) 2022", "1/1/2022", "12/31/2022", "2022")
 
