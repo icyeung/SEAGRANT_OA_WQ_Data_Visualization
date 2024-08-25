@@ -134,7 +134,7 @@ def tide_subordinate_time_adjustor(file_name, harmonic_location, subordinate_sta
     #file_name_base = file_name[:-4]
     #file_name_adjusted = file_name_base + "_adjusted_UTC+1.csv"
 
-    harmonic_data.to_csv(os.path.join(subordinate_data_location_folder, file_save_name))
+    harmonic_data.to_csv(os.path.join(subordinate_data_location_folder, file_save_name), index=None)
 
 
 # Herring River uses Boston
