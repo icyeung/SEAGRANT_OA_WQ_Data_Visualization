@@ -116,9 +116,12 @@ print(pd.DataFrame(outlierData, headersV, headersH))
 print("")
 
 # Dataframe without outliers
-extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, 
-                           augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
+#extractedData = pd.concat([januaryDf, februaryDf, marchDf, aprilDf, mayDf, juneDf, julyDF, augustDf, septemberDf, octoberDf, novemberDf, decemberDf])
  
+extractedData = januaryDf
+
+print(januaryDf)
+
 # Displays total number of data points after outliers are removed
 print("Original data after all outliers are removed: ", len(extractedData.get("Date")))
 
@@ -153,13 +156,13 @@ def timeConverter (date):
 # Original Data    
 for dateValue in xData:
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2018)
+    trueDate = dateValue.replace(year = 2023)
     xDataTrueO.append(trueDate)
 
 # Data with no outliers
 for dateValue in extractedData.get("Date"):
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2018)
+    trueDate = dateValue.replace(year = 2023)
     xDataTrueNO.append(trueDate)
 
 
@@ -167,16 +170,18 @@ for dateValue in extractedData.get("Date"):
 
 
 # Creates dataframes of data grapher without outliers
-pco2DF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"), 
-                       "CO2": extractedData.get("CO2"), "Battery": extractedData.get("Battery")})
+pco2DF = pd.DataFrame({"Year Day": extractedData.get("Date"), "Temperature C": extractedData.get("Temp"), 
+                       "CO2": extractedData.get("CO2"), "Battery": extractedData.get("Battery"), "Date (UTC)": xDataTrueNO})
 
 
 # Saves dataframes to csv files
-#pco2DF.to_csv("pco2_2021_Total_Data_Compiled_Monthly.csv")
-
-pco2DF['Date'] = pd.to_datetime(pco2DF['Date'])
 
 
+pco2DF['Date (UTC)'] = pd.to_datetime(pco2DF['Date (UTC)'])
+
+print(pco2DF)
+
+pco2DF.to_csv("pCO2_2023_Complete_Annual_Data_NO_1.csv", index=None)
 # Histogram of CO2 measurements
 # plt.hist(extractedData.get("CO2"), edgecolor='black', bins=20)
 # plt.hist(extractedData.get("Temp"), edgecolor='black', bins=20)
@@ -243,13 +248,13 @@ grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extrac
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2023_Graph_No_Outliers_Monthly.png')
+#plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2023_Graph_No_Outliers_Monthly.png')
 
 # Plots graph with outliers
 grapher(xDataTrueO, tyData, cyData, byData, "2023 pCO2 Data (With Outliers)")
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2023_Graph_With_Outliers.png')
+#plt.savefig(my_path + '\\pCO2_Graphs\\Only_pCO2_2023_Graph_With_Outliers.png')
 
 
 # Displays figures

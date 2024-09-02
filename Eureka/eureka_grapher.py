@@ -14,6 +14,8 @@ import math
 from datetime import datetime as dt
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
+import datetime
+import numpy as np
 
 
 def commonDataRange(datetime, start_date, end_date):
@@ -52,6 +54,23 @@ def eureka_grapher(file, title, start_date, end_date, year):
 
     eureka_data = pd.read_csv(os.path.join(formatted_data_year_location, file))
 
+    #eureka_data = eureka.copy(deep=True)
+
+    invalid_index_list = []
+
+    print("why are you not being detected", eureka_data.loc[0, "Sp Cond"])
+
+    for i in range(len(eureka_data)):
+        if (float(eureka_data.loc[i, "Sp Cond"]) == 0) or (eureka_data.loc[i, "Sp Cond"] == "nan") or (eureka_data.loc[i, "Temperature"] == np.NaN) or float((eureka_data.loc[i, "Temperature"] == 0)):
+            invalid_index_list.append(i)
+    
+    print(invalid_index_list)
+
+    eureka_data = eureka_data.dropna()
+    eureka_data = eureka_data.drop(invalid_index_list)
+    eureka_data = eureka_data.reset_index()
+
+    print(eureka_data)
    
     # Fixes time
     def timeConverterto24(datetime):
@@ -62,12 +81,12 @@ def eureka_grapher(file, title, start_date, end_date, year):
         return converted_time_dt
 
     eureka_data_time_converted_list = []
-    for time in eureka_data["Time (UTC)"]:
+    for time in eureka_data["Time (America/New_York)"]:
         eureka_data_time_converted_list.append(timeConverterto24(time))
     #print("time", NOAA_tidal_data_time_converted_list)
 
     eureka_data_date_converted_list = []    
-    for date in eureka_data["Time (UTC)"]:
+    for date in eureka_data["Time (America/New_York)"]:
         eureka_data_date_converted_list.append(dt.strptime((date.split(" ")[0]), "%m-%d-%Y"))
     #print("date", NOAA_tidal_data_date_converted_list)
 
@@ -76,15 +95,37 @@ def eureka_grapher(file, title, start_date, end_date, year):
     else:
         print("Oops", "date", len(eureka_data_date_converted_list), "time", len(eureka_data_time_converted_list))
 
-    print(eureka_data_date_converted_list)
+    #print(eureka_data_date_converted_list)
+
+    
 
 
     eureka_data_datetime_combined_list = []
     for index in range(0, len(eureka_data_date_converted_list)):
-        eureka_data_datetime_combined_list.append(dt.combine(eureka_data_date_converted_list[index], eureka_data_time_converted_list[index].time()))
+        combined_dt_lst = dt.combine(eureka_data_date_converted_list[index], eureka_data_time_converted_list[index].time())
+        combined_dt_utc = combined_dt_lst + datetime.timedelta(hours=4)
+        eureka_data_datetime_combined_list.append(combined_dt_utc)
 
-    eureka_data["DateTime"] = eureka_data_datetime_combined_list
+    eureka_data["DateTime (UTC)"] = eureka_data_datetime_combined_list
 
+    print(eureka_data)
+
+    # Calculates Conductivity from Specific Conductivity and Temperature
+    # Temperature must be in C
+    def spec_cond_2_cond(specificCond, temperature):
+        conductivity = specificCond * (1 + 0.02 * (temperature - 25))
+        return conductivity
+
+    conductivity_list = []
+    for i in range(len(eureka_data)):
+        conductivity = spec_cond_2_cond(eureka_data.loc[i, "Sp Cond"], eureka_data.loc[i, "Temperature"])
+        #print(salinity)
+        
+        conductivity_list.append(conductivity)
+        
+    eureka_data["Conductivity"] = conductivity_list
+
+    print(eureka_data)
 
     # Calculates salinity
     # Conductivity conversion to salinity
@@ -145,25 +186,39 @@ def eureka_grapher(file, title, start_date, end_date, year):
     cal_sal_list = []  
     used_time = []
     used_temp = []
+    used_sp_cond = []
     used_cond = []  
     for i in range(len(eureka_data)):
-        salinity = condSalConv(eureka_data.loc[i, "Sp Cond"], eureka_data.loc[i, "Temperature"])
+        salinity = condSalConv(eureka_data.loc[i, "Conductivity"], eureka_data.loc[i, "Temperature"])
         #print(salinity)
         
         if salinity != "":
             salinity = round(float(salinity), 3)
         
             cal_sal_list.append(salinity)
-            used_time.append(eureka_data.loc[i, "DateTime"])
+            used_time.append(eureka_data.loc[i, "DateTime (UTC)"])
             used_temp.append(eureka_data.loc[i, "Temperature"])
-            used_cond.append(eureka_data.loc[i, "Sp Cond"])
+            used_sp_cond.append(eureka_data.loc[i, "Sp Cond"])
+            used_cond.append(eureka_data.loc[i, "Conductivity"])
 
-    cal_sal_df = pd.DataFrame({"Date": used_time, "Temperature": used_temp, "Conductivity": used_cond, "Salinity": cal_sal_list})
+    print(len(cal_sal_list))
 
+    cal_sal_df = pd.DataFrame({"Date": used_time, "Temperature": used_temp, "Conductivity": used_cond, "Sp Cond": used_sp_cond, "Salinity": cal_sal_list})
 
+    print(cal_sal_df)
+
+    print(len(eureka_data))
+
+    eureka_data["Salinity"] = cal_sal_list
+
+    eureka_data = eureka_data.drop('index', axis=1)
+
+    eureka_data.to_csv("Deer_Island-SG1-2018_Annual_Data_UTC.csv", index = None)
+
+    # Graphing
     fig, ax1 = plt.subplots(figsize=(14,7))
-    p1 = ax1.plot(eureka_data["DateTime"], eureka_data["Salinity"], color = "brown", label = 'Eureka Salinity')
-    p2 = ax1.plot(cal_sal_df['Date'], cal_sal_df["Salinity"], color = "purple", label = 'Calculated Salinity')
+    p1 = ax1.plot(eureka_data["DateTime (UTC)"], eureka_data["Salinity"], color = "brown", label = 'Calculated Salinity')
+    #p2 = ax1.plot(cal_sal_df['Date'], cal_sal_df["Salinity"], color = "purple", label = 'Calculated Salinity')
 
     '''
     ax3 = ax1.twinx()
@@ -187,8 +242,8 @@ def eureka_grapher(file, title, start_date, end_date, year):
 
     # Sets axis labels
     ax1.set_ylabel("Salinity (PSU)")
-    ax1.set_xlabel("Dates (MM-DD)")
-    ax1.yaxis.label.set_color(p2[0].get_color())
+    ax1.set_xlabel("Dates (MM-DD) UTC")
+    #ax1.yaxis.label.set_color(p2[0].get_color())
     
     # Sets x-axis as Dates
     date_form = DateFormatter("%m-%d")
@@ -206,12 +261,12 @@ def eureka_grapher(file, title, start_date, end_date, year):
     fig.legend(loc = 'upper center', ncol = 3, borderaxespad=4)
 
     my_path = os.path.dirname(os.path.abspath(__file__))
-    plt.savefig(my_path + '\\Eureka_Graphs\\Eureka_Deer_Island_Salinity_Comparison_' + year + '.png')
+    plt.savefig(my_path + '\\Eureka_Graphs\\Eureka_Deer_Island_Salinity_Comparison_' + year + '_corr_sal.png')
 
     plt.show()
 
 # Deer Island 2018 Conductivity
-#eureka_grapher("Deer_Island-SG1-2018_Annual_Data.csv", "Eureka 2018 Deer Island (SG1) Conductivity", "01/01/2018", "12/31/2018", "2018")
+eureka_grapher("Deer_Island-SG1-2018_Annual_Data.csv", "Eureka 2018 Deer Island (SG1) Conductivity", "01/01/2018", "12/31/2018", "2018")
 
 # Deer Island 2019 Conductivity
 #eureka_grapher("Deer_Island-SG1-2019_Annual_Data.csv", "Eureka 2019 Deer Island (SG1) Conductivity", "01/01/2019", "12/31/2019", "2019")
@@ -220,4 +275,4 @@ def eureka_grapher(file, title, start_date, end_date, year):
 #eureka_grapher("Deer_Island-SG1-2018_Annual_Data.csv", "Eureka 2018 Deer Island (SG1)", "01/01/2018", "12/31/2018", "2018")
 
 # Deer Island 2019 Multi-Parameter
-eureka_grapher("Deer_Island-SG1-2019_Annual_Data.csv", "Eureka 2019 Deer Island (SG1)", "01/01/2019", "12/31/2019", "2019")
+#eureka_grapher("Deer_Island-SG1-2019_Annual_Data.csv", "Eureka 2019 Deer Island (SG1)", "01/01/2019", "12/31/2019", "2019")

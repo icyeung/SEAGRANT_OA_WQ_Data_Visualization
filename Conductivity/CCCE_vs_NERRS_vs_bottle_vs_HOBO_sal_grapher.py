@@ -226,7 +226,7 @@ def sal_compare_grapher(nerrs_file_location, ccce_file_location, mwra_file, hobo
                     numofLinesS += 1
 
 
-        # MWRA is stored as LST, added 5 hours for now (but will need to account for daylight saving)
+        # HOBO is stored as EDT, added 4 hours to convert to UTC
         def timeConverterto24(datetime1):
             time_number_with_offset = datetime1.split(" ")[1]
             time_number = time_number_with_offset.split("-")[0]

@@ -30,6 +30,8 @@ pyData = []     # pH
 byData = []     # Battery Voltage
 dsData = []     # Date (Calendar)
 tsData = []     # Time 
+date_str_list = []
+time_str_list = []
 
 
 # Used in taking out empty data values from pCO2 data
@@ -65,7 +67,7 @@ def is_float(string):
 
 
 # Takes out empty data values in pCO2 data set
-with open(os.path.join(__location__, 'SAMI_pH\\pH_Annual_Compiled_Data\\pH_2023_Complete_Data.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'SAMI_pH\\pH_Annual_Compiled_Data\\pH_2019_Complete_Data.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter='\t')
     for row in lines:
         
@@ -77,6 +79,8 @@ with open(os.path.join(__location__, 'SAMI_pH\\pH_Annual_Compiled_Data\\pH_2023_
             syData.append(float(row[2]))
             pyData.append(float(row[3]))
             byData.append(float(row[4]))
+            date_str_list.append(row[5])
+            time_str_list.append(row[6])
             numofLinesD += 1
         elif numofLinesD == 0:
             numofLinesD += 1
@@ -85,7 +89,7 @@ with open(os.path.join(__location__, 'SAMI_pH\\pH_Annual_Compiled_Data\\pH_2023_
 print("Original data after empty values are taken out: ", len(xData))
 
 # Dataframe of original data after blanks removed
-completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "pH": pyData, "Battery": byData})
+completeRowData = pd.DataFrame({"Date": xData, "Temp": tyData, "ConstSal": syData, "pH": pyData, "Battery": byData, "DateStr": date_str_list, "TimeStr": time_str_list})
 
 # Sourced from https://www.analyticsvidhya.com/blog/2022/09/dealing-with-outliers-using-the-iqr-method/
 def IQR(dfName):
@@ -171,13 +175,13 @@ def timeConverter (date):
 # Original Data    
 for dateValue in xData:
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2020)
+    trueDate = dateValue.replace(year = 2019)
     xDataTrueO.append(trueDate)
 
 # Data with no outliers
 for dateValue in extractedData.get("Date"):
     dateValue = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(dateValue)), timeConverter(dateValue))
-    trueDate = dateValue.replace(year = 2020)
+    trueDate = dateValue.replace(year = 2019)
     xDataTrueNO.append(trueDate)
 
 
@@ -185,16 +189,17 @@ for dateValue in extractedData.get("Date"):
 
 
 # Creates dataframes of data grapher without outliers
-pHDF = pd.DataFrame({"Date": xDataTrueNO, "Temperature (C)": extractedData.get("Temp"),
-                       "pH": extractedData.get("pH"), "Battery": extractedData.get("Battery")})
+pHDF = pd.DataFrame({"Year Day": extractedData.get("Date"), "Temperature C": extractedData.get("Temp"), "SalinityConst": extractedData.get("ConstSal"),
+                       "pHConstSal": extractedData.get("pH"), "Battery Voltage": extractedData.get("Battery"), "DateStr": extractedData.get("DateStr"),
+                       "TimeStr": extractedData.get("TimeStr"), "Date (UTC)": xDataTrueNO})
 
 
 # Saves dataframes to csv files
-#pHDF.to_csv("pH_Data_2020_Compiled.csv")
-
-pHDF['Date'] = pd.to_datetime(pHDF['Date'])
 
 
+pHDF['Date (UTC)'] = pd.to_datetime(pHDF['Date (UTC)'])
+
+pHDF.to_csv("pH_2019_Complete_Annual_Data_NO.csv", index = None)
 # Histogram of CO2 measurements
 # plt.hist(extractedData.get("pH"), edgecolor='black', bins=20)
 # plt.hist(extractedData.get("Temp"), edgecolor='black', bins=20)
@@ -271,14 +276,14 @@ my_path = os.path.dirname(os.path.abspath(__file__))
 
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\pH_Graphs\\pH_2023_Graph_No_Outliers_Monthly.png')
+#plt.savefig(my_path + '\\pH_Graphs\\pH_2023_Graph_No_Outliers_Monthly.png')
 
 # Plots graph with outliers
 grapher(xDataTrueO, tyData, pyData, byData, "2023 pH Data (With Outliers) Monthly")
 
 
 # Saves with outliers graph to specified name in folder
-plt.savefig(my_path + '\\pH_Graphs\\pH_2023_Graph_With_Outliers_Monthly.png')
+#plt.savefig(my_path + '\\pH_Graphs\\pH_2023_Graph_With_Outliers_Monthly.png')
 
 # Displays figures
 plt.show()
