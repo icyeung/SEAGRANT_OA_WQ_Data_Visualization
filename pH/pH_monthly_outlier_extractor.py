@@ -199,7 +199,7 @@ pHDF = pd.DataFrame({"Year Day": extractedData.get("Date"), "Temperature C": ext
 
 pHDF['Date (UTC)'] = pd.to_datetime(pHDF['Date (UTC)'])
 
-pHDF.to_csv("pH_2019_Complete_Annual_Data_NO.csv", index = None)
+#pHDF.to_csv("pH_2019_Complete_Annual_Data_NO.csv", index = None)
 # Histogram of CO2 measurements
 # plt.hist(extractedData.get("pH"), edgecolor='black', bins=20)
 # plt.hist(extractedData.get("Temp"), edgecolor='black', bins=20)

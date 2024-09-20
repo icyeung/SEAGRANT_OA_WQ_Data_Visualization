@@ -5,6 +5,8 @@
 # subordinate_station = name of desired tide station from harmonic
 # save_location = folder name of subordinate tide
 
+# To use the program, navigate to the end, and follow instructions there.
+
 import pandas as pd
 import os
 from datetime import datetime as dt
@@ -14,24 +16,23 @@ import numpy as np
 
 
 def tide_subordinate_time_adjustor(file_name, harmonic_location, subordinate_station, save_location, file_save_name):
+    
+    # Obtains location of Tide_Data main folder
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    
+    # Location finders for harmonic data location
     harmonic_data_folder = os.path.join(__location__, 'NOAA_Tide_Harmonic_Data\\')
     harmonic_data_location_folder = os.path.join(harmonic_data_folder, harmonic_location)
 
+    # Location finders for subordinate save location
     subordinate_data_folder = os.path.join(__location__, 'NOAA_Tide_Subordinate_Data\\')
     subordinate_data_location_folder = os.path.join(subordinate_data_folder, save_location)
 
-    '''
-    # Opens NERRS raw data file
-    with open (os.path.join(harmonic_data_location_folder, file_name)) as csv_file:
-        csv_reader = csv.reader(csv_file)
-        harmonic_data = pd.DataFrame([csv_reader], index = None)
-    '''
-
+    # Opens harmonic data as dataframe
     harmonic_data = pd.read_csv(os.path.join(harmonic_data_location_folder, file_name))
 
-    print(harmonic_data)
 
+    # Converts from AM/PM time to 24-hr time in harmonic data
     def timeConverterto24(time):
         ending = time.split(" ")[-1]
         time_number = time.split(" ")[0]
@@ -44,27 +45,28 @@ def tide_subordinate_time_adjustor(file_name, harmonic_location, subordinate_sta
         converted_time_dt = dt.strptime(converted_time, "%H:%M:%S")
         return converted_time_dt
 
-
+    # Runs AM/PM to 24-hr converter for all times in harmonic data file
     NOAA_tidal_data_time_converted_list = []
     for time in harmonic_data["Time"]:
         NOAA_tidal_data_time_converted_list.append(timeConverterto24(time))
-    #print("time", NOAA_tidal_data_time_converted_list)
 
+    # Converts date format to MM/DD/YYYY for all dates in harmonic data file
     NOAA_tidal_data_date_converted_list = []
     for date in harmonic_data["Date"]:
         NOAA_tidal_data_date_converted_list.append(dt.strptime(date, "%m/%d/%Y"))
-    #print("date", NOAA_tidal_data_date_converted_list)
 
-
+    # Combines time and date together to be saved in one column: "DateTime (UTC)"
     NOAA_tidal_data_datetime_combined_list = []
     for index in range(0, len(NOAA_tidal_data_date_converted_list)):
         NOAA_tidal_data_datetime_combined_list.append(dt.combine(NOAA_tidal_data_date_converted_list[index], NOAA_tidal_data_time_converted_list[index].time()))
 
-    # Need to add NOAA_tidal_data_datetime_combined_list into NOAA dataframe as "DateTime"
     harmonic_data["DateTime (UTC)"] = NOAA_tidal_data_datetime_combined_list
 
+    # Creates new column too hold adjusted times for subordinate data
     harmonic_data["Subordinate DateTime (Adjusted)"] = np.nan
 
+    # Goes through all of the harmonic data, and depending on which subordinate station is desired,
+    # the highs/lows are adjusted by certain amounts and saved under a new column: "Subordinate DateTime (Adjusted)".
     for index in range(0, len(harmonic_data)):
         
         tide_type = harmonic_data.loc[index, "High/Low"]
@@ -141,12 +143,15 @@ def tide_subordinate_time_adjustor(file_name, harmonic_location, subordinate_sta
                 date_adjusted = date + time_change
                 harmonic_data.loc[index, "Subordinate DateTime (Adjusted)"] = date_adjusted
 
-
-    # Updates data file name to reflect the time being adjusted
-    #file_name_base = file_name[:-4]
-    #file_name_adjusted = file_name_base + "_adjusted_UTC+1.csv"
-
+    # Saves subordinate data file under desired save name
     harmonic_data.to_csv(os.path.join(subordinate_data_location_folder, file_save_name), index=None)
+
+
+# To use the program, identify the harmonic data file name, harmonic data folder name, subordinate location name, subordinate location folder name, and save name for subordinate file.
+# Write in a new line: tide_subordinate_time_adjustor(harmonic data file name, harmonic data folder name, subordinate location name, subordinate location folder name, subordinate file save name) 
+# See below lines as examples.
+# Each line will make the program run once for that instance, so if you only want to run one line, please comment out all other lines to prevent overwriting existing data.
+
 
 '''
 # Herring River uses Boston

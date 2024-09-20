@@ -14,10 +14,12 @@ import datetime
 
 
 
-def CCCE_sal_grapher(file_location, date_start, date_end, trunc_date_start, trunc_date_end, title, file_save_location):
+def CCCE_sal_grapher(file_location, date_start, date_end, trunc_date_start, trunc_date_end, title, file_save_location, graph_save_location):
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
     CCCE_data = pd.read_csv(file_location)
+    
+    my_path = os.path.dirname(os.path.abspath(__file__))
     
     # Converts time stamp from EST to UTC (adds 5 hours)
     def CCCE_time_converter(date_time):
@@ -83,7 +85,11 @@ def CCCE_sal_grapher(file_location, date_start, date_end, trunc_date_start, trun
     CCCE_fitted_data = CCCE_fitted_data.reset_index()
 
     print(CCCE_fitted_data)
+    
+    CCCE_fitted_data = CCCE_fitted_data.drop('level_0', axis=1)
+    CCCE_fitted_data = CCCE_fitted_data.drop('index', axis=1)
 
+    CCCE_fitted_data.to_csv(my_path + file_save_location, index = None)
 
     # Graphing
     fig, ax1 = plt.subplots(figsize=(14,7))
@@ -94,14 +100,15 @@ def CCCE_sal_grapher(file_location, date_start, date_end, trunc_date_start, trun
     date_form = DateFormatter("%m-%d")
     ax1.xaxis.set_major_formatter(date_form)
     ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval = 8))     # Displays x-axis label every 14 days
-    plt.xticks(rotation=90)
     ax1.xaxis.set_major_locator(mdates.DayLocator(interval = 7))       # Indicates each day (without label) on x-axis
+    plt.xticks(rotation=90)
+    
 
     ax1.set_xlim([trunc_date_start, trunc_date_end])
-    ax1.set_ylim(26, 33)
+    #ax1.set_ylim(26, 33)
         
     # Sets axis labels and changes font color of "pco2" label for easy viewing
-    ax1.set_xlabel("Dates (MM-DD)")
+    ax1.set_xlabel("Dates (MM-DD) UTC")
     ax1.set_ylabel("Salinity (ppt)")
     ax1.yaxis.label.set_color("k")  
 
@@ -114,16 +121,26 @@ def CCCE_sal_grapher(file_location, date_start, date_end, trunc_date_start, trun
     fig.legend(loc = 'upper left', ncol = 2, borderaxespad=4)
 
 
-    my_path = os.path.dirname(os.path.abspath(__file__))
+    
 
     # Saves without outliers graph to specified name in folder
-    plt.savefig(my_path + file_save_location)
+    plt.savefig(my_path + graph_save_location)
     plt.show()
 
 
-
+# Cotuit Bay
+'''
 CCCE_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\Cape_Cod_Cooperative_Extension_Data\\Cotuit_Bay\\cotb-dock-wq-2022.csv",
                   "01-01-2022", "12-31-2022",
                   datetime.date(2022, 1, 1), datetime.date(2022, 12, 31),
                   'CCCE Cotuit Bay 2022 Salinity',
                   '\\Conductivity_Graphs\\CCCE_Graphs\\CCCE_Salinity_2022_Cotuit.png')
+'''
+
+# Barnstable Harbor
+CCCE_sal_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\Cape_Cod_Cooperative_Extension_Data\\Barnstable_Harbor\\BH2019 Aug Sept.csv",
+                  "08-01-2019", "10-02-2019",
+                  datetime.date(2019, 8, 1), datetime.date(2019, 10, 2),
+                  'CCCE Barnstable Harbor 2019 Salinity',
+                  '\\Sourced_Data\\Cape_Cod_Cooperative_Extension_Data\\Barnstable_Harbor\\CCCE_Barnstable_Salinity_Data_2019_UTC.csv',
+                  '\\Conductivity_Graphs\\CCCE_Graphs\\CCCE_Salinity_2019_Barnstable.png')

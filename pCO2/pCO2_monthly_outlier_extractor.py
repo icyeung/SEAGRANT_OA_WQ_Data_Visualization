@@ -181,7 +181,7 @@ pco2DF['Date (UTC)'] = pd.to_datetime(pco2DF['Date (UTC)'])
 
 print(pco2DF)
 
-pco2DF.to_csv("pCO2_2023_Complete_Annual_Data_NO_1.csv", index=None)
+#pco2DF.to_csv("pCO2_2023_Complete_Annual_Data_NO_1.csv", index=None)
 # Histogram of CO2 measurements
 # plt.hist(extractedData.get("CO2"), edgecolor='black', bins=20)
 # plt.hist(extractedData.get("Temp"), edgecolor='black', bins=20)
