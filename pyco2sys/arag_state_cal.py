@@ -36,7 +36,7 @@ def arag_state_cal(sami_type, sami_file_loc, sal_ta_file_loc, arag_file_save_loc
         temperature = 25,  # temperature at which par1 and par2 arguments are provided in °C (default 25 °C)
         pressure = 0,   # water pressure at which par1 and par2 arguments are provided in dbar (default 0 dbar)
         temperature_out = sami_file['Temperature C'], # temperature at which results will be calculated in °C 
-        pressure_out = test['Depth'], # water pressure at which results will be calculated in dbar
+        pressure_out = sami_file['Depth'], # water pressure at which results will be calculated in dbar
         
         opt_pH_scale = 4, # NBS 4
         opt_k_carbonic = 10, # LDK00: Lueker et al. 2000 10

@@ -233,7 +233,6 @@ def grapher(time, tempC, pH, batteryV, name):
     ax1.set_ylabel("Temperature (C)")
     ax1.set_xlabel("Dates (MM-DD)")
     ax1.yaxis.label.set_color(p1[0].get_color())
-    
 
     
     # pH plot
@@ -242,14 +241,15 @@ def grapher(time, tempC, pH, batteryV, name):
     ax2.set_ylabel("pH")
     ax2.yaxis.label.set_color(p2[0].get_color())
     
-    
+    '''
     # Battery Voltage plot
     ax3 = ax1.twinx()
     p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
     ax3.set_ylabel("Battery Voltage")
     ax3.spines["right"].set_position(("outward", 60))
     ax3.yaxis.label.set_color(p3[0].get_color())
-
+    '''
+    
     '''
     # Salinity plot
     ax4 = ax1.twinx()
@@ -263,7 +263,7 @@ def grapher(time, tempC, pH, batteryV, name):
     # Sets title, adds a grid, and shows legend
     plt.title(name, fontsize = 20)
     plt.grid(True)
-    plt.legend(handles=p1+p2+p3)
+    plt.legend(handles=p1+p2)
 
     return
 

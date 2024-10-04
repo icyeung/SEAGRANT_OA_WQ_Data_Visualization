@@ -88,8 +88,8 @@ def castawayFileChooser(date, label, collection_time, special_case):
             collection_time_conv = float(collection_time_hour + collection_time_min_percent)
 
             # Finds difference in collection time and time of file to look for which file to take info from
-            for time in filetime_conv_list:
-               difference_list = []
+            difference_list = []
+            for time in filetime_conv_list:   
                difference = abs(float(collection_time_conv-time))         
                difference_list.append(difference)
 
