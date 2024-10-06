@@ -1,5 +1,5 @@
 # As compared with BBC Data for Pocasset (see IY's pCO2 Grapher slides for more info), HOBO #1 data 2022 will be offset by +15 PSU and used for 2022.
-# For 2023, HOBO #1 offset by -3 hours and +15 PSU will be used for 2023.
+# For 2023, HOBO #1 data 2022 offset by -3 hours and 1 year and +15 PSU will be used for 2023.
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -73,6 +73,7 @@ hobo_data_datetime_utc_offset_list = []
 for date_utc in hobo_data["Date (UTC)"]:
     if date_utc.year == 2022:
         date_utc_offset = date_utc - datetime.timedelta(hours = 3)
+        date_utc_offset = date_utc_offset.replace(year=date_utc_offset.year + 1)
         hobo_data_datetime_utc_offset_list.append(date_utc_offset)
 
 hobo_data["Date (UTC) Offset -3 Hours"] = hobo_data_datetime_utc_offset_list
@@ -82,7 +83,7 @@ hobo_data = hobo_data.drop('Unnamed: 0', axis=1)
 
 print(hobo_data)
 
-hobo_data.to_csv(os.path.join(__location__, 'HOBO_Data\\Conductivity_Data_No_Outliers\\Salinity_Carolina_Pocasset_12-9-22_1_NO_offset_all.csv'), index=None)
+hobo_data.to_csv(os.path.join(__location__, 'HOBO_Data\\Conductivity_Data_No_Outliers\\Salinity_Carolina_Pocasset_12-9-22_1_NO_offset_all_year_updated.csv'), index=None)
 
 print(len(hobo_data["Date (UTC)"]))
 print(len(hobo_data["Salinity Value (Offset +15)"]))
@@ -107,7 +108,7 @@ plt.title("HOBO 1 2022 Pocasset Salinity (Offset +15 PSU)", loc='center')
 plt.grid(True)
 plt.legend()
 
-plt.savefig(__location__ + '\\Conductivity_Graphs\\HOBO_Graphs\\Conductivity_12-9-22_1_Graph_Without_Outliers_Offset_Sal.png')
+#plt.savefig(__location__ + '\\Conductivity_Graphs\\HOBO_Graphs\\Conductivity_12-9-22_1_Graph_Without_Outliers_Offset_Sal.png')
 
 
 plt.show()

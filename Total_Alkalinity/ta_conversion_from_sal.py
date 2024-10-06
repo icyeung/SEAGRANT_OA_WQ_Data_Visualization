@@ -59,7 +59,7 @@ def ta_conversion (sal_file_loc, sal_source, file_save_name):
 
     sal_data.to_csv(file_save_name, index = None)
 
-
+'''
 # NERRS Metoxit 2020
 ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Used_Data\\Salinity\\wqbmpwq2020_OR.csv",
               "NERRS",
@@ -83,12 +83,12 @@ ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Use
               "NERRS",
               "NERRS_Metoxit_2023_TA_NO.csv")
 
-'''
+
 # CCCE Barnstable 2019
 ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Used_Data\\Salinity\\CCCE_Barnstable_Salinity_Data_2019_UTC.csv",
               "CCCE",
               "CCCE_Barnstable_2019_TA.csv")
-'''
+
 
 # Eureka 2018
 ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Used_Data\\Salinity\\Deer_Island-SG1-2018_Annual_Data_UTC_OR.csv",
@@ -101,7 +101,7 @@ ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Use
               "Eureka",
               "Eureka_DeerIsland_2019_TA_NO.csv")
 
-'''
+
 
 # HOBO 2021 Part 1
 ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Used_Data\\Salinity\\Salinity_Carolina_FiddlersCove_9-28-21_2_NO_offset.csv",
@@ -121,9 +121,14 @@ ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Use
               "HOBO_Pocasset_2022_TA.csv")
 
 
-# HOBO 2023
+# HOBO 2023 (datapoints have year as 2022)
 ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Used_Data\\Salinity\\Salinity_Carolina_Pocasset_12-9-22_1_NO_offset_all.csv",
               "HOBO 2023",
               "HOBO_Pocasset_2023_TA.csv")
     
 '''
+
+# HOBO 2023 (datapoints have year as 2023)
+ta_conversion("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Used_Data\\Salinity\\Salinity_Carolina_Pocasset_12-9-22_1_NO_offset_all_year_updated.csv",
+              "HOBO 2023",
+              "HOBO_Pocasset_2023_TA_NO.csv")
