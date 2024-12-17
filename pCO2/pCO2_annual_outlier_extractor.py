@@ -185,7 +185,6 @@ def grapher(time, tempC, CO2, batteryV, name):
     ax3 = ax1.twinx()
     p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
     ax3.set_ylabel("Battery Voltage")
-    ax3.spines["right"].set_position(("outward", 60))
     ax3.yaxis.label.set_color(p3[0].get_color())
 
    
