@@ -1,1 +1,8 @@
-STUDY_ID,EVENT_ID,STAT_ID,ORDERED_DEPTH_CODE,SAMPLE_ID,SAMPLE_DEPTH_TOP,SAMPLE_DEPTH_BOTTOM,LATITUDE,LONGITUDE,PROF_DATE_TIME_LOCAL,SAMPLE_DEPTH_CODE,DEPTH (m),CONDTVY (mS/cm),DISS_OXYGEN (mg/L),FLUORESCENCE (ug/L),FLU_RAW (ug/L),PCT_SAT (PCT),pH (),VAL_QUAL,SAL (PSU),SIGMA_T (),TEMP (C),TRANS (m-1),Station_D,Air Irradiance,Water Irradiance,TA in (mmol/kgSW),TCO2 in (mmol/kgSW),t(oC) out,P (dbars) out,pH out,fCO2 out (matm),pCO2 out (matm),HCO3 out (mmol/kgSW),CO3 out (mmol/kgSW),CO2 out (mmol/kgSW),B Alk out (mmol/kgSW),OH out (mmol/kgSW),P Alk out (mmol/kgSW),Si Alk out (mmol/kgSW) ,Revelle out,WCa out,WAr out,xCO2 out (dry at 1 atm) (ppm),Field Replicate,VINDTA Sample Name,Sampled Bottle Name,Sampling Date,Sampling Depth,Salinity - Carolina,Salinity - Ries ,Run T,Sampling T,Pressure,Comments,Data Source,Match_Cal_TA,Match_Cal_TA_Datetime
+PROF_DATE_TIME_LOCAL,TA in (mmol/kgSW),MWRA_UTC,Match_Cal_TA,Match_Cal_TA_Datetime
+5/17/2022 9:30,1835.7,2022-05-17 13:30:00,1986.94,2022-05-17 14:30:00
+6/2/2022 14:15,2339.5,2022-06-02 18:15:00,2008.78,2022-06-02 17:15:00
+6/9/2022 10:00,2271.1,2022-06-09 14:00:00,2030.62,2022-06-09 13:00:00
+7/14/2022 11:00,2042.3,2022-07-14 15:00:00,2117.98,2022-07-14 14:00:00
+8/8/2022 9:45,2038.2,2022-08-08 13:45:00,2134.36,2022-08-08 13:30:00
+9/22/2022 10:25,1971.9,2022-09-22 14:25:00,2107.06,2022-09-22 15:15:00
+12/1/2022 15:00,2045.1,2022-12-01 20:00:00,2079.76,2022-12-01 19:00:00
