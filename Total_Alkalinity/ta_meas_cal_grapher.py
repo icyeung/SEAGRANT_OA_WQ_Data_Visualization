@@ -12,8 +12,8 @@ def grapher(file, name, loc):
 
     # Plotting the data
     plt.figure(figsize=(12, 6))
-    plt.plot(data['MWRA_UTC'], data['TA in (mmol/kgSW)'], label='Bottle Sample TA (mmol/kgSW)', color='blue', alpha=0.7)
-    plt.plot(data['MWRA_UTC'], data['Match_Cal_TA'], label='Calculated TA', color='red', alpha=0.7)
+    plt.plot(data['MWRA_UTC'], data['TA in (mmol/kgSW)'], label='Bottle Sample TA (mmol/kgSW)', color='blue', alpha=0.7, marker = ".")
+    plt.plot(data['MWRA_UTC'], data['Match_Cal_TA'], label='Calculated TA', color='red', alpha=0.7, marker = ".")
 
     # Add labels, legend, and title
     plt.xlabel('Datetime UTC', fontsize=12)
@@ -29,31 +29,31 @@ def grapher(file, name, loc):
     plt.show()
 
 grapher ("C:\\Users\\isabe\\source\\repos\\SEAGRANT_OA_WQ_Data_Visualization\\Total_Alkalinity\\MWRA_CAL_TA_Data\\pCO2_2018_Cal_Mea_TA_Data.csv",
-         "Cal vs Meas TA: 2018 Deer Island.png",
+         "Cal_vs_Meas_TA_2018_Deer_Island.png",
          "2018 Deer Island"
          )
 
 grapher ("C:\\Users\\isabe\\source\\repos\\SEAGRANT_OA_WQ_Data_Visualization\\Total_Alkalinity\\MWRA_CAL_TA_Data\\pCO2_2019_Cal_Mea_TA_Data.csv",
-         "Cal vs Meas TA: 2019 Deer Island.png",
+         "Cal_vs_Meas_TA_2019_Deer_Island.png",
          "2019 Deer Island"
          )
 
 grapher ("C:\\Users\\isabe\\source\\repos\\SEAGRANT_OA_WQ_Data_Visualization\\Total_Alkalinity\\MWRA_CAL_TA_Data\\pCO2_2021_Cal_Mea_TA_Data.csv",
-         "Cal vs Meas TA: 2021 North Falmouth.png",
+         "Cal_vs_Meas_TA_2021_North_Falmouth.png",
          "2021 North Falmouth"
          )
 
 grapher ("C:\\Users\\isabe\\source\\repos\\SEAGRANT_OA_WQ_Data_Visualization\\Total_Alkalinity\\MWRA_CAL_TA_Data\\pCO2_2022_Cal_Mea_TA_Data.csv",
-         "Cal vs Meas TA: 2022 Pocasset.png",
+         "Cal_vs_Meas_TA_2022_Pocasset.png",
          "2022 Pocasset"
          )
 
 grapher ("C:\\Users\\isabe\\source\\repos\\SEAGRANT_OA_WQ_Data_Visualization\\Total_Alkalinity\\MWRA_CAL_TA_Data\\pH_2021_Cal_Mea_TA_Data.csv",
-         "Cal vs Meas TA: 2021 Harwich.png",
+         "Cal_vs_Meas_TA_2021_Harwich.png",
          "2021 Harwich"
          )
 
 grapher ("C:\\Users\\isabe\\source\\repos\\SEAGRANT_OA_WQ_Data_Visualization\\Total_Alkalinity\\MWRA_CAL_TA_Data\\pH_2022_Cal_Mea_TA_Data.csv",
-         "Cal vs Meas TA: 2022 Harwich.png",
+         "Cal_vs_Meas_TA_2022_Harwich.png",
          "2022 Harwich"
          )
