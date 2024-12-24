@@ -101,16 +101,7 @@ ax1.xaxis.set_minor_locator(mdates.DayLocator(interval = 1))       # Indicates e
 ax1.set_ylabel("pH")
 ax1.set_xlabel("Dates (MM-DD)")
 ax1.yaxis.label.set_color("k")
-    
-'''   
-    # Temperature plot
-ax2 = ax1.twinx()
-p2 = ax2.plot(sx, ty, color = 'r', linestyle = 'solid', label = "Temperature (F)")
-p2a = ax2.plot(date_2021_revised, temp_2021, color = 'b', linestyle = 'dashed', label = '2021')
-p2b = ax2.plot(date_2022_revised, temp_2022, color = "g", linestyle = 'dashed', label = '2022')
-p2c = ax2.plot(date_2023_revised, temp_2023, color = "r", linestyle = 'dashed', label = '2023')
-ax2.set_ylabel("Temperature (C)")
-'''    
+ 
     
     # Sets title, adds a grid, and shows legend
 plt.tight_layout()

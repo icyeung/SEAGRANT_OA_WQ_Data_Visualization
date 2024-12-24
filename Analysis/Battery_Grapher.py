@@ -1,3 +1,5 @@
+# Data is in UTC/GMT time zone
+
 import numpy as np
 import csv
 import os
