@@ -1,4 +1,4 @@
-# As compared with BBC Data for Pocasset (see IY's pCO2 Grapher slides for more info), HOBO#1 data 2022 will be offset by +15 PSU and used.
+# As compared with BBC Data for Pocasset (see IY's pCO2 Grapher slides for more info), HOBO#2 data 2021 will be offset by +4 PSU and used.
 
 import pandas as pd
 import matplotlib.pyplot as plt

@@ -80,3 +80,5 @@ def battery_grapher (battery_file, graph_name, save_name):
     plt.show()
 
 battery_grapher("pco2_Battery_Data.csv", "Coefficient of Variation vs Battery (2021 pCO2)", "\\2021_pco2CV_vs_Battery.png")
+
+battery_grapher("pco2_Battery_Data.csv", "Coefficient of Variation vs Battery (2023 pCO2)", "\\2023_pco2CV_vs_Battery.png")

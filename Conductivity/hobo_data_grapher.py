@@ -39,7 +39,7 @@ usedTime = []
 
 
 # Takes out empty values in salinity data set
-with open(os.path.join(__location__, 'HOBO_Data\\Conductivity_Data_With_Outliers\\Salinity_Carolina_Pocasset_12-9-22_1.csv'),'r') as csvfile:
+with open(os.path.join(__location__, 'HOBO_Data\\Conductivity_Data_With_Outliers\\Salinity_Carolina_Pocasset_6-2-22_2.csv'),'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
             print(row)
@@ -60,7 +60,7 @@ print(salDate)
 
 # Salinity data
 for time in salDate:
-    timeObj = datetime.datetime.strptime(time, '%m/%d/%y %H:%M:%S')
+    timeObj = datetime.datetime.strptime(time, '%m/%d/%Y %H:%M')
     eastern = pytz.timezone('US/Eastern')
     realTimeObj = timeObj.astimezone(eastern)       # Converts time from GMT to EST
     salDateTrue.append(realTimeObj)
@@ -339,7 +339,7 @@ grapher(salinityDFSortedNOreset.get("Date"), salinityDFSortedNOreset.get("Salini
 # Saves without outliers graph to specified name in folder
 #plt.savefig(my_path + '\\Conductivity_Graphs\\HOBO_Graphs\\Conductivity_6-2-22_2_Pocasset_Graph_Without_Outliers.png', dpi=2000)
 
-salinityDFSortedNOreset.to_csv(my_path + '\\HOBO_Data\\Conductivity_Data_No_Outliers\\Salinity_Carolina_Pocasset_12-9-22_1_NO_Updated.csv', index=None)
+#salinityDFSortedNOreset.to_csv(my_path + '\\HOBO_Data\\Conductivity_Data_No_Outliers\\Salinity_Carolina_Pocasset_12-9-22_1_NO_Updated.csv', index=None)
 
 print("fitted length", len(salinityDFSortedNOreset.get("Fit")))
 

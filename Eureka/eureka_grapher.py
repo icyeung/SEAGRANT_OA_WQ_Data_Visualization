@@ -36,16 +36,7 @@ def commonDataRange(datetime, start_date, end_date):
     else:
         return False
 
-def eureka_grapher(file, title, start_date, end_date, year):
-
-    numofLinesS = 0
-    raw_datetime_list = []
-    water_temp_list = []
-    ph_list = []
-    cond_list = []
-    depth_list = []
-    chlorophyll_list = []
-    do_list = []
+def eureka_grapher(file, title, year):
     
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     formatted_folder_location = os.path.join(__location__, "Eureka_Data\\Eureka_Formatted_Data\\")
@@ -266,13 +257,13 @@ def eureka_grapher(file, title, start_date, end_date, year):
     plt.show()
 
 # Deer Island 2018 Conductivity
-eureka_grapher("Deer_Island-SG1-2018_Annual_Data.csv", "Eureka 2018 Deer Island (SG1) Conductivity", "01/01/2018", "12/31/2018", "2018")
+eureka_grapher("Deer_Island-SG1-2018_Annual_Data.csv", "Eureka 2018 Deer Island (SG1) Conductivity", "2018")
 
 # Deer Island 2019 Conductivity
-#eureka_grapher("Deer_Island-SG1-2019_Annual_Data.csv", "Eureka 2019 Deer Island (SG1) Conductivity", "01/01/2019", "12/31/2019", "2019")
+#eureka_grapher("Deer_Island-SG1-2019_Annual_Data.csv", "Eureka 2019 Deer Island (SG1) Conductivity", "2019")
 
 # Deer Island 2018 Multi-Parameter
-#eureka_grapher("Deer_Island-SG1-2018_Annual_Data.csv", "Eureka 2018 Deer Island (SG1)", "01/01/2018", "12/31/2018", "2018")
+#eureka_grapher("Deer_Island-SG1-2018_Annual_Data.csv", "Eureka 2018 Deer Island (SG1)", "2018")
 
 # Deer Island 2019 Multi-Parameter
-#eureka_grapher("Deer_Island-SG1-2019_Annual_Data.csv", "Eureka 2019 Deer Island (SG1)", "01/01/2019", "12/31/2019", "2019")
+#eureka_grapher("Deer_Island-SG1-2019_Annual_Data.csv", "Eureka 2019 Deer Island (SG1)", "2019")
