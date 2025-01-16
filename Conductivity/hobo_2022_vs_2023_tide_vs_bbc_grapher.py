@@ -360,7 +360,7 @@ weather_data_2_fitted = commonDataRange_weather(weather_data_2, "05-16-2023", "1
 weather_data_3_fitted = commonDataRange_weather(weather_data_3, "05-16-2023", "12-02-2023")
 weather_data_4_fitted = commonDataRange_weather_2(weather_data_4, "05-16-2023", "12-02-2023")
 
-sbm_data_fitted = commonDataRange_weather_2(sbm_data, "01-01-2023", "12-31-2023")
+sbm_data_fitted = commonDataRange_sbm(sbm_data, "01-01-2023", "12-31-2023")
 
 NOAA_fitted_data = commonDataRange(NOAA_tidal_data, "05-16-2023", "12-02-2023")
 #print(commonDataRange(NOAA_tidal_data, "05-16-2023", "11-01-2023"))
