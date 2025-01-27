@@ -186,6 +186,7 @@ def pco2_annual_extractor(file_loc, data_year):
         ax3 = ax1.twinx()
         p3 = ax3.plot(x, by, color = 'g', linestyle = 'solid', label = "Battery Voltage")
         ax3.set_ylabel("Battery Voltage")
+        ax3.spines["right"].set_position(("outward", 60))
         ax3.yaxis.label.set_color(p3[0].get_color())
 
     
@@ -199,7 +200,7 @@ def pco2_annual_extractor(file_loc, data_year):
 
     # Plots graph without outliers
     grapher(xDataTrueNO, extractedData.get("Temp"), extractedData.get("CO2"), extractedData.get("Battery"), 
-            str(data_year) + " pCO2 Data (No Outliers)")
+            str(data_year) + " pCO2 Data (No Outliers) Annual")
 
     # Finds location of .py program
     my_path = os.path.dirname(os.path.abspath(__file__))
@@ -239,4 +240,4 @@ def pco2_annual_extractor(file_loc, data_year):
                                 "Battery": scaledValueBattery})
 
 
-pco2_annual_extractor("SAMI_pCO2\\pCO2_Annual_Compiled_Data\\pCO2_2023_Complete_Data.csv", 2023)
+pco2_annual_extractor("SAMI_pCO2\\pCO2_Annual_Compiled_Data\\pCO2_2018_Complete_Data.csv", 2018)
