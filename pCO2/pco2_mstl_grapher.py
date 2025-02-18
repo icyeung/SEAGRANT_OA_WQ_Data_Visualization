@@ -106,12 +106,11 @@ def sami_mstl(file_loc, data_year, seasonal_period):
     res = result.fit()
     ax = res.plot()
     print(res)
+
+    my_path = os.path.dirname(os.path.abspath(__file__))
+    graph_bd_save_name = "pCO2_" + str(data_year) + "_MSTL_Graph_SeasonalPeriod_" + str(seasonal_period)+ "z2.5_Breakdown.png"
+    plt.savefig(my_path + '\\pCO2_Graphs\\MSTL\\Z_Score_2.5\\' + graph_bd_save_name)
     
-    '''
-    trend = result
-    seasonal_intraday = result.seasonal[0]
-    seasonal_monthly = result.seasonal[1]
-    '''
     
     residual = res.resid # This represents the residuals
 
@@ -119,9 +118,9 @@ def sami_mstl(file_loc, data_year, seasonal_period):
 
     # Identify outliers in residuals (e.g., values greater than 2 standard deviations from mean)
     #threshold = 2  # Define your outlier threshold
-    outliers = sami_data[np.abs(z_scores) > 2]
+    outliers = sami_data[np.abs(z_scores) > 2.5]
 
-    not_outliers = sami_data[np.abs(z_scores) <= 2]
+    not_outliers = sami_data[np.abs(z_scores) <= 2.5]
     
     print(outliers)
     print ("# of Outliers: ", len(outliers))
@@ -140,10 +139,10 @@ def sami_mstl(file_loc, data_year, seasonal_period):
     outlier_indices = outliers.index
 
     cleaned_sami_data = sami_data.drop(sami_data.index[outlier_indices])
-    print(cleaned_sami_data
-          )
+    print(cleaned_sami_data)
+
     # Save cleaned data to CSV
-    #cleaned_data.to_csv('cleaned_file.csv')
+    cleaned_sami_data.to_csv('pCO2_' + str(data_year) + "_MSTL_Filtered_Data.csv", index=False)
     
 
     print("Filtered pCO2 Data:", len(cleaned_sami_data))
@@ -164,8 +163,8 @@ def sami_mstl(file_loc, data_year, seasonal_period):
 
 
     my_path = os.path.dirname(os.path.abspath(__file__))
-    graph_save_name = "pCO2_" + str(data_year) + "_MSTL_Graph_SeasonalPeriod_" + str(seasonal_period)+ ".png"
-    plt.savefig(my_path + '\\pCO2_Graphs\\MSTL\\' + graph_save_name)
+    graph_save_name = "pCO2_" + str(data_year) + "_MSTL_Graph_SeasonalPeriod_" + str(seasonal_period)+ "z2.5.png"
+    plt.savefig(my_path + '\\pCO2_Graphs\\MSTL\\Z_Score_2.5\\' + graph_save_name)
 
     plt.tight_layout()
     plt.show()

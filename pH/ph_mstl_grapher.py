@@ -13,7 +13,7 @@ import datetime
 from matplotlib.dates import DateFormatter
 import matplotlib.dates as mdates
 
-'''
+
 # Converts Year Day Column to calendar day and time
 # Extracts time in HH:MM:SS format from date in Year Day column
 def timeConverter (date):
@@ -36,7 +36,7 @@ def timeConverter (date):
     timeObject = datetime.datetime.strptime(time, '%H:%M:%S').time()
 
     return timeObject
-'''
+
 
 # Sourced from https://pythonhow.com/how/check-if-a-string-is-a-float/
     # Used to check if data is a numeric value
@@ -88,7 +88,7 @@ def sami_ph_mstl(file_loc, data_year, seasonal_period):
     print("hi")
 
     # Dataframe of original data after blanks removed
-    sami_ph_data = pd.DataFrame({"Date": dData, "Time":ttData, "Temp": tyData, "pH": cyData, "Battery": byData})
+    sami_ph_data = pd.DataFrame({"Ordinal_Date": xData, "Date": dData, "Time":ttData, "Temp": tyData, "pH": cyData, "Battery": byData})
     #print("hi", sami_ph_data)
 
     sami_ph_data.to_csv(str(data_year) + "_pH_Formatted_Data.csv", index=False)
@@ -103,20 +103,26 @@ def sami_ph_mstl(file_loc, data_year, seasonal_period):
     
     
     
-    #print("Original data after empty values are taken out: ", len(pH_original))
+    print("Original data after empty values are taken out: ", len(pH_original))
     #sami_data.set_index('Date (UTC)', inplace=True)
     
 
     datetime_dt_list = []
     for date_index in range(0, len(dData)):
-        date = dData[date_index]
-        print(date)
-        time = ttData[date_index]
-        y1, m1, d1 = [int(date_part) for date_part in date.split("-")]
-        date1 = dt(y1, m1, d1)
-        converted_time = dt.strptime(time, "%H:%M:%S")
-        datetime_dt_utc = dt.combine(date1, converted_time.time())
-        datetime_dt_list.append(datetime_dt_utc)
+        if data_year != 2021:
+            date = dData[date_index]
+            #print(date)
+            time = ttData[date_index]
+            y1, m1, d1 = [int(date_part) for date_part in date.split("-")]
+            date1 = dt(y1, m1, d1)
+            converted_time = dt.strptime(time, "%H:%M:%S")
+            datetime_dt_utc = dt.combine(date1, converted_time.time())
+            datetime_dt_list.append(datetime_dt_utc)
+        elif data_year == 2021:
+            ordinal_date = xData[date_index]
+            date_dt_noyear = datetime.datetime.combine(datetime.date.fromordinal(math.trunc(ordinal_date)), timeConverter(ordinal_date))
+            datetime_dt_utc = date_dt_noyear.replace(year = data_year)
+            datetime_dt_list.append(datetime_dt_utc)
 
     sami_ph_data['Date (UTC)'] = datetime_dt_list
 
@@ -128,11 +134,9 @@ def sami_ph_mstl(file_loc, data_year, seasonal_period):
     ax = res.plot()
     #print(res)
     
-    '''
-    trend = result
-    seasonal_intraday = result.seasonal[0]
-    seasonal_monthly = result.seasonal[1]
-    '''
+    my_path = os.path.dirname(os.path.abspath(__file__))
+    graph_bd_save_name = "pH_" + str(data_year) + "_MSTL_Graph_SeasonalPeriod_" + str(seasonal_period)+ "z2.5_Breakdown.png"
+    plt.savefig(my_path + '\\pH_Graphs\\MSTL\\Z_Score_2.5\\' + graph_bd_save_name)
     
     residual = res.resid # This represents the residuals
 
@@ -140,14 +144,14 @@ def sami_ph_mstl(file_loc, data_year, seasonal_period):
 
     # Identify outliers in residuals (e.g., values greater than 2 standard deviations from mean)
     #threshold = 2  # Define your outlier threshold
-    outliers = sami_ph_data[np.abs(z_scores) > 2]
+    outliers = sami_ph_data[np.abs(z_scores) > 2.5]
 
-    not_outliers = sami_ph_data[np.abs(z_scores) <= 2]
+    not_outliers = sami_ph_data[np.abs(z_scores) <= 2.5]
     
     #print(outliers)
-    #print ("# of Outliers: ", len(outliers))
+    print ("# of Outliers: ", len(outliers))
     #print(not_outliers)
-    #print ("# of Non-Outliers: ", len(not_outliers))
+    print ("# of Non-Outliers: ", len(not_outliers))
 
 
     outlier_indices = outliers.index
@@ -156,11 +160,11 @@ def sami_ph_mstl(file_loc, data_year, seasonal_period):
     #print(cleaned_sami_data)
 
     # Save cleaned data to CSV
-    #cleaned_data.to_csv('cleaned_file.csv')
+    cleaned_sami_data.to_csv('pH_' + str(data_year) + "_MSTL_Filtered_Data.csv", index=False)
     
 
-    #print("Filtered pH Data:", len(cleaned_sami_data))
-    #print("Number of Outliers:", len(outlier_indices))
+    print("Filtered pH Data:", len(cleaned_sami_data))
+    print("Number of Outliers:", len(outlier_indices))
     
     # Plot the original data with estimated standard deviations in the first subplot
     fig, axes = plt.subplots(2, 1, figsize=(14,7))
@@ -177,8 +181,8 @@ def sami_ph_mstl(file_loc, data_year, seasonal_period):
 
 
     my_path = os.path.dirname(os.path.abspath(__file__))
-    graph_save_name = "pH_" + str(data_year) + "_MSTL_Graph_SeasonalPeriod_" + str(seasonal_period)+ ".png"
-    plt.savefig(my_path + '\\pH_Graphs\\MSTL\\' + graph_save_name)
+    graph_save_name = "pH_" + str(data_year) + "_MSTL_Graph_SeasonalPeriod_" + str(seasonal_period)+ "z2.5.png"
+    plt.savefig(my_path + '\\pH_Graphs\\MSTL\\Z_Score_2.5\\' + graph_save_name)
 
     plt.tight_layout()
     plt.show()
