@@ -46,7 +46,7 @@ def NERRS_sal_grapher(file_name, location):
     file_name_base = file_name[:-4]
     file_name_adjusted = file_name_base + "_adjusted_UTC+1.csv"
 
-    NERRS_data.to_csv(os.path.join(adjusted_data_folder ,file_name_adjusted))
+    NERRS_data.to_csv(os.path.join(adjusted_data_folder ,file_name_adjusted), index=None)
 
 
 # Metoxit Point 2020
