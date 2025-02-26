@@ -214,7 +214,7 @@ def hobo_2023_corrector(hobo_file, bbc_file, sbm_file):
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
     # HOBO #1 2022 (Pocasset)
-    hobo_data = pd.read_csv(os.path.join(__location__, hobo_file))
+    hobo_data = pd.read_csv(os.path.join(os.path.realpath(os.getcwd()), hobo_file))
 
     #BBC PR1 2023
     BBC_data = pd.read_csv(os.path.join(os.path.realpath(os.getcwd()), bbc_file))
@@ -287,7 +287,7 @@ def hobo_2023_corrector(hobo_file, bbc_file, sbm_file):
 
     #Formatting HOBO Date 
     hobo_sal = hobo_data["Salinity Value (Offset +15)"]
-    hobo_date_with_year = hobo_data["Date (UTC)"]
+    hobo_date_with_year = hobo_data["DateTime (UTC)"]
     hobo_date_no_year = []
     for date in hobo_date_with_year:
         date_no_year = '{:%m-%d %H:%M}'.format(dt.strptime(date, '%Y-%m-%d %H:%M:%S'))
@@ -405,9 +405,9 @@ def hobo_2023_corrector(hobo_file, bbc_file, sbm_file):
     hobo_data["Sal_Value_Test_2"] = corrected_sal_value_list
 
 
-    hobo_data.to_csv("hobo_2023_corrected.csv", index=None)
+    hobo_data.to_csv("HOBO_2023_From_2022_1_MSTL_Filtered_Data.csv", index=None)
 
 # Test Run 1
-hobo_2023_corrector("HOBO_Data\\Conductivity_Data_No_Outliers\\Salinity_Carolina_Pocasset_12-9-22_1_NO_offset.csv",
+hobo_2023_corrector("Used_Data\\Salinity\\HOBO_Used\\HOBO_#1_2022_MSTL_Filtered_Data.csv",
                     "Conductivity\\Sourced_Data\\Buzzards_Bay_Coalition_Data\\bbcdata1992to2023-ver23May2024-export_FC_PR.csv",
                     "Conductivity\\Sourced_Data\\Scallop_Bay_Marina\\Scallop_Bay_Marina_2023_Salinity.csv")

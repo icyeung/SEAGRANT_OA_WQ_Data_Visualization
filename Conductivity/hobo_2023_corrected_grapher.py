@@ -29,7 +29,7 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 hobo_data = pd.read_csv(os.path.join(__location__, "HOBO_Data\\Conductivity_Data_No_Outliers\\Salinity_Carolina_Pocasset_12-9-22_1_NO_offset.csv"))
 
 # HOBO Data Corrected 
-hobo_data_corrected = pd.read_csv(os.path.join(__location__, "HOBO_Data\\hobo_2023_corrected.csv"))
+hobo_data_corrected = pd.read_csv(os.path.join(__location__, "HOBO_Data\\HOBO_2023_From_2022_1_MSTL_Filtered_Data.csv"))
 
 # Pocasset River Entrance 2023
 NOAA_tidal_data = pd.read_csv(os.path.join(os.path.realpath(os.getcwd()), "Tide_Data\\NOAA_Tide_Subordinate_Data\\Pocasset_River_Entrance_MA\\NOAA_Tidal_HL_2023_PocassetRiverEntrance_GMT.csv"))
@@ -594,6 +594,6 @@ plt.legend()
 my_path = os.path.dirname(os.path.abspath(__file__))
 
 # Saves without outliers graph to specified name in folder
-plt.savefig(my_path + '\\Conductivity_Graphs\\Comparison_Graphs\\hobo_1_2022_vs_2023_bbc_vs_sbm_corrected.png')
+plt.savefig(my_path + '\\Conductivity_Graphs\\Comparison_Graphs\\hobo_1_2022_vs_2023_bbc_vs_sbm_corrected_mstl2022.png')
 
 plt.show()

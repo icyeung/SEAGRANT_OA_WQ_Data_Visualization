@@ -22,13 +22,14 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 
 hobo_data = pd.read_csv(os.path.join(__location__, 'HOBO_Data\\Conductivity_Data_No_Outliers\\Salinity_Carolina_Pocasset_12-9-22_1_NO.csv'))
 
+'''
 offset_sal_val_list = []
 for sal_val in hobo_data["Salinity Value"]:
     offset_sal_val = sal_val + 15
     offset_sal_val_list.append(offset_sal_val)
 
 hobo_data["Salinity Value (Offset +15)"] = offset_sal_val_list
-
+'''
 
 # HOBO is stored as LST, added 4/5 hours to convert to UTC
 def timeConvertertoUTC(datetime1):
