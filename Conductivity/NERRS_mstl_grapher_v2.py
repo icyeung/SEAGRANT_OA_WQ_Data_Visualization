@@ -447,7 +447,17 @@ NERRS_mstl_grapher_v2("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGr
 NERRS_mstl_grapher_v2("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\Waquoit_Bay_Data_Adjusted_Time_UTC_+_1\\wqbmpwq2023_adjusted_UTC+1.csv",
                   "01-01-2023", "12-31-2023",
                   datetime.date(2023, 1, 1), datetime.date(2023, 12, 31),
-                  0.2, 
+                  0.15, 
+                  "wqbmpwq2023_NoFlagged.csv",
+                  [12, 708],
+                  2023)
+
+
+# Metoxit Point 2023
+NERRS_mstl_grapher_v2("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\Waquoit_Bay_Data_Adjusted_Time_UTC_+_1\\wqbmpwq2023_adjusted_UTC+1.csv",
+                  "01-01-2023", "12-31-2023",
+                  datetime.date(2023, 1, 1), datetime.date(2023, 12, 31),
+                  0.1, 
                   "wqbmpwq2023_NoFlagged.csv",
                   [12, 708],
                   2023)
