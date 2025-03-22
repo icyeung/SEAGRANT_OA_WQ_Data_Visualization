@@ -11,13 +11,24 @@ import math
 import pytz
 import datetime
 import time
-from statsmodels.tsa.seasonal import MSTL
+#from statsmodels.tsa.seasonal import MSTL
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from loess.loess_1d import loess_1d
 from statsforecast import StatsForecast
 from statsforecast.models import MSTL, AutoARIMA
 from statsforecast.utils import ConformalIntervals
 from IPython.display import Image, display
+import random
+
+def random_num_gen(df):
+    limit = 0.8*len(df)
+    upper_limit = len(df)-1
+    lower_limit = 0
+    random_num_list = []
+    for index in range(0, (int(0.2*len(df)))):
+        random_num_list.append(random.randint(lower_limit, upper_limit))
+    return random_num_list
+        
 
 def NERRS_mstl_cv_grapher(file_location, seasonal_period, data_year):
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -42,13 +53,13 @@ def NERRS_mstl_cv_grapher(file_location, seasonal_period, data_year):
     '''
 
     # MSTL
-    train = NERRS_formatted_data[NERRS_formatted_data.ds < '2022-10-01 00:00:00']
-    test = NERRS_formatted_data[NERRS_formatted_data.ds >= '2022-10-01 00:00:00']
-    train.shape, test.shape
+    train = NERRS_formatted_data.drop(index=random_num_gen(NERRS_formatted_data))
+    #test = NERRS_formatted_data[NERRS_formatted_data.ds >= '2022-10-01 00:00:00']
+    #train.shape, test.shape
 
-    print(train.shape, test.shape)
+    #print(train.shape, test.shape)
 
-    horizon = len(test)
+    horizon = len(NERRS_formatted_data)-len(train)
     models = [MSTL(season_length=seasonal_period, trend_forecaster=AutoARIMA(prediction_intervals = ConformalIntervals(n_windows=5, h=horizon)))]
     sf = StatsForecast(models=models, freq = 'h')
     print(train)
