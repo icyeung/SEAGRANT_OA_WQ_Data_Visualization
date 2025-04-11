@@ -62,6 +62,7 @@ def tide_subordinate_time_adjustor(file_name, harmonic_location, subordinate_sta
 
     harmonic_data["DateTime (UTC)"] = NOAA_tidal_data_datetime_combined_list
 
+    '''
     # Creates new column too hold adjusted times for subordinate data
     harmonic_data["Subordinate DateTime (Adjusted)"] = np.nan
 
@@ -143,6 +144,7 @@ def tide_subordinate_time_adjustor(file_name, harmonic_location, subordinate_sta
                 date_adjusted = date + time_change
                 harmonic_data.loc[index, "Subordinate DateTime (Adjusted)"] = date_adjusted
 
+        '''
     # Saves subordinate data file under desired save name
     harmonic_data.to_csv(os.path.join(subordinate_data_location_folder, file_save_name), index=None)
 
@@ -179,5 +181,8 @@ tide_subordinate_time_adjustor("NOAA_Tidal_HL_2019_Boston_GMT.csv", "Boston_MA\\
 '''
 
 # Dennis uses Boston
-tide_subordinate_time_adjustor("NOAA_Tidal_HL_2019_Boston_GMT.csv", "Boston_MA\\", "Dennis, MA", "Dennis_MA", "NOAA_Tidal_HL_2019_Dennis_GMT.csv")
+#tide_subordinate_time_adjustor("NOAA_Tidal_HL_2019_Boston_GMT.csv", "Boston_MA\\", "Dennis, MA", "Dennis_MA", "NOAA_Tidal_HL_2019_Dennis_GMT.csv")
+
+# Dead Neck uses Boston
+tide_subordinate_time_adjustor("NOAA_Tidal_1MIN_May-Dec_2022_Boston_GMT.csv", "Boston_MA\\", "Dead Neck, MA", "Dead_Neck_MA", "NOAA_Tidal_1MIN_May-Dec_2022_DeadNeck_GMT.csv")
 
