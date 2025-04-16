@@ -1,22 +1,29 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import os
 
+my_path = os.path.dirname(os.path.abspath(__file__))
 #df = pd.read_csv('C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Used_Data\\Salinity\\NERRS_Not_Used\\No_Flags\\wqbmpwq2022_NoFlagged.csv')
-df_withtide = pd.read_csv('C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Correlation_Coeff\\NERRS_MP_2022_Matched_Tide_Updated.csv')
+df_withtide_unsampled = pd.read_csv(my_path + '\\NERRS_test_data_trunc_082022_102022.csv')
+
+df_withtide_unsampled["Datetime"] = pd.to_datetime(df_withtide_unsampled["Salinity_Time"])
+
+df_withtide = df_withtide_unsampled.sample(frac=0.8, random_state=42)
 
 # Convert Salinity_Time to datetime
 df_withtide['Datetime'] = pd.to_datetime(df_withtide['Salinity_Time'])
 
-'''
+
 # Set the datetime as the index
 df_withtide.set_index('Datetime', inplace=True)
 
 # Create the full range of timestamps at 15-minute intervals
-full_range = pd.date_range(start="2022-05-12 11:15:00", end="2022-12-20 13:30:00", freq="15T")
+full_range = pd.date_range(start="2022-08-15 03:30:00", end="2022-10-31 23:45:00", freq="15T")
 
+df_full = df_withtide.copy()
 # Reindex the dataframe to the full range
-df_full = df_withtide.reindex(full_range)
+#df_full = df_withtide.reindex(full_range)
 
 # Perform spline interpolation (order=3 for cubic spline)
 df_full['Salinity'] = df_full['Salinity'].interpolate(method='spline', order=3)
@@ -27,8 +34,9 @@ df_full[['Salinity']].head(10)
 
 # Create the plot
 plt.figure(figsize=(12, 6))
-plt.scatter(df_full.index, df_full['Salinity'], color='teal', linewidth=2, label='Interpolated')
-plt.scatter(df_withtide.index, df_withtide['Salinity'], color='orange', s=10, alpha=0.5, label = "Original_Data")
+plt.scatter(df_withtide_unsampled['Datetime'], df_withtide_unsampled['Salinity'], color='orange', s=10, alpha=0.5, label = "Original_Data")
+plt.scatter(df_full.index, df_full['Salinity'], color='teal', linewidth=2, label='Interpolated', marker = "*")
+
 plt.legend()
 plt.title("Salinity Over Time", fontsize=16)
 plt.xlabel("Time", fontsize=12)
@@ -36,9 +44,15 @@ plt.ylabel("Salinity", fontsize=12)
 plt.grid(True)
 plt.tight_layout()
 plt.xticks(rotation=45)
-plt.show()
-'''
 
+
+
+plt.savefig(my_path + '\\NERRS_interp_test_spline_2022815_20221031.png')
+
+plt.show()
+
+
+'''
 
 df_notideduplicate = pd.read_csv('C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Correlation_Coeff\\NERRS_MP_2022_Matched_Tide_NoTideDuplicates.csv')
 missing_tide = pd.read_csv('C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Correlation_Coeff\\Missing_Tide_withDate.csv')
@@ -97,3 +111,4 @@ plt.grid(True)
 plt.tight_layout()
 plt.xticks(rotation=45)
 plt.show()
+'''
