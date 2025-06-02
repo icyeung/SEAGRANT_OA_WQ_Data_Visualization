@@ -131,7 +131,7 @@ def NERRS_mstl_grapher(file_location, date_start, date_end, trunc_date_start, tr
     #print(cleaned_sami_data)
 
     # Save cleaned data to CSV
-    cleaned_nerrs_data.to_csv('NERRS_' + str(data_year) + "_Metoxit_MSTL_Filtered_Data.csv", index=False)
+    cleaned_nerrs_data.to_csv('NERRS_' + str(data_year) + "_Metoxit_MSTL_Test_Data.csv", index=False)
     
 
     print("Filtered Salinity Data:", len(cleaned_nerrs_data))
@@ -152,13 +152,14 @@ def NERRS_mstl_grapher(file_location, date_start, date_end, trunc_date_start, tr
 
 
     my_path = os.path.dirname(os.path.abspath(__file__))
-    graph_bd_save_name = "NERRS_" + str(data_year) + "Metoxit_MSTL_Graph_SeasonalPeriod_" + str(seasonal_period)+ "z2.5.png"
+    graph_bd_save_name = "NERRS_" + str(data_year) + "Metoxit_MSTL_Graph_SeasonalPeriod_" + str(seasonal_period)+ "z2.5_test.png"
     plt.savefig(my_path + '\\Conductivity_Graphs\\NERRS_Graphs\\MSTL\\Z_Score_2.5\\' + graph_bd_save_name)
 
     plt.tight_layout()
     plt.show()
 
 
+'''
 # Metoxit Point 2020
 NERRS_mstl_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Conductivity\\Sourced_Data\\NERRS_Data\\Waquoit_Bay_Data_Adjusted_Time_UTC_+_1\\wqbmpwq2020_adjusted_UTC+1.csv",
                   "01-01-2020", "12-31-2020",
@@ -190,3 +191,12 @@ NERRS_mstl_grapher("C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant
                   "wqbmpwq2023_NoFlagged.csv",
                   [12, 708],
                   2023)
+'''
+
+# Metoxit Point 2022 with empty rows for missing sal
+NERRS_mstl_grapher("C:\\Users\\isabe\\OneDrive\\Documents\\Code\\MITSG_OA_WQ\\nerrs_2022_empty_sal_rows_test.csv",
+                  "01-01-2022", "12-31-2022",
+                  datetime.date(2022, 1, 1), datetime.date(2022, 12, 31),
+                  "nerrs_2022_empty_sal_rows_mstl_test.csv",
+                  [12, 708],
+                  2022)

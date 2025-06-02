@@ -1,3 +1,6 @@
+# Uses .interpolatte method to interpolate gaps that are larger than 1 day
+
+
 import pandas as pd
 
 # Load the CSV file

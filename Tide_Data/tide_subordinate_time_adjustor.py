@@ -184,5 +184,8 @@ tide_subordinate_time_adjustor("NOAA_Tidal_HL_2019_Boston_GMT.csv", "Boston_MA\\
 #tide_subordinate_time_adjustor("NOAA_Tidal_HL_2019_Boston_GMT.csv", "Boston_MA\\", "Dennis, MA", "Dennis_MA", "NOAA_Tidal_HL_2019_Dennis_GMT.csv")
 
 # Dead Neck uses Boston
-tide_subordinate_time_adjustor("NOAA_Tidal_1MIN_May-Dec_2022_Boston_GMT.csv", "Boston_MA\\", "Dead Neck, MA", "Dead_Neck_MA", "NOAA_Tidal_1MIN_May-Dec_2022_DeadNeck_GMT.csv")
+#tide_subordinate_time_adjustor("NOAA_Tidal_1MIN_May-Dec_2022_Boston_GMT.csv", "Boston_MA\\", "Dead Neck, MA", "Dead_Neck_MA", "NOAA_Tidal_1MIN_May-Dec_2022_DeadNeck_GMT.csv")
+
+# Dead Neck uses Boston
+tide_subordinate_time_adjustor("NOAA_Tidal_1MIN_May-Dec_2023_Boston_GMT.csv", "Boston_MA\\", "Dead Neck, MA", "Dead_Neck_MA", "NOAA_Tidal_1MIN_May-Dec_2023_DeadNeck_GMT.csv")
 

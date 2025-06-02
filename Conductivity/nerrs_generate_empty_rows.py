@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# Example lists of times (replace with your actual data)
-sal_data = pd.read_csv('/Users/isabellayeung/Downloads/MITSG_OA_WQ-master/Correlation_Coeff/NERRS_MP_2022_Matched_Tide_Updated.csv')
-tide_data = pd.read_csv('/Users/isabellayeung/Downloads/MITSG_OA_WQ-master/Correlation_Coeff/NOAA_Tidal_1MIN_May-Dec_2022_DeadNeck_GMT.csv')
+# Enter in matched tide and salinity data for sal_data
+# Enter in tidal data with 1_min frequency for nerrs (should say dead neck location)
+sal_data = pd.read_csv('Correlation_Coeff/NERRS_MP_2023_Matched_Tide_Updated.csv')
+tide_data = pd.read_csv('Correlation_Coeff/NOAA_Tidal_1MIN_May-Dec_2023_DeadNeck_GMT.csv')
 
 # Convert time strings to datetime objects
 sal_data["Datetime"] = pd.to_datetime(sal_data["Salinity_Time"])
@@ -44,4 +45,4 @@ df_with_missing_sal_rows_sorted = df_with_missing_sal_rows.sort_values('Salinity
 
 #missing_tide_df = pd.DataFrame({"Datetime": missing_time_list, "Tide_Height": tide_list})
 print(df_with_missing_sal_rows_sorted)
-df_with_missing_sal_rows_sorted.to_csv('nerrs_2022_empty_sal_rows_test.csv', index=False)
+df_with_missing_sal_rows_sorted.to_csv('nerrs_2023_empty_sal_rows_test.csv', index=False)

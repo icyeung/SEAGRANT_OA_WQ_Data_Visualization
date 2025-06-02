@@ -1,8 +1,9 @@
 import pandas as pd
 
 # Load the salinity and tidal data
-salinity_df = pd.read_csv('C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Used_Data\\Salinity\\NERRS_Not_Used\\No_Flags\\wqbmpwq2022_NoFlagged.csv', parse_dates=['DateTimeStamp'])
-tidal_df = pd.read_csv('C:\\Users\\isabe\\source\\repos\\icyeung\\SAMI_Data_SeaGrant\\Correlation_Coeff\\NOAA_Tidal_1MIN_May-Dec_2022_DeadNeck_GMT.csv', parse_dates=['DateTime (UTC)'])
+salinity_df = pd.read_csv('Used_Data\\Salinity\\NERRS_Not_Used\\No_Flags\\wqbmpwq2023_NoFlagged.csv')
+print(salinity_df)
+tidal_df = pd.read_csv('Correlation_Coeff\\NOAA_Tidal_1MIN_May-Dec_2023_DeadNeck_GMT.csv')
 
 # Convert time columns to datetime format if not already
 salinity_df['time_column'] = pd.to_datetime(salinity_df['Datetime'])
@@ -30,7 +31,7 @@ for _, salinity_row in salinity_df.iterrows():
 # Convert the matched data to a DataFrame
 matched_df = pd.DataFrame(matched_data)
 
-matched_df.to_csv('NERRS_MP_2022_Matched_Tide_Updated.csv', index=False)
+matched_df.to_csv('NERRS_MP_2023_Matched_Tide_Updated.csv', index=False)
 
 # View the combined data
 print(matched_df)
