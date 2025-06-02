@@ -6,6 +6,9 @@ from sklearn.gaussian_process.kernels import RBF, WhiteKernel, ConstantKernel, E
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import GridSearchCV
 
+# Fixes sklearn warnings about not converging
+from sklearn.linear_model import LogisticRegression
+log_model = LogisticRegression(solver='lbfgs', max_iter=1000000)
 
 
 print("hi0")
@@ -30,6 +33,11 @@ df['True_Salinity'] = true_df['Salinity']
 scaled_true_data = scaler.fit_transform(true_df[['Salinity']])
 df['True_Salinity_Scaled'] = scaled_true_data
 
+# For every 4 points, remove the last 3. Truncates the data from every 15mins to 1hr
+#df = df.iloc[::4, :].reset_index(drop=True)
+print(df)
+
+
 # Separates data into observed and missing
 observed = df[~df['Salinity'].isna()]
 missing = df[df['Salinity'].isna()]
@@ -38,6 +46,7 @@ X_train = observed[['Tide_Height', 'time_numeric']].values
 y_train = observed['Salinity'].values
 
 X_missing = missing[['Tide_Height', 'time_numeric']].values
+print(X_missing)
 
 print("hi1")
 
@@ -79,15 +88,16 @@ df.loc[df['Salinity'].isna(), 'Salinity'] = y_pred
 
 # GPR Test Version 2
 # Specify Gaussian Processes with fixed and optimized hyperparameters
-gp_fix = GaussianProcessRegressor(kernel=(0.1 * RBF(35040) + # length_scale tuned for [tidal, time]
-                                          2.0 * ExpSineSquared(length_scale=24, periodicity=2832) +  # 12-hour tidal cycle
-                                          WhiteKernel(noise_level=0.5)),
-                                  optimizer=None)
+gp_fix = GaussianProcessRegressor(kernel=(#RBF(length_scale=35040) + # length_scale tuned for [tidal, time]
+                                          ExpSineSquared(length_scale=24, periodicity=96)),  #length_scale_bounds='fixed', periodicity_bounds='fixed') +  # 29.5-day tidal cycle
+                                          #WhiteKernel(noise_level=1)),
+                                  optimizer=None, normalize_y=True, alpha=1)
 gp_fix.fit(X_train, y_train)
 
-gp_opt = GaussianProcessRegressor(kernel=(0.1 * RBF(35040) + # length_scale tuned for [tidal, time]
-                                          2.0 * ExpSineSquared(length_scale=24, periodicity=2832) +  # 12-hour tidal cycle
-                                          WhiteKernel(noise_level=0.5)), n_restarts_optimizer=10)
+gp_opt = GaussianProcessRegressor(kernel=(#RBF(length_scale=35040) + # length_scale tuned for [tidal, time]
+                                          ExpSineSquared(length_scale=24, periodicity=96)),  #length_scale_bounds='fixed', periodicity_bounds='fixed') +  # 29.5-day tidal cycle
+                                          #WhiteKernel(noise_level=1)),
+                                  n_restarts_optimizer=10, normalize_y=True, alpha=1)
 gp_opt.fit(X_train, y_train)
 
 y_fix_pred, sigma_fix = gp_fix.predict(X_missing, return_std=True)
